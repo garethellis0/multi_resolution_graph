@@ -1,9 +1,12 @@
 #ifndef THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
 #define THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
 
+// TODO: In general, function order in `.cpp` should match that in the relevent `.h` file
+
 #include <Node.h>
 #include <stdexcept>
 #include <array>
+#include <RealNode.h>
 
 class GraphNode : public Node {
 public:
@@ -12,12 +15,14 @@ public:
     /**
      *  See superclass doc comment
      */
-    RealNode& getClosestNodeToCoordinates(Coordinates coordinates) override;
+    boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
     /**
      *  See superclass doc comment
      */
-    boost::optional<RealNode&> getClosestNodeAboveCoordinates(Coordinates coordinates) override;
+    boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
+            Coordinates coordinates,
+            const std::function<bool(Node &)> &filter) override;
 
     /**
      *  See superclass doc comment
@@ -32,11 +37,14 @@ public:
      * - the coordinates of the given node if the the node was found
      * - throws a NodeNotFoundException if the given node was not found
      */
-    Coordinates getCoordinatesOfNode(Node& node);
+    Coordinates getCoordinatesOfNode(Node* node);
 
+    /**
+     * This is thrown when a given node cannot be found beneath this node
+     */
     class NodeNotFoundException : public std::runtime_error {
     public:
-        NodeNotFoundException(const char* m) : std::runtime_error(m) {}
+        explicit NodeNotFoundException(const char* m) : std::runtime_error(m) {}
     };
 
     // TODO: We call this function a *LOT*, so some caching here could yield big improvements
@@ -48,12 +56,19 @@ public:
     double getResolution();
 
 private:
+    // TODO: We should *NOT* be using raw pointers here
     // Nodes located below this one
-    std::array<std::array<Node, 2>, 2> subNodes;
+    std::array<std::array<Node*, 2>, 2> subNodes;
 
     // TODO: This should NOT be a raw pointer
     // The possible parent of this node
     GraphNode* parent;
+
+    /**
+     * Initializes all the subNodes to RealNodes with this node as their parent
+     * Note that this is used because `std::array` doesn't play nice with constructor initialiser lists
+     */
+    void initSubNodes();
 };
 
 
