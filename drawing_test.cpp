@@ -6,6 +6,11 @@
 #include <opencv2/highgui.hpp>
 #include <GraphNode.h>
 
+// Create the mat
+int window_resolution = 600;
+GraphNode graphNode(10);
+cv::Mat globalImage;
+
 cv::Mat drawNode(Node& node, int window_resolution);
 
 cv::Mat drawRealNode(RealNode node, int window_resolution){
@@ -45,19 +50,31 @@ cv::Mat drawNode(Node& node, int window_resolution){
     BOOST_ASSERT(false);
 }
 
+void callBack(int event, int x, int y, int flags, void* userdata){
+    if (event == CV_EVENT_LBUTTONUP) {
+        // Convert window coordinates to graph coordinates
+        Coordinates coordinates = {
+                (x / (double)window_resolution) * graphNode.getScale(),
+                (y / (double)window_resolution) * graphNode.getScale()
+        };
+        graphNode.increaseResolutionOfClosestNode(coordinates, 2);
+        globalImage = drawNode(graphNode, window_resolution);
+        imshow("Graph", globalImage);
+        cvSetMouseCallback("Graph", callBack, NULL);
+        cv::waitKey(0);
+    }
+}
+
 
 int main(){
-    // Create the mat
-    int window_resolution = 600;
 
     // Draw the graph over the cv::Mat
-    GraphNode graphNode(10);
     auto subNodes = graphNode.getSubNodes();
     graphNode.increaseResolutionOfNode(subNodes[0][0], 3);
-    cv::Mat image = drawNode(graphNode, window_resolution);
+    globalImage = drawNode(graphNode, window_resolution);
     // Display the graph
-    imshow("Graph", image);
+    imshow("Graph", globalImage);
+    cvSetMouseCallback("Graph", callBack, NULL);
     cv::waitKey(0);
     return 0;
 }
-
