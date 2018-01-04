@@ -24,3 +24,13 @@ add_executable(realnode_test
         src/GraphNode.cpp
         )
 target_link_libraries(realnode_test ${TESTING_LIBS})
+
+add_executable(graphnode_test
+        test/GraphNode_test.cpp
+        include/RealNode.h
+        include/GraphNode.h
+        include/Node.h
+        src/RealNode.cpp
+        src/GraphNode.cpp
+        )
+target_link_libraries(graphnode_test ${TESTING_LIBS})

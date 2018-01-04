@@ -3,13 +3,13 @@
 #include <memory>
 
 // TODO: Finish Tests
-class RealNodeTest : public testing::Test {
+class GraphNodeTest : public testing::Test {
 protected:
     virtual void SetUp() {
     }
 };
 
-TEST_F(RealNodeTest, getClosestNodeToCoordinates_Test){
+TEST_F(GraphNodeTest, getClosestNodeToCoordinates_Test){
     RealNode realNode(new GraphNode);
     boost::optional<RealNode*> closestNode = realNode.getClosestNodeToCoordinates(
             Coordinates{10,10}
@@ -21,7 +21,7 @@ TEST_F(RealNodeTest, getClosestNodeToCoordinates_Test){
     EXPECT_EQ(&realNode, closestNode);
 }
 
-TEST_F(RealNodeTest, getClosestNodeThatPassesFilter_passes_filter_Test){
+TEST_F(GraphNodeTest, getClosestNodeThatPassesFilter_passes_filter_Test){
 
 }
 
