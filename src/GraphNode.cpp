@@ -58,9 +58,14 @@ Coordinates GraphNode::getCoordinatesOfNode(Node* node) {
             if (potentialNode == node){
                 Coordinates coordinates;
                 coordinates.x = this->getCoordinates().x +
-                        (this->getScale()/this->getResolution()) * colIndex;
+                            // Offset into the graph node for this subnode
+                            (this->getScale()/this->getResolution()) * colIndex
+                            // Add on an extra 1/2 of a subnode so that coordinates are in
+                            // the middle of the node, rather then at the edge
+                            + (this->getScale()/this->getResolution())/2;
                 coordinates.y = this->getCoordinates().y +
-                        (this->getScale()/this->getResolution()) * rowIndex;
+                            (this->getScale()/this->getResolution()) * rowIndex
+                            + (this->getScale()/this->getResolution())/2;
                 return coordinates;
             }
         }
@@ -122,12 +127,12 @@ std::vector<std::vector<Node *>> GraphNode::getSubNodes() {
     return subNodes;
 }
 
-void GraphNode::increaseResolutionOfNode(Node *node, unsigned int resolution) {
+void GraphNode::changeResolutionOfNode(Node *node, unsigned int resolution) {
     for (auto& row : subNodes){
         for (auto& subNode : row){
             if (subNode == node){
                 delete subNode;
-                subNode = new GraphNode(resolution);
+                subNode = new GraphNode(resolution, this);
                 return;
             }
         }
@@ -137,7 +142,8 @@ void GraphNode::increaseResolutionOfNode(Node *node, unsigned int resolution) {
     throw NodeNotFoundException("Given node is not a direct sub-node of this node");
 }
 
-void GraphNode::increaseResolutionOfClosestNode(Coordinates coordinates, unsigned int resolution) {
+void GraphNode::changeResolutionOfClosestNode(Coordinates coordinates,
+                                              unsigned int resolution) {
     boost::optional<RealNode*> possibleClosestNode = this->getClosestNodeToCoordinates(coordinates);
 
     // TODO: What if we can't find any node (should never happen, but.....)

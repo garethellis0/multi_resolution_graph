@@ -63,17 +63,18 @@ public:
 
     // TODO: Do we need this function? Is it crap?
     /**
-     * Increase the resolution of a given sub-node
+     * Change the resolution of a given sub-node
      * @param node the sub-node to increase the resolution of
      * @param resolution the new resolution of the sub-node
      */
-    void increaseResolutionOfNode(Node* node, unsigned int resolution);
+    void changeResolutionOfNode(Node *node, unsigned int resolution);
 
     /**
-     * Increases the resolution of the closest node to the given coordinates
+     * Changes the resolution of the closest node to the given coordinates
      * @param coordinates TODO
      */
-    void increaseResolutionOfClosestNode(Coordinates coordinates, unsigned int resolution);
+    void changeResolutionOfClosestNode(Coordinates coordinates,
+                                       unsigned int resolution);
 
     /**
      * This is thrown when a given node cannot be found beneath this node

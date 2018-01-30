@@ -33,7 +33,7 @@ std::vector<RealNode*> RealNode::getNeighbours() {
 }
 
 Coordinates RealNode::getCoordinates() {
-    parent->getCoordinatesOfNode(this);
+    return parent->getCoordinatesOfNode(this);
 }
 
 boost::optional<RealNode*> RealNode::getClosestNodeToCoordinatesThatPassesFilter(
@@ -49,5 +49,5 @@ double RealNode::getScale() {
 }
 
 void RealNode::convertToGraphNode(unsigned int resolution) {
-    parent->increaseResolutionOfNode(this, resolution);
+    parent->changeResolutionOfNode(this, resolution);
 }
