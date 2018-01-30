@@ -20,8 +20,11 @@ inline double distance(Coordinates c1, Coordinates c2) {
 }
 
 // We need to forward declare this here so that we can use it as a return type in the "Node" class
+template <typename T>
 class RealNode;
 
+// TODO: Really detailed comment explaining what exactly this class is
+template <typename T>
 class Node {
 public:
     /**
@@ -29,7 +32,7 @@ public:
      * @param coordinates the coordinates that we're looking for a node at
      * @return a reference to the node closest to the given coordinates
      */
-    virtual boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) = 0;
+    virtual boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) = 0;
 
     // TODO: Better doc comment here
     // TODO: Better function name
@@ -39,7 +42,7 @@ public:
      * @param filter a function that takes a node, and returns if it passes
      * @return
      */
-    virtual boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
+    virtual boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates,
             const std::function<bool(Node &)> &filter) = 0;
 

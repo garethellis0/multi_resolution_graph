@@ -4,16 +4,18 @@
 #include <Node.h>
 #include <GraphNode.h>
 
+template <typename T>
 class GraphNode;
 
-// TODO: Some basic tests (not a very complex class)
-class RealNode : public Node {
+// TODO: Really detailed comment explaining what exactly this class is
+template <typename T>
+class RealNode : public Node<T> {
 public:
-    boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) override;
+    boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
-    boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
+    boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates,
-            const std::function<bool(Node&)>& filter) override;
+            const std::function<bool(Node<T>&)>& filter) override;
 
     Coordinates getCoordinates() override;
 
@@ -29,7 +31,7 @@ public:
      * Construct a RealNode with a given parent node
      * @param parent the parent graph node
      */
-    explicit RealNode(GraphNode* parent);
+    explicit RealNode(GraphNode<T>* parent);
 
 
     // TODO: Should not be using raw pointers here
@@ -37,7 +39,7 @@ public:
      * Get the neighbouring nodes to this node
      * @return a vector of all neighbouring nodes
      */
-    std::vector<RealNode*> getNeighbours();
+    std::vector<RealNode<T>*> getNeighbours();
 
     /**
      * Converts this RealNode into a GraphNode
@@ -50,8 +52,14 @@ private:
     // TODO: This should *NOT* be a raw pointer
     // TODO: Better comment here?
     // The parent "graph" node to this node
-    GraphNode* parent;
+    GraphNode<T>* parent;
+
+    // TODO: Add getter/setters for this
+    // The value this node contains
+    T contained_value;
 };
+
+#include <RealNode.tpp>
 
 
 #endif //THUNDERBOTS_NAVIGATOR_REALNODE_H

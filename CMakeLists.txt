@@ -7,7 +7,7 @@ find_package(OpenCV REQUIRED)
 
 include_directories(include)
 
-set(SOURCE_FILES main.cpp include/Node.h include/RealNode.h src/RealNode.cpp src/GraphNode.cpp src/GraphNode.cpp include/GraphNode.h)
+set(SOURCE_FILES main.cpp include/Node.h include/RealNode.h include/RealNode.tpp include/GraphNode.tpp include/GraphNode.tpp include/GraphNode.h)
 
 # Setup stuff to let us use GTest
 find_package(GTest REQUIRED)
@@ -21,8 +21,8 @@ add_executable(realnode_test
         include/RealNode.h
         include/GraphNode.h
         include/Node.h
-        src/RealNode.cpp
-        src/GraphNode.cpp
+        include/RealNode.tpp
+        include/GraphNode.tpp
         )
 target_link_libraries(realnode_test ${TESTING_LIBS})
 
@@ -31,8 +31,8 @@ add_executable(graphnode_test
         include/RealNode.h
         include/GraphNode.h
         include/Node.h
-        src/RealNode.cpp
-        src/GraphNode.cpp
+        include/RealNode.tpp
+        include/GraphNode.tpp
         )
 target_link_libraries(graphnode_test ${TESTING_LIBS})
 
@@ -42,7 +42,7 @@ add_executable(drawing_test
         include/RealNode.h
         include/GraphNode.h
         include/Node.h
-        src/RealNode.cpp
-        src/GraphNode.cpp
+        include/RealNode.tpp
+        include/GraphNode.tpp
         )
 target_link_libraries(drawing_test ${OpenCV_LIBS})

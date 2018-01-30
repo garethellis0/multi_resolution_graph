@@ -8,33 +8,33 @@ protected:
 };
 
 TEST_F(GraphNodeTest, constructor_with_scale){
-    GraphNode graphNode(1, 0.3);
+    GraphNode<nullptr_t> graphNode(1, 0.3);
     EXPECT_EQ(1, graphNode.getResolution());
     EXPECT_EQ(0.3, graphNode.getScale());
 }
 
 TEST_F(GraphNodeTest, constructor_with_negative_scale){
-    GraphNode graphNode(1, -0.3);
+    GraphNode<nullptr_t> graphNode(1, -0.3);
     EXPECT_EQ(1, graphNode.getResolution());
     EXPECT_EQ(0.3, graphNode.getScale());
 }
 
 TEST_F(GraphNodeTest, constructor_with_parent){
-    GraphNode* parent = new GraphNode(2, 1);
-    GraphNode graphNode(3, parent);
+    GraphNode<nullptr_t>* parent = new GraphNode<nullptr_t>(2, 1);
+    GraphNode<nullptr_t> graphNode(3, parent);
     EXPECT_EQ(3, graphNode.getResolution());
     EXPECT_EQ(0.5, graphNode.getScale());
 }
 
 // TODO: Do larger case (a few levels of nodes deep, and odd resolution and scale would be good)
 TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
-    GraphNode graph_node(2,1);
-    std::vector<std::vector<Node*>> sub_nodes = graph_node.getSubNodes();
+    GraphNode<nullptr_t> graph_node(2,1);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
 
     // Get a list of coordinates from the subnodes
     std::vector<Coordinates> coordinates;
     for (auto& row : sub_nodes){
-        for (Node* node : row) {
+        for (Node<nullptr_t>* node : row) {
             coordinates.push_back(node->getCoordinates());
         }
     }
@@ -65,27 +65,27 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
 }
 
 TEST_F(GraphNodeTest, increaseResolutionOfNode) {
-    GraphNode graph_node(2,1);
-    std::vector<std::vector<Node*>> sub_nodes = graph_node.getSubNodes();
+    GraphNode<nullptr_t> graph_node(2,1);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
 
     // Choose an arbitrary node to expand
-    Node* node_to_expand = sub_nodes[0][0];
+    Node<nullptr_t>* node_to_expand = sub_nodes[0][0];
 
     // Before we expand it, this node should be a RealNode
-    EXPECT_EQ(typeid(RealNode), typeid(*node_to_expand));
+    EXPECT_EQ(typeid(RealNode<nullptr_t>), typeid(*node_to_expand));
 
     // Expand the node
     graph_node.changeResolutionOfNode(node_to_expand,3);
 
     // Get the subnodes again
     sub_nodes = graph_node.getSubNodes();
-    Node* expanded_node = sub_nodes[0][0];
+    Node<nullptr_t>* expanded_node = sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
-    ASSERT_EQ(typeid(GraphNode), typeid(*expanded_node));
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    GraphNode* new_graph_node = dynamic_cast<GraphNode*>(expanded_node);
+    GraphNode<nullptr_t>* new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
 
     EXPECT_EQ(3, new_graph_node->getResolution());
     EXPECT_EQ(0.5, new_graph_node->getScale());

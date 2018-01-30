@@ -9,14 +9,16 @@
 #include <array>
 #include <RealNode.h>
 
-class GraphNode : public Node {
+// TODO: Really detailed comment explaining what exactly this class is
+template <typename T>
+class GraphNode : public Node<T> {
 public:
 
-    boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) override;
+    boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
-    boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
+    boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates,
-            const std::function<bool(Node &)> &filter) override;
+            const std::function<bool(Node<T> &)> &filter) override;
 
     Coordinates getCoordinates() override;
 
@@ -59,7 +61,7 @@ public:
      * - the coordinates of the given node if the the node was found
      * - throws a NodeNotFoundException if the given node was not found
      */
-    Coordinates getCoordinatesOfNode(Node* node);
+    Coordinates getCoordinatesOfNode(Node<T>* node);
 
     // TODO: Do we need this function? Is it crap?
     /**
@@ -67,7 +69,7 @@ public:
      * @param node the sub-node to increase the resolution of
      * @param resolution the new resolution of the sub-node
      */
-    void changeResolutionOfNode(Node *node, unsigned int resolution);
+    void changeResolutionOfNode(Node<T> *node, unsigned int resolution);
 
     /**
      * Changes the resolution of the closest node to the given coordinates
@@ -96,7 +98,7 @@ public:
      * Get the subnodes for this graph node
      * @return the subnodes for this graph node
      */
-    std::vector<std::vector<Node*>> getSubNodes();
+    std::vector<std::vector<Node<T>*>> getSubNodes();
 
 
 private:
@@ -109,7 +111,7 @@ private:
 
     // TODO: We should *NOT* be using raw pointers here
     // Nodes located below this one
-    std::vector<std::vector<Node*>> subNodes;
+    std::vector<std::vector<Node<T>*>> subNodes;
 
     // TODO: This should *NOT* be a raw pointer
     // The possible parent of this node
@@ -122,5 +124,6 @@ private:
     void initSubNodes();
 };
 
+#include <GraphNode.tpp>
 
 #endif //THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
