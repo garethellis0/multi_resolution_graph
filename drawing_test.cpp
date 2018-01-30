@@ -71,6 +71,7 @@ int main(){
     // Draw the graph over the cv::Mat
     auto subNodes = graphNode.getSubNodes();
     graphNode.increaseResolutionOfNode(subNodes[0][0], 3);
+    graphNode.increaseResolutionOfNode(subNodes[7][8], 10);
     globalImage = drawNode(graphNode, window_resolution);
     // Display the graph
     imshow("Graph", globalImage);
