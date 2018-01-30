@@ -9,6 +9,16 @@ class GraphNode;
 // TODO: Some basic tests (not a very complex class)
 class RealNode : public Node {
 public:
+    boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) override;
+
+    boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
+            Coordinates coordinates,
+            const std::function<bool(Node&)>& filter) override;
+
+    Coordinates getCoordinates() override;
+
+    double getScale() override;
+
     /**
      * Default constructor is deleted to force the caller to pass in a parent node
      * (this is basically equivalent to declaring the default constructor private)
@@ -21,22 +31,6 @@ public:
      */
     explicit RealNode(GraphNode* parent);
 
-    /**
-     *  See superclass doc comment
-     */
-    boost::optional<RealNode*> getClosestNodeToCoordinates(Coordinates coordinates) override;
-
-    /**
-     *  See superclass doc comment
-     */
-    boost::optional<RealNode*> getClosestNodeToCoordinatesThatPassesFilter(
-            Coordinates coordinates,
-            const std::function<bool(Node&)>& filter) override;
-
-    /**
-     *  See superclass doc comment
-     */
-    Coordinates getCoordinates() override;
 
     // TODO: Should not be using raw pointers here
     /**
@@ -45,6 +39,12 @@ public:
      */
     std::vector<RealNode*> getNeighbours();
 
+    /**
+     * Converts this RealNode into a GraphNode
+     * Note: Will invalidate any pointers to this Node
+     * @param resolution the resolution of the new GraphNode
+     */
+    void convertToGraphNode(unsigned int resolution);
 
 private:
     // TODO: This should *NOT* be a raw pointer

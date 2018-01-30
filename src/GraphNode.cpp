@@ -1,17 +1,31 @@
 #include <GraphNode.h>
 
-// TODO: We should probably
-GraphNode::GraphNode() :
+GraphNode::GraphNode(unsigned int resolution, double scale) :
+    resolution(resolution),
+    scale(std::abs(scale)),
     parent(nullptr)
 {
     initSubNodes();
 }
 
+// Note: If we give this node a parent, then we cannot give it a scale, because it's scale
+// will be decided by the scale of it's parent (ie. only the topmost parent will have a scale)
+GraphNode::GraphNode(unsigned int resolution, GraphNode *parent) :
+    resolution(resolution),
+    parent(parent)
+{
+    initSubNodes();
+}
+
 void GraphNode::initSubNodes() {
-    subNodes = {
-            {new RealNode(this), new RealNode(this),
-            new RealNode(this), new RealNode(this)}
-    };
+    for (int rowIndex = 0; rowIndex < resolution; rowIndex++){
+        // Add a new row
+        subNodes.emplace_back(std::vector<Node*>{});
+        // Populate the row with nodes
+        for (int colIndex = 0; colIndex < resolution; colIndex++){
+            subNodes[rowIndex].emplace_back(new RealNode(this));
+        }
+    }
 }
 
 boost::optional<RealNode*> GraphNode::getClosestNodeToCoordinates(Coordinates coordinates) {
@@ -36,15 +50,17 @@ Coordinates GraphNode::getCoordinates() {
 
 Coordinates GraphNode::getCoordinatesOfNode(Node* node) {
     // Look through all the sub-nodes to see if any match the given node
-    for (int rowIndex = 0; rowIndex < 2; rowIndex++){
-        std::array<Node*, 2>& row = subNodes[rowIndex];
-        for (int colIndex = 0; colIndex < 2; colIndex++){
+    for (int rowIndex = 0; rowIndex < resolution; rowIndex++){
+        std::vector<Node*>& row = subNodes[rowIndex];
+        for (int colIndex = 0; colIndex < resolution; colIndex++){
             Node* potentialNode = row[colIndex];
             // Check if this is the node we're looking for
             if (potentialNode == node){
                 Coordinates coordinates;
-                coordinates.x = this->getCoordinates().x + this->getResolution() * colIndex;
-                coordinates.y = this->getCoordinates().y + this->getResolution() * rowIndex;
+                coordinates.x = this->getCoordinates().x +
+                        (this->getScale()/this->getResolution()) * colIndex;
+                coordinates.y = this->getCoordinates().y +
+                        (this->getScale()/this->getResolution()) * rowIndex;
                 return coordinates;
             }
         }
@@ -54,13 +70,17 @@ Coordinates GraphNode::getCoordinatesOfNode(Node* node) {
     throw NodeNotFoundException("Given node is not a direct sub-node of this node");
 }
 
-double GraphNode::getResolution() {
-    // If we have a parent, our resolution is 1/2 of our parents
+int GraphNode::getResolution() {
+    return resolution;
+}
+
+double GraphNode::getScale() {
+    // If we have a parent, our scale is our parents scale divided by our parents resolution
     if (parent != nullptr){
-        return parent->getResolution()/2;
+        return parent->getScale()/parent->getResolution();
     }
-    // If we have no parent, our resolution is 1
-    return 1;
+    // If we have no parent, our scale is 1
+    return scale;
 }
 
 boost::optional<RealNode*> GraphNode::getClosestNodeToCoordinatesThatPassesFilter(
@@ -72,15 +92,16 @@ boost::optional<RealNode*> GraphNode::getClosestNodeToCoordinatesThatPassesFilte
     std::vector<std::pair<Node*, double>> deltas;
     for (auto& row : subNodes) {
         for (auto node : row){
-            // Only append nodes above the given coordinates
+            // Only append nodes that pass the given filter
             if (filter(*node)){
                 double delta = distance(node->getCoordinates(), coordinates);
-                deltas.emplace_back(std::make_pair(node, delta));
+                deltas.push_back(std::make_pair(node, delta));
             }
         }
 
     }
-    // Return the closest node beneath the closest node found (if any)
+
+    // Return the closest node that passed the filter (if any)
     if (!deltas.empty()){
         Node* closestNode = std::min_element(deltas.begin(), deltas.end(),
                                             [](auto d1, auto d2){ return d1.second < d2.second; }
@@ -95,5 +116,34 @@ boost::optional<RealNode*> GraphNode::getClosestNodeToCoordinatesThatPassesFilte
 
     // Couldn't find any node above the given coordinates
     return boost::optional<RealNode*>{};
+}
+
+std::vector<std::vector<Node *>> GraphNode::getSubNodes() {
+    return subNodes;
+}
+
+void GraphNode::increaseResolutionOfNode(Node *node, unsigned int resolution) {
+    for (auto& row : subNodes){
+        for (auto& subNode : row){
+            if (subNode == node){
+                delete subNode;
+                subNode = new GraphNode(resolution);
+                return;
+            }
+        }
+    }
+
+    // We couldn't find the given node
+    throw NodeNotFoundException("Given node is not a direct sub-node of this node");
+}
+
+void GraphNode::increaseResolutionOfClosestNode(Coordinates coordinates, unsigned int resolution) {
+    boost::optional<RealNode*> possibleClosestNode = this->getClosestNodeToCoordinates(coordinates);
+
+    // TODO: What if we can't find any node (should never happen, but.....)
+    if (possibleClosestNode){
+        RealNode* closestNode = *possibleClosestNode;
+        closestNode->convertToGraphNode(resolution);
+    }
 }
 

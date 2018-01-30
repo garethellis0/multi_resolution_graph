@@ -49,6 +49,12 @@ public:
      * @return the coordinates for this node
      */
     virtual Coordinates getCoordinates() = 0;
+
+    /**
+     * Gets the scale of this node
+     * @return the length/width of this node
+     */
+    virtual double getScale() = 0;
 };
 
 #endif //THUNDERBOTS_NAVIGATOR_NODE_H

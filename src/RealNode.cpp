@@ -25,47 +25,9 @@ std::vector<RealNode*> RealNode::getNeighbours() {
                 this->getCoordinates(), filter
         );
         if (node) {
-            neighbours.emplace_back(*node);
+            neighbours.push_back(*node);
         }
     }
-
-
-//    // TODO: This whole thing can probably be neatly simplified into a couple for loops
-//    // Top Neighbour
-//    boost::optional<RealNode*> topNeighbour = parent->getClosestNodeToCoordinatesThatPassesFilter(
-//            this->getCoordinates(),
-//            [&](Node &n) {
-//                return n.getCoordinates().y < this->getCoordinates().y;
-//            }
-//    );
-//    if (topNeighbour)
-//        neighbours.emplace_back(*topNeighbour);
-//    // Bottom Neighbour
-//    boost::optional<RealNode*> bottomNeighbour = parent->getClosestNodeToCoordinatesThatPassesFilter(
-//            this->getCoordinates(),
-//            [&](Node &n) {
-//                return n.getCoordinates().y > this->getCoordinates().y;
-//            }
-//    );
-//    if (bottomNeighbour)
-//        neighbours.emplace_back(*bottomNeighbour);
-//    // Left neighbour
-//    boost::optional<RealNode*> leftNeighbour = parent->getClosestNodeToCoordinatesThatPassesFilter(
-//            this->getCoordinates(),
-//            [&](Node &n) {
-//                return n.getCoordinates().x < this->getCoordinates().x;
-//            }
-//    );
-//    if (leftNeighbour)
-//        neighbours.emplace_back(*leftNeighbour);
-//    boost::optional<RealNode*> rightNeighbour = parent->getClosestNodeToCoordinatesThatPassesFilter(
-//            this->getCoordinates(),
-//            [&](Node &n) {
-//                return n.getCoordinates().x < this->getCoordinates().x;
-//            }
-//    );
-//    if (rightNeighbour)
-//        neighbours.emplace_back(*rightNeighbour);
 
     return neighbours;
 }
@@ -80,4 +42,12 @@ boost::optional<RealNode*> RealNode::getClosestNodeToCoordinatesThatPassesFilter
     // TODO: Descriptive comment here
     if (filter(*this)){ return this; }
     return boost::optional<RealNode*>{};
+}
+
+double RealNode::getScale() {
+    return parent->getResolution()/parent->getScale();
+}
+
+void RealNode::convertToGraphNode(unsigned int resolution) {
+    parent->increaseResolutionOfNode(this, resolution);
 }

@@ -1,24 +1,29 @@
 #include <gtest/gtest.h>
 #include <RealNode.h>
-#include <memory>
 
-// TODO: Finish Tests
 class GraphNodeTest : public testing::Test {
 protected:
     virtual void SetUp() {
     }
 };
 
-TEST_F(GraphNodeTest, getClosestNodeToCoordinates_Test){
-    RealNode realNode(new GraphNode);
-    boost::optional<RealNode*> closestNode = realNode.getClosestNodeToCoordinates(
-            Coordinates{10,10}
-    );
-    // We should have been able to find at least one node
-    bool foundNode = closestNode.is_initialized();
-    ASSERT_TRUE(foundNode);
-    // Since this is a RealNode, the closest node is itself
-    EXPECT_EQ(&realNode, closestNode);
+TEST_F(GraphNodeTest, constructor_with_scale){
+    GraphNode graphNode(1, 0.3);
+    EXPECT_EQ(1, graphNode.getResolution());
+    EXPECT_EQ(0.3, graphNode.getScale());
+}
+
+TEST_F(GraphNodeTest, constructor_with_negative_scale){
+    GraphNode graphNode(1, -0.3);
+    EXPECT_EQ(1, graphNode.getResolution());
+    EXPECT_EQ(0.3, graphNode.getScale());
+}
+
+TEST_F(GraphNodeTest, constructor_with_parent){
+    GraphNode* parent = new GraphNode(2, 1);
+    GraphNode graphNode(3, parent);
+    EXPECT_EQ(3, graphNode.getResolution());
+    EXPECT_EQ(0.5, graphNode.getScale());
 }
 
 TEST_F(GraphNodeTest, getClosestNodeThatPassesFilter_passes_filter_Test){
