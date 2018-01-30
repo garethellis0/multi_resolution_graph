@@ -14,8 +14,10 @@ template <typename T>
 class GraphNode : public Node<T> {
 public:
 
+    // TODO: Can we make this just return a pointer directly? This is guaranteed to find a node....
     boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
+    // TODO: TEST ME
     boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates,
             const std::function<bool(Node<T> &)> &filter) override;

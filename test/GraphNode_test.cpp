@@ -35,7 +35,7 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
     std::vector<Coordinates> coordinates;
     for (auto& row : sub_nodes){
         for (Node<nullptr_t>* node : row) {
-            coordinates.push_back(node->getCoordinates());
+            coordinates.push_back(graph_node.getCoordinatesOfNode(node));
         }
     }
 
@@ -111,6 +111,90 @@ TEST_F(GraphNodeTest, changeResolutionOfClosestNode_small_case){
 
     EXPECT_EQ(3, new_graph_node->getResolution());
     EXPECT_EQ(0.5, new_graph_node->getScale());
+}
+
+TEST_F(GraphNodeTest, getCoordinates_top_level_graphnode){
+    GraphNode<nullptr_t> graph_node(2,1);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+
+    // Check the coordinates of the top level node
+    Coordinates expected_top_level_node_coordinates = {0.5,0.5};
+    EXPECT_EQ(expected_top_level_node_coordinates, graph_node.getCoordinates());
+}
+
+TEST_F(GraphNodeTest, getCoordinates_for_subnodes){
+    GraphNode<nullptr_t> graph_node(2,1);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+
+    // Check the coordinates of subnodes
+    std::vector<Coordinates> coordinates;
+    for (auto& row : sub_nodes){
+        for (Node<nullptr_t>* node : row){
+            coordinates.emplace_back(node->getCoordinates());
+        }
+    }
+
+    // Our GraphNode should be 2x2, so we should have 4 subnodes
+    ASSERT_EQ(4, coordinates.size());
+
+    // Sort the coordinates so this test is deterministic
+    // (will always produce the same result, even if some implementation details change)
+    std::sort(coordinates.begin(), coordinates.end(),
+              [&](auto& c1, auto& c2){
+                  return c1.x < c2.x && c1.y < c2.y;
+              });
+
+    std::vector<Coordinates> expected_subnode_coordinates = {
+            {0.25,0.25},
+            {0.75,0.25},
+            {0.25,0.75},
+            {0.75,0.75},
+    };
+
+    // Sadly this seems like the nicest way to compare vectors of floating point
+    // values in gtest :(
+    for (int i = 0; i < 4; i++){
+        EXPECT_FLOAT_EQ(expected_subnode_coordinates[i].x, coordinates[i].x);
+        EXPECT_FLOAT_EQ(expected_subnode_coordinates[i].y, coordinates[i].y);
+    }
+}
+
+TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
+    GraphNode<nullptr_t> graph_node(2,1);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+
+    // Expand one of the subnodes
+    Node<nullptr_t>* expanded_sub_node = sub_nodes[0][0];
+    graph_node.changeResolutionOfNode(expanded_sub_node, 3);
+
+    // Get the new subnodes
+    sub_nodes = graph_node.getSubNodes();
+    expanded_sub_node = sub_nodes[0][0];
+
+    Coordinates expected = {0.25, 0.25};
+    EXPECT_EQ(expected, graph_node.getCoordinatesOfNode(expanded_sub_node));
+}
+
+// TODO: Larger case that's a few level deep
+TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
+    GraphNode<nullptr_t> graph_node(4,10);
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+
+    // Expand one of the subnodes
+    graph_node.changeResolutionOfNode(sub_nodes[0][0],2);
+
+    boost::optional<RealNode<nullptr_t>*> found_node;
+    Coordinates expected_coordinates;
+
+    // For every one of the following coordinates:
+    // - check that we actually got a result
+    // - check that it was the node we were expecting
+    // - check that the result has the coordinates we were expecting
+
+    found_node = graph_node.getClosestNodeToCoordinates({0,0});
+    ASSERT_TRUE(found_node.is_initialized());
+
+    // TODO: YOU ARE HERE - finish this test
 }
 
 

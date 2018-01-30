@@ -18,6 +18,9 @@ inline double distance(Coordinates c1, Coordinates c2) {
     double dy = c1.y - c2.y;
     return sqrt(pow(dx,2) + pow(dy,2));
 }
+bool operator==(const Coordinates& c1, const Coordinates& c2){
+    return c1.x == c2.x && c1.y == c2.y;
+}
 
 // We need to forward declare this here so that we can use it as a return type in the "Node" class
 template <typename T>
