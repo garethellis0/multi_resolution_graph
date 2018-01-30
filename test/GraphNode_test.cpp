@@ -64,7 +64,8 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
     }
 }
 
-TEST_F(GraphNodeTest, increaseResolutionOfNode) {
+// TODO: A larger case that's a few levels deep
+TEST_F(GraphNodeTest, changeResolutionOfNode_small_case) {
     GraphNode<nullptr_t> graph_node(2,1);
     std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
 
@@ -85,7 +86,28 @@ TEST_F(GraphNodeTest, increaseResolutionOfNode) {
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    GraphNode<nullptr_t>* new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+
+    EXPECT_EQ(3, new_graph_node->getResolution());
+    EXPECT_EQ(0.5, new_graph_node->getScale());
+}
+
+// TODO: A larger case that's a few levels deep
+TEST_F(GraphNodeTest, changeResolutionOfClosestNode_small_case){
+    GraphNode<nullptr_t> graph_node(2,1);
+
+    // Expand the node
+    graph_node.changeResolutionOfClosestNode({0.75,0.75}, 3);
+
+    // Get the subnodes
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    Node<nullptr_t>* expanded_node = sub_nodes[1][1];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
 
     EXPECT_EQ(3, new_graph_node->getResolution());
     EXPECT_EQ(0.5, new_graph_node->getScale());
