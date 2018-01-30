@@ -57,7 +57,7 @@ void callBack(int event, int x, int y, int flags, void* userdata){
                 (x / (double)window_resolution) * graphNode.getScale(),
                 (y / (double)window_resolution) * graphNode.getScale()
         };
-        graphNode.increaseResolutionOfClosestNode(coordinates, 2);
+        graphNode.changeResolutionOfClosestNode(coordinates, 2);
         globalImage = drawNode(graphNode, window_resolution);
         imshow("Graph", globalImage);
         cvSetMouseCallback("Graph", callBack, NULL);
@@ -70,8 +70,8 @@ int main(){
 
     // Draw the graph over the cv::Mat
     auto subNodes = graphNode.getSubNodes();
-    graphNode.increaseResolutionOfNode(subNodes[0][0], 3);
-    graphNode.increaseResolutionOfNode(subNodes[7][8], 10);
+    graphNode.changeResolutionOfNode(subNodes[0][0], 3);
+    graphNode.changeResolutionOfNode(subNodes[7][8], 10);
     globalImage = drawNode(graphNode, window_resolution);
     // Display the graph
     imshow("Graph", globalImage);
