@@ -52,10 +52,10 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
               });
 
     std::vector<Coordinates> expected = {
-            {0.25,0.25},
-            {0.75,0.25},
-            {0.25,0.75},
-            {0.75,0.75},
+            {0,0},
+            {0.5,0},
+            {0,0.5},
+            {0.5,0.5},
     };
 
     // Sadly this seems like the nicest way to compare vectors of floating point
@@ -120,7 +120,7 @@ TEST_F(GraphNodeTest, getCoordinates_top_level_graphnode){
     std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
 
     // Check the coordinates of the top level node
-    Coordinates expected_top_level_node_coordinates = {0.5,0.5};
+    Coordinates expected_top_level_node_coordinates = {0,0};
     EXPECT_EQ(expected_top_level_node_coordinates, graph_node.getCoordinates());
 }
 
@@ -147,10 +147,10 @@ TEST_F(GraphNodeTest, getCoordinates_for_subnodes){
               });
 
     std::vector<Coordinates> expected_subnode_coordinates = {
-            {0.25,0.25},
-            {0.75,0.25},
-            {0.25,0.75},
-            {0.75,0.75},
+            {0,0},
+            {0.5,0},
+            {0,0.5},
+            {0.5,0.5},
     };
 
     // Sadly this seems like the nicest way to compare vectors of floating point
@@ -173,7 +173,7 @@ TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
     sub_nodes = graph_node.getSubNodes();
     expanded_sub_node = sub_nodes[0][0];
 
-    Coordinates expected = {0.25, 0.25};
+    Coordinates expected = {0, 0};
     EXPECT_EQ(expected, graph_node.getCoordinatesOfNode(expanded_sub_node));
 }
 
@@ -214,25 +214,25 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     found_node = graph_node.getClosestNodeToCoordinates({0,0});
     ASSERT_TRUE(found_node.is_initialized());
     EXPECT_EQ(expanded_node_sub_nodes[0][0], *found_node);
-    expected_coordinates = {0.5, 0.5};
+    expected_coordinates = {0, 0};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({1.1,0});
     ASSERT_TRUE(found_node.is_initialized());
     EXPECT_EQ(expanded_node_sub_nodes[0][1], *found_node);
-    expected_coordinates = {1.5, 0.5};
+    expected_coordinates = {1, 0};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({0,1.1});
     ASSERT_TRUE(found_node.is_initialized());
     EXPECT_EQ(expanded_node_sub_nodes[1][0], *found_node);
-    expected_coordinates = {0.5, 1.5};
+    expected_coordinates = {0, 1};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({5.4,7.6});
     ASSERT_TRUE(found_node.is_initialized());
     EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
-    expected_coordinates = {5, 7};
+    expected_coordinates = {4, 6};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }
 

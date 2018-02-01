@@ -53,10 +53,7 @@ Coordinates GraphNode<T>::getCoordinates() {
         return parent->getCoordinatesOfNode(this);
     }
     // Otherwise we're at the top level graph
-    return Coordinates{
-            getScale()/getResolution(),
-            getScale()/getResolution()
-    };
+    return Coordinates{0,0};
 }
 
 template <typename T>
@@ -71,16 +68,16 @@ Coordinates GraphNode<T>::getCoordinatesOfNode(Node<T>* node) {
                 Coordinates coordinates;
                 coordinates.x = this->getCoordinates().x +
                             // Offset into the graph node for this subnode
-                            (this->getScale()/this->getResolution()) * colIndex
+                            (this->getScale()/this->getResolution()) * colIndex;
                             // Subtract an extra 1/2 of a subnode so that coordinates are in
                             // the middle of the node, rather then at the edge
-                            - (this->getScale()/this->getResolution())/2;
+                            //- (this->getScale()/this->getResolution())/2;
                 coordinates.y = this->getCoordinates().y +
                             // Offset into the graph node for this subnode
-                            (this->getScale()/this->getResolution()) * rowIndex
+                            (this->getScale()/this->getResolution()) * rowIndex;
                             // Subtract an extra 1/2 of a subnode so that coordinates are in
                             // the middle of the node, rather then at the edge
-                            - (this->getScale()/this->getResolution())/2;
+                            //- (this->getScale()/this->getResolution())/2;
                 return coordinates;
             }
         }
