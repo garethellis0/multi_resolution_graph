@@ -7,20 +7,23 @@
 #include <GraphNode.h>
 
 // Create the mat
-int window_resolution = 600;
-GraphNode graphNode(10);
+int window_resolution = 800;
+GraphNode<int> graphNode(10);
 cv::Mat globalImage;
 
-cv::Mat drawNode(Node& node, int window_resolution);
+template <typename T>
+cv::Mat drawNode(Node<T>& node, int window_resolution);
 
-cv::Mat drawRealNode(RealNode node, int window_resolution){
+template <typename T>
+cv::Mat drawRealNode(RealNode<T> node, int window_resolution){
     cv::Mat image = cv::Mat::zeros(window_resolution, window_resolution, CV_8UC3);
     rectangle(image, {0,0}, {window_resolution,window_resolution},
               cv::Scalar(0, 255, 0), 0.05 * window_resolution);
     return image;
 }
 
-cv::Mat drawGraphNode(GraphNode node, int window_resolution){
+template <typename T>
+cv::Mat drawGraphNode(GraphNode<T> node, int window_resolution){
     cv::Mat image = cv::Mat::zeros(window_resolution, window_resolution, CV_8UC3);
     for (int rowIndex = 0; rowIndex < node.getResolution(); rowIndex++){
         for (int colIndex = 0; colIndex < node.getResolution(); colIndex++){
@@ -39,18 +42,19 @@ cv::Mat drawGraphNode(GraphNode node, int window_resolution){
     return image;
 }
 
-cv::Mat drawNode(Node& node, int window_resolution){
-    if (typeid(node) == typeid(GraphNode)){
-        return drawGraphNode(static_cast<GraphNode&>(node), window_resolution);
+template <typename T>
+cv::Mat drawNode(Node<T>& node, int window_resolution){
+    if (typeid(node) == typeid(GraphNode<T>)){
+        return drawGraphNode(static_cast<GraphNode<T>&>(node), window_resolution);
     }
-    if (typeid(node) == typeid(RealNode)){
-        return drawRealNode(static_cast<RealNode&>(node), window_resolution);
+    if (typeid(node) == typeid(RealNode<T>)){
+        return drawRealNode(static_cast<RealNode<T>&>(node), window_resolution);
     }
     // Should never get here
     BOOST_ASSERT(false);
 }
 
-void callBack(int event, int x, int y, int flags, void* userdata){
+void callBack(int event, int y, int x, int flags, void* userdata){
     if (event == CV_EVENT_LBUTTONUP) {
         // Convert window coordinates to graph coordinates
         Coordinates coordinates = {
@@ -69,9 +73,6 @@ void callBack(int event, int x, int y, int flags, void* userdata){
 int main(){
 
     // Draw the graph over the cv::Mat
-    auto subNodes = graphNode.getSubNodes();
-    graphNode.changeResolutionOfNode(subNodes[0][0], 3);
-    graphNode.changeResolutionOfNode(subNodes[7][8], 10);
     globalImage = drawNode(graphNode, window_resolution);
     // Display the graph
     imshow("Graph", globalImage);
