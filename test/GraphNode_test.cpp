@@ -177,11 +177,27 @@ TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
 
 // TODO: Larger case that's a few level deep
 TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
-    GraphNode<nullptr_t> graph_node(4,10);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    GraphNode<nullptr_t> graph_node(4,8);
+    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
 
-    // Expand one of the subnodes
-    graph_node.changeResolutionOfNode(sub_nodes[0][0],2);
+    // Expand the bottom left subnode
+    graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
+
+    // Get the new top level subnodes
+    top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Get the node we just expanded
+    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+
+    // Get the subnodes of the node we just expanded
+    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+            new_graph_node->getSubNodes();
 
     boost::optional<RealNode<nullptr_t>*> found_node;
     Coordinates expected_coordinates;
@@ -193,8 +209,27 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
 
     found_node = graph_node.getClosestNodeToCoordinates({0,0});
     ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(expanded_node_sub_nodes[0][0], *found_node);
+    expected_coordinates = {0.5, 0.5};
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
-    // TODO: YOU ARE HERE - finish this test
+    found_node = graph_node.getClosestNodeToCoordinates({1.1,0});
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(expanded_node_sub_nodes[0][1], *found_node);
+    expected_coordinates = {1.5, 0.5};
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
+
+    found_node = graph_node.getClosestNodeToCoordinates({0,1.1});
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(expanded_node_sub_nodes[1][0], *found_node);
+    expected_coordinates = {0.5, 1.5};
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
+
+    found_node = graph_node.getClosestNodeToCoordinates({5.4,7.6});
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
+    expected_coordinates = {5, 7};
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }
 
 
