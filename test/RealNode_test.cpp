@@ -2,6 +2,8 @@
 #include <RealNode.h>
 #include <memory>
 
+// TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
+
 // TODO: Finish Tests
 class RealNodeTest : public testing::Test {
 protected:

@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 #include <RealNode.h>
 
+// TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
+
 class GraphNodeTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -175,7 +177,8 @@ TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
     EXPECT_EQ(expected, graph_node.getCoordinatesOfNode(expanded_sub_node));
 }
 
-// TODO: Larger case that's a few level deep
+// This test is more of a higher level integration test. If it's failing,
+// it's likely other, smaller/more focused tests are also failing
 TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     GraphNode<nullptr_t> graph_node(4,8);
     std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
@@ -202,6 +205,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     boost::optional<RealNode<nullptr_t>*> found_node;
     Coordinates expected_coordinates;
 
+    // TODO: These should def. be seperate tests
     // For every one of the following coordinates:
     // - check that we actually got a result
     // - check that it was the node we were expecting
@@ -229,6 +233,71 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     ASSERT_TRUE(found_node.is_initialized());
     EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
     expected_coordinates = {5, 7};
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
+}
+
+// This test is more of a higher level integration test. If it's failing,
+// it's likely other, smaller/more focused tests are also failing
+TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
+    GraphNode<nullptr_t> graph_node(4,8);
+    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Expand the bottom left subnode
+    graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
+
+    // Get the new top level subnodes
+    top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Get the node we just expanded
+    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+
+    // Get the subnodes of the node we just expanded
+    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+            new_graph_node->getSubNodes();
+
+    boost::optional<RealNode<nullptr_t>*> found_node;
+    Coordinates expected_coordinates;
+    std::function<bool(Node<nullptr_t>&)> filter;
+
+    // TODO: These should def. be seperate tests
+    // For every one of the following coordinates:
+    // - check that we actually got a result
+    // - check that it was the node we were expecting
+    // - check that the result has the coordinates we were expecting
+
+    // This filter forces us to find a node with specific coordinates
+    expected_coordinates = {5,7};
+    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates() == expected_coordinates; };
+    found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter(
+            {0,0}, filter);
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
+
+    // This filter forces us to find a node in the top 1/2 of the graph
+    expected_coordinates = {3,5};
+    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates().y > 4; };
+    found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter(
+            {3,0}, filter);
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(top_level_sub_nodes[2][1], *found_node);
+    EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
+
+    // This filter forces us to find a node in the bottom left 1/4 of the graph
+    expected_coordinates = {3,3};
+    filter = [&](Node<nullptr_t> &n) {
+        return n.getCoordinates().y < 4 && n.getCoordinates().x < 4;
+    };
+    found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter(
+            {7,7}, filter);
+    ASSERT_TRUE(found_node.is_initialized());
+    EXPECT_EQ(top_level_sub_nodes[1][1], *found_node);
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }
 

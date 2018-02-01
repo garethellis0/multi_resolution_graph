@@ -76,7 +76,10 @@ Coordinates GraphNode<T>::getCoordinatesOfNode(Node<T>* node) {
                             // the middle of the node, rather then at the edge
                             - (this->getScale()/this->getResolution())/2;
                 coordinates.y = this->getCoordinates().y +
+                            // Offset into the graph node for this subnode
                             (this->getScale()/this->getResolution()) * rowIndex
+                            // Subtract an extra 1/2 of a subnode so that coordinates are in
+                            // the middle of the node, rather then at the edge
                             - (this->getScale()/this->getResolution())/2;
                 return coordinates;
             }
@@ -108,10 +111,11 @@ boost::optional<RealNode<T>*> GraphNode<T>::getClosestNodeToCoordinatesThatPasse
         const std::function<bool(Node<T> &)> &filter) {
     // First, look in the sub-nodes of this node
 
-    // Get the distances to each sub-node
+    // Get the distances to each sub-node that passes the filter
     std::vector<std::pair<Node<T>*, double>> deltas;
     for (auto& row : subNodes) {
         for (auto node : row){
+            // NOTE: CLion complains about the following line, but it compiles fine... :|
             // Only append nodes that pass the given filter
             if (filter(*node)){
                 double delta = distance(node->getCoordinates(), coordinates);
