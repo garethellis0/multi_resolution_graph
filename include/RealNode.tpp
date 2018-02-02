@@ -69,4 +69,14 @@ void RealNode<T>::convertToGraphNode(unsigned int resolution) {
     parent->changeResolutionOfNode(this, resolution);
 }
 
+template <typename T>
+T RealNode::getContainedValue() {
+    return contained_value;
+}
+
+template <typename T>
+void RealNode::setContainedValue(T val) {
+    this->contained_value = val;
+}
+
 #endif // THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H

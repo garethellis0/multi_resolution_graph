@@ -49,6 +49,20 @@ public:
      */
     void convertToGraphNode(unsigned int resolution);
 
+    // TODO: Better comment? Bit hard, since it's so generic
+    /**
+     * Gets the value contained by this node
+     * @return the values contained by this node
+     */
+    T getContainedValue();
+
+    // TODO: Better comment? Bit hard, since it's so generic
+    /**
+     * Sets the value contained by this node
+     * @param val the value to be contained by this node
+     */
+    void setContainedValue(T val);
+
 private:
     // TODO: This should *NOT* be a raw pointer
     // TODO: Better comment here?

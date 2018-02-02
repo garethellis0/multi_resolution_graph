@@ -16,11 +16,6 @@ protected:
     }
 };
 
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
-}
-
 // TODO: Larger test case
 TEST_F(RealNodeTest, getNeighbours_small_case){
     GraphNode<nullptr_t> graph_node(2,2);
@@ -104,5 +99,12 @@ TEST_F(RealNodeTest, getNeighbours_small_case){
     EXPECT_EQ(expected, neighbours);
     // TODO: Check coordinates
 
+}
+
+//TODO: Tests got getContainedValue and setContainedValue for a few different templated types
+
+int main(int argc, char** argv) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }
 
