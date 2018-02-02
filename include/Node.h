@@ -43,11 +43,14 @@ public:
      * Gets the closest node at or below this node that passes the given function
      * @param coordinates the coordinates to find a node relative to
      * @param filter a function that takes a node, and returns if it passes
+     * @param search_parent whether or not to try searching through this nodes parent node
+     * (this is used to prevent loops when travelling all the way up the tree and back down)
      * @return
      */
-    virtual boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
-            Coordinates coordinates,
-            const std::function<bool(Node &)> &filter) = 0;
+    virtual boost::optional<RealNode<T> *>
+    getClosestNodeToCoordinatesThatPassesFilter(
+            Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
+            bool search_parent = true) = 0;
 
     // TODO: We call this function a *LOT*, so some caching here could yield big improvements
     /**

@@ -38,12 +38,11 @@ template <typename T>
 boost::optional<RealNode<T>*> GraphNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
     // In this case, we just setup the filter so that all nodes pass,
     // so that we just find the closest node with no restrictions
-    return this->getClosestNodeToCoordinatesThatPassesFilter(
-            coordinates,
-            [&](Node<T>& n){
-                return true;
-            }
-    );
+    return this->getClosestNodeToCoordinatesThatPassesFilter(coordinates,
+                                                             [&](Node<T> &n) {
+                                                                 return true;
+                                                             },
+                                                             false);
 }
 
 template <typename T>
@@ -103,39 +102,48 @@ double GraphNode<T>::getScale() {
 }
 
 template <typename T>
-boost::optional<RealNode<T>*> GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
-        Coordinates coordinates,
-        const std::function<bool(Node<T> &)> &filter) {
-    // First, look in the sub-nodes of this node
+boost::optional<RealNode<T> *>
+GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
+        Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
+        bool search_parent) {
 
-    // Get the distances to each sub-node that passes the filter
-    std::vector<std::pair<Node<T>*, double>> deltas;
+    // First, look in the sub-nodes of this node
+    // Find the closest node below this one that passes the filter
+    boost::optional<RealNode<T>*> closest_node_found = boost::optional<RealNode<T>*>{};
+    double distance_to_closest_node_found = -1;
     for (auto& row : subNodes) {
-        for (auto node : row){
-            // NOTE: CLion complains about the following line, but it compiles fine... :|
-            // Only append nodes that pass the given filter
-            if (filter(*node)){
-                double delta = distance(node->getCoordinates(), coordinates);
-                deltas.push_back(std::make_pair(node, delta));
+        for (Node<T>* node : row){
+            boost::optional<RealNode<T>*> closest_sub_node = node->getClosestNodeToCoordinatesThatPassesFilter(
+                    coordinates, filter, false);
+            // Check that we found a node that passed the filter
+            if (closest_sub_node){
+                double distance_to_closest_sub_node = distance((*closest_sub_node)->getCoordinates(), coordinates);
+                // If we haven't found any node yet, or if this one is closer
+                // the the closest one found so far, save it as the closest
+                if (!closest_node_found.is_initialized() ||
+                        distance_to_closest_sub_node < distance_to_closest_node_found) {
+                    closest_node_found = closest_sub_node;
+                    distance_to_closest_node_found = distance_to_closest_sub_node;
+                }
             }
         }
 
     }
 
-    // Return the closest node that passed the filter (if any)
-    if (!deltas.empty()){
-        Node<T>* closestNode = std::min_element(deltas.begin(), deltas.end(),
-                                            [](auto d1, auto d2){ return d1.second < d2.second; }
-        )->first;
-        return closestNode->getClosestNodeToCoordinatesThatPassesFilter(coordinates, filter);
+    // If we found a node, return it
+    if (closest_node_found){
+        return closest_node_found;
     }
 
-    // If we couldn't find any appropriate node under this node, look in our parent node (if we have one)
-    if (parent != nullptr){
-        return parent->getClosestNodeToCoordinatesThatPassesFilter(coordinates, filter);
+    // If we couldn't find any appropriate node under this node and we want to,
+    // look in our parent node (if we have one)
+    if (parent != nullptr && search_parent){
+        return parent->getClosestNodeToCoordinatesThatPassesFilter(coordinates,
+                                                                   filter,
+                                                                   true);
     }
 
-    // Couldn't find any node above the given coordinates
+    // Couldn't find any node that passes the given filter
     return boost::optional<RealNode<T>*>{};
 }
 

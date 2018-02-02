@@ -28,8 +28,8 @@ std::vector<RealNode<T>*> RealNode<T>::getNeighbours() {
     std::vector<RealNode<T>*> neighbours;
     for (auto& filter : filters){
         boost::optional<RealNode<T>*> node = parent->getClosestNodeToCoordinatesThatPassesFilter(
-                this->getCoordinates(), filter
-        );
+                this->getCoordinates(), filter,
+                false);
         if (node) {
             neighbours.push_back(*node);
         }
@@ -46,9 +46,15 @@ Coordinates RealNode<T>::getCoordinates() {
 template <typename T>
 boost::optional<RealNode<T>*> RealNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
         Coordinates coordinates,
-        const std::function<bool(Node<T> &)> &filter) {
+        const std::function<bool(Node<T> &)> &filter,
+        bool search_parent) {
+    if (search_parent && parent != nullptr) {
+        return parent->getClosestNodeToCoordinatesThatPassesFilter(coordinates, filter);
     // TODO: Descriptive comment here
-    if (filter(*this)){ return this; }
+    } else if (filter(*this)){
+        return this;
+    }
+
     return boost::optional<RealNode<T>*>{};
 }
 

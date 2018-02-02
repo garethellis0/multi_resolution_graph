@@ -18,9 +18,9 @@ public:
     boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
     // TODO: TEST ME
-    boost::optional<RealNode<T>*> getClosestNodeToCoordinatesThatPassesFilter(
-            Coordinates coordinates,
-            const std::function<bool(Node<T> &)> &filter) override;
+    boost::optional<RealNode<T> *> getClosestNodeToCoordinatesThatPassesFilter(
+            Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
+            bool search_parent = true) override;
 
     Coordinates getCoordinates() override;
 
