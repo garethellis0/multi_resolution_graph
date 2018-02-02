@@ -111,6 +111,7 @@ private:
     // the length/width of this graph node in some arbitrary unit of measurement
     double scale;
 
+    // TODO: NOTE THAT THIS IS STORED IN THE FORM subNodes[y][x]
     // TODO: We should *NOT* be using raw pointers here
     // Nodes located below this one
     std::vector<std::vector<Node<T>*>> subNodes;

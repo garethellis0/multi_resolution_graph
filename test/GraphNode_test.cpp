@@ -303,6 +303,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }
 
+// TODO: Test conditions that would cause functions to throw exceptions (which GraphNode *DOES*)
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

@@ -29,8 +29,9 @@ std::vector<RealNode<T>*> RealNode<T>::getNeighbours() {
     for (auto& filter : filters){
         boost::optional<RealNode<T>*> node = parent->getClosestNodeToCoordinatesThatPassesFilter(
                 this->getCoordinates(), filter,
-                false);
+                true);
         if (node) {
+            RealNode<T>* TODO_delete_me = *node;
             neighbours.push_back(*node);
         }
     }
