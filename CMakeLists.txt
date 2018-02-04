@@ -36,6 +36,18 @@ add_executable(graphnode_test
         )
 target_link_libraries(graphnode_test ${TESTING_LIBS})
 
+add_executable(graph_factory_test
+        test/GraphFactory_test.cpp
+        include/RealNode.h
+        include/GraphNode.h
+        include/Node.h
+        include/RealNode.tpp
+        include/GraphNode.tpp
+        include/GraphFactory.h
+        include/GraphFactory.tpp
+        )
+target_link_libraries(graphnode_test ${TESTING_LIBS})
+
 # Misc executables
 add_executable(drawing_test
         drawing_test.cpp
