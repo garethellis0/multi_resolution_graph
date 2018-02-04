@@ -70,12 +70,12 @@ void RealNode<T>::convertToGraphNode(unsigned int resolution) {
 }
 
 template <typename T>
-T RealNode::getContainedValue() {
+T RealNode<T>::getContainedValue() {
     return contained_value;
 }
 
 template <typename T>
-void RealNode::setContainedValue(T val) {
+void RealNode<T>::setContainedValue(T val) {
     this->contained_value = val;
 }
 

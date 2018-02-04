@@ -101,7 +101,15 @@ TEST_F(RealNodeTest, getNeighbours_small_case){
 
 }
 
-//TODO: Tests got getContainedValue and setContainedValue for a few different templated types
+TEST_F(RealNodeTest, get_and_set_containedValue) {
+    // We must give a RealNode a GraphNode when we create it
+    GraphNode<int> graph_node;
+    RealNode<int> real_node(&graph_node);
+
+    real_node.setContainedValue(39);
+
+    EXPECT_EQ(39, real_node.getContainedValue());
+}
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);
