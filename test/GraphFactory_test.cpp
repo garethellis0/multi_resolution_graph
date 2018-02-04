@@ -5,7 +5,7 @@
 #include <memory>
 
 // Thunderbots Includes
-// TODO
+#include <GraphFactory.h>
 
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 
@@ -15,6 +15,8 @@ protected:
     virtual void SetUp() {
     }
 };
+
+// TODO: Test constructor to make sure if we generate a graph without setting anything we get what we expect
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

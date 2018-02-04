@@ -50,7 +50,9 @@ public:
     virtual boost::optional<RealNode<T> *>
     getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
-            bool search_parent = true) = 0;
+            bool search_parent) = 0;
+
+    // TODO: YOU ARE HERE -  need to add a `getAllNodesThatPassFilter` function
 
     // TODO: We call this function a *LOT*, so some caching here could yield big improvements
     /**
