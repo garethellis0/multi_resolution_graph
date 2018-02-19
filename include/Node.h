@@ -3,8 +3,11 @@
 
 // TODO: naming conventions? do we use snake case for variables? Fix!
 
+// C++ STD Includes
 #include <vector>
 #include <cmath>
+
+// Boost Includes
 // TODO: C++ 17 has `std::optional`. We should use it if possible (instead of `boost::optional`)
 #include <boost/optional.hpp>
 
@@ -12,7 +15,7 @@ struct Coordinates {
     double x;
     double y;
 };
-// TODO: Should this functions be within `Coordinates`? Should `Coordiantes` be a class?
+// TODO: Should this functions be within `Coordinates`? Should `Coordinates` be a class?
 inline double distance(Coordinates c1, Coordinates c2) {
     double dx = c1.x - c2.x;
     double dy = c1.y - c2.y;

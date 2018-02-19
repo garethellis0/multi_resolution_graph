@@ -46,7 +46,7 @@ add_executable(graph_factory_test
         include/GraphFactory.h
         include/GraphFactory.tpp
         )
-target_link_libraries(graphnode_test ${TESTING_LIBS})
+target_link_libraries(graph_factory_test ${TESTING_LIBS})
 
 # Misc executables
 add_executable(drawing_test
