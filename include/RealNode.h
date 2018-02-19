@@ -18,6 +18,10 @@ public:
             const std::function<bool(Node<T>&)>& filter,
             bool search_parent = true) override;
 
+    std::vector<RealNode<T>*> getAllNodesThatPassFilter(
+            const std::function<bool(Node<T> &)> &filter,
+            bool search_parent = true) override;
+
     Coordinates getCoordinates() override;
 
     double getScale() override;

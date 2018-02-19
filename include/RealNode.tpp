@@ -59,6 +59,18 @@ boost::optional<RealNode<T>*> RealNode<T>::getClosestNodeToCoordinatesThatPasses
     return boost::optional<RealNode<T>*>{};
 }
 
+template<typename T>
+std::vector<RealNode<T> *> RealNode<T>::getAllNodesThatPassFilter(
+        const std::function<bool(Node<T> &)> &filter, bool search_parent) {
+    // If this node passes the given filter, the return a list with just
+    // this node, otherwise return an empty list
+    if (filter(*this)){
+        return {this};
+    } else {
+        return {};
+    }
+}
+
 template <typename T>
 double RealNode<T>::getScale() {
     return parent->getResolution()/parent->getScale();
@@ -78,5 +90,6 @@ template <typename T>
 void RealNode<T>::setContainedValue(T val) {
     this->contained_value = val;
 }
+
 
 #endif // THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H

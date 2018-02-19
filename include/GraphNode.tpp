@@ -147,6 +147,36 @@ GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
     return boost::optional<RealNode<T>*>{};
 }
 
+template<typename T>
+std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
+        const std::function<bool(Node<T> &)> &filter, bool search_parent) {
+
+    // TODO: This comment is likely hard to understand
+    // Search through our parent (if we were asked to)
+    // This will eventually recurse back over this node
+    if (search_parent){
+        // Check that we actually have a parent
+        if (parent == nullptr){
+            // If we don't have a parent, we're at the top of the tree, so recurse back down
+            return this->getAllNodesThatPassFilter(filter, false);
+        } else {
+            return parent->getAllNodesThatPassFilter(filter, true);
+        }
+    }
+
+    // If we weren't asked to search our parent, search the the sub-nodes of this node
+    std::vector<RealNode<T>*> all_matching_nodes;
+    for (auto& row : subNodes) {
+        for (Node<T>* node : row){
+            // Concatenate all nodes found below this one to those already found
+            std::vector<RealNode<T>*> matching_nodes = node->getAllNodesThatPassFilter(filter, false);
+            all_matching_nodes.insert(all_matching_nodes.end(), matching_nodes.begin(), matching_nodes.end());
+        }
+    }
+    return all_matching_nodes;
+}
+
+
 template <typename T>
 std::vector<std::vector<Node<T> *>> GraphNode<T>::getSubNodes() {
     return subNodes;
