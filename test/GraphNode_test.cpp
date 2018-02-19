@@ -28,6 +28,52 @@ TEST_F(GraphNodeTest, constructor_with_parent){
     EXPECT_EQ(0.5, graphNode.getScale());
 }
 
+TEST_F(GraphNodeTest, getScale_with_subnodes){
+    GraphNode<nullptr_t> graph_node(2,1);
+
+    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+
+    // Choose an arbitrary node to expand
+    Node<nullptr_t>* node_to_expand = sub_nodes[0][0];
+
+    // Before we expand it, this node should be a RealNode
+    EXPECT_EQ(typeid(RealNode<nullptr_t>), typeid(*node_to_expand));
+
+    // Expand the node
+    graph_node.changeResolutionOfNode(node_to_expand,2);
+
+    // Get the subnodes again
+    sub_nodes = graph_node.getSubNodes();
+    Node<nullptr_t>* expanded_node = sub_nodes[0][0];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+
+    // Get the subnodes of our newly expanded node
+    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes = new_graph_node->getSubNodes();
+
+    // Check the scale of the top level node
+    EXPECT_EQ(1, graph_node.getScale());
+
+    // Check the scale of the RealNodes directly below the top level (the ones we didn't expand)
+    EXPECT_EQ(0.5, sub_nodes[1][0]->getScale());
+    EXPECT_EQ(0.5, sub_nodes[1][1]->getScale());
+    EXPECT_EQ(0.5, sub_nodes[0][1]->getScale());
+
+    // Check the scale of the expanded node
+    EXPECT_EQ(0.5, new_graph_node->getScale());
+
+    // Check the scale of the subnodes beneath the newly expanded node
+    EXPECT_EQ(0.25, expanded_node_sub_nodes[0][0]->getScale());
+    EXPECT_EQ(0.25, expanded_node_sub_nodes[0][1]->getScale());
+    EXPECT_EQ(0.25, expanded_node_sub_nodes[1][0]->getScale());
+    EXPECT_EQ(0.25, expanded_node_sub_nodes[1][1]->getScale());
+
+}
+
 // TODO: Do larger case (a few levels of nodes deep, and odd resolution and scale would be good)
 TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
     GraphNode<nullptr_t> graph_node(2,1);

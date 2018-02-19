@@ -73,7 +73,7 @@ std::vector<RealNode<T> *> RealNode<T>::getAllNodesThatPassFilter(
 
 template <typename T>
 double RealNode<T>::getScale() {
-    return parent->getResolution()/parent->getScale();
+    return parent->getScale()/parent->getResolution();
 }
 
 template <typename T>

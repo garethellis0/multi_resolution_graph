@@ -68,15 +68,9 @@ Coordinates GraphNode<T>::getCoordinatesOfNode(Node<T>* node) {
                 coordinates.x = this->getCoordinates().x +
                             // Offset into the graph node for this subnode
                             (this->getScale()/this->getResolution()) * colIndex;
-                            // Subtract an extra 1/2 of a subnode so that coordinates are in
-                            // the middle of the node, rather then at the edge
-                            //- (this->getScale()/this->getResolution())/2;
                 coordinates.y = this->getCoordinates().y +
                             // Offset into the graph node for this subnode
                             (this->getScale()/this->getResolution()) * rowIndex;
-                            // Subtract an extra 1/2 of a subnode so that coordinates are in
-                            // the middle of the node, rather then at the edge
-                            //- (this->getScale()/this->getResolution())/2;
                 return coordinates;
             }
         }
@@ -97,7 +91,7 @@ double GraphNode<T>::getScale() {
     if (parent != nullptr){
         return parent->getScale()/parent->getResolution();
     }
-    // If we have no parent, our scale is 1
+    // If we have no parent (ie. if this is the top level node), use the stored scale
     return scale;
 }
 
