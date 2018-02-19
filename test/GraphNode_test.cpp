@@ -303,6 +303,87 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }
 
+TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
+    GraphNode<nullptr_t> graph_node(4,8);
+    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Expand the bottom left subnode
+    graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
+
+    // Get the new top level subnodes
+    top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Get the node we just expanded
+    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+
+    // Get the subnodes of the node we just expanded
+    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+            new_graph_node->getSubNodes();
+
+    std::vector<RealNode<nullptr_t>*> found_nodes;
+    std::vector<RealNode<nullptr_t>*> expected_nodes;
+    std::function<bool(Node<nullptr_t>&)> filter;
+
+    // TODO: These should def. be seperate tests
+    // For every one of the following coordinates:
+    // - check that we got the right number of nodes
+    // - check that it was the nodes we were expecting
+    // TODO: Add in GMock for unordered vector comparison
+    // NOTE: List equality checks are *order-sensitive*. If it fails, check
+    // that it's just not because the order has changed (which is fine)
+
+    // This filter forces us to find a node with specific coordinates
+    expected_nodes = {
+            (RealNode<nullptr_t>*)top_level_sub_nodes[3][2]
+    };
+    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates() == (Coordinates){4,6}; };
+    found_nodes = graph_node.getAllNodesThatPassFilter(filter);
+    EXPECT_EQ(found_nodes.size(), 1);
+    EXPECT_EQ(expected_nodes, found_nodes);
+
+
+    // This filter forces us to find nodes in the top 1/2 of the graph
+    expected_nodes = {
+            (RealNode<nullptr_t>*)top_level_sub_nodes[2][0],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[2][1],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[2][2],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[2][3],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[3][0],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[3][1],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[3][2],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[3][3],
+    };
+    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates().y > 3; };
+    found_nodes = graph_node.getAllNodesThatPassFilter(filter);
+    EXPECT_EQ(found_nodes.size(), 8);
+    EXPECT_EQ(expected_nodes, found_nodes);
+
+    // This filter forces us to find a node in the bottom left 1/4 of the graph
+    expected_nodes = {
+            // All the RealNodes under the expanded node
+            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][0],
+            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][1],
+            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][0],
+            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][1],
+            // All the top level RealNodes in the bottom left 1/4
+            (RealNode<nullptr_t>*)top_level_sub_nodes[0][1],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[1][0],
+            (RealNode<nullptr_t>*)top_level_sub_nodes[1][1],
+    };
+    filter = [&](Node<nullptr_t> &n) {
+        return n.getCoordinates().y < 4 && n.getCoordinates().x < 4;
+    };
+    found_nodes = graph_node.getAllNodesThatPassFilter(filter);
+    EXPECT_EQ(found_nodes.size(), 7);
+    EXPECT_EQ(expected_nodes, found_nodes);
+}
+
 // TODO: Test conditions that would cause functions to throw exceptions (which GraphNode *DOES*)
 
 int main(int argc, char** argv) {
