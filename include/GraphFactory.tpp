@@ -38,12 +38,27 @@ template <typename T>
 void GraphFactory<T>::changeGraphResolutionForArea(
         GraphNode<T> &graph_node,
         GraphFactory::Area area,
-        GraphFactory::Resolution min_resolution) {
+        GraphFactory::Resolution min_scale) {
     // TODO: We should be setting layers of resolution more intelligently (doing something like only make a quadtree),
     // TODO: not just setting the resolution of the first children to match
 
     // Find the subnodes of the graph in the given area
-    // TODO: Waiting on the `getAllNodesThatPassFilter` function in the Node class
+    std::function<bool(Node<T>&)> area_filter = [&](Node<T> &n) {
+        return area.pointInArea(n.getCoordinates());
+    };
+    std::vector<RealNode<T>*> matching_nodes = graph_node.getAllNodesThatPassFilter(area_filter);
+
+    for (RealNode<T>*& node : matching_nodes){
+        // If the node isn't already greater then the requested resolution, increase it
+        if (node->getScale() > min_scale) {
+            // Choose a high enough resolution that the scale is
+            // equal to or greater then the requested scale
+            int new_resolution = std::ceil(node->getScale() / min_scale);
+            node->convertToGraphNode(new_resolution);
+        }
+    }
+
+    // TODO: YOU ARE HERE - NEED TO TEST THIS FUNCTION
 }
 
 #endif // THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H

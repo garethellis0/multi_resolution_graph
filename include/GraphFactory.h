@@ -3,6 +3,7 @@
 
 // C++ STD Includes
 #include <cmath>
+#include <functional>
 
 // Thunderbots Includes
 #include <GraphNode.h>
@@ -103,11 +104,11 @@ private:
      * Sets all nodes within the given area on the given graph to the given resolution
      * @param graph_node the graph in which we're setting the min. resolution of an area
      * @param area the area over which the minimum resolution is to be set
-     * @param min_resolution the minimum resolution every node in the given area must be
+     * @param min_scale the minimum resolution every node in the given area must be
      */
     void changeGraphResolutionForArea(GraphNode<T>& graph_node,
                                       Area area,
-                                      Resolution min_resolution);
+                                      Resolution min_scale);
 
     // TODO: Better name for this variable?
     // A list of areas with a given minimum resolution
