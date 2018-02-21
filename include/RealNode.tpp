@@ -5,7 +5,8 @@
 
 template <typename T>
 RealNode<T>::RealNode(GraphNode<T>* parent):
-        parent(parent)
+        parent(parent),
+        have_cached_coordinates(false)
 {
 }
 
@@ -19,9 +20,13 @@ template <typename T>
 std::vector<RealNode<T>*> RealNode<T>::getNeighbours() {
     // Find the closest nodes above, below, to the left, and to the right of this node
     std::vector<std::function<bool(Node<T>&)>> filters = {
+            // Filter to find the node below this one
             [&](Node<T> &n) { return n.getCoordinates().y < this->getCoordinates().y; },
+            // Filter to find the node above this one
             [&](Node<T> &n) { return n.getCoordinates().y > this->getCoordinates().y; },
+            // Filter to find the node to the left of this one
             [&](Node<T> &n) { return n.getCoordinates().x < this->getCoordinates().x; },
+            // Filter to find the node to the right of this one
             [&](Node<T> &n) { return n.getCoordinates().x > this->getCoordinates().x; }
     };
 
@@ -31,7 +36,6 @@ std::vector<RealNode<T>*> RealNode<T>::getNeighbours() {
                 this->getCoordinates(), filter,
                 true);
         if (node) {
-            RealNode<T>* TODO_delete_me = *node;
             neighbours.push_back(*node);
         }
     }
@@ -41,7 +45,15 @@ std::vector<RealNode<T>*> RealNode<T>::getNeighbours() {
 
 template <typename T>
 Coordinates RealNode<T>::getCoordinates() {
-    return parent->getCoordinatesOfNode(this);
+    // Check if we have the coordinates of this node cached
+    if (have_cached_coordinates) {
+        return cached_coordinates;
+    } else {
+        // Get the coordinates of this node
+        cached_coordinates = parent->getCoordinatesOfNode(this);
+        have_cached_coordinates = true;
+        return cached_coordinates;
+    }
 }
 
 template <typename T>
@@ -71,14 +83,21 @@ std::vector<RealNode<T> *> RealNode<T>::getAllNodesThatPassFilter(
     }
 }
 
+template<typename T>
+std::vector<RealNode<T> *> RealNode<T>::getAllSubNodes() {
+    // Since this is a RealNode, the only node at or below it is itself
+    return {this};
+}
+
+
 template <typename T>
 double RealNode<T>::getScale() {
     return parent->getScale()/parent->getResolution();
 }
 
 template <typename T>
-void RealNode<T>::convertToGraphNode(unsigned int resolution) {
-    parent->changeResolutionOfNode(this, resolution);
+Node<T> * RealNode<T>::convertToGraphNode(unsigned int resolution) {
+    return parent->changeResolutionOfNode(this, resolution);
 }
 
 template <typename T>

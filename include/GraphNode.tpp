@@ -7,7 +7,8 @@ template <typename T>
 GraphNode<T>::GraphNode(unsigned int resolution, double scale) :
     resolution(resolution),
     scale(std::abs(scale)),
-    parent(nullptr)
+    parent(nullptr),
+    have_cached_coordinates(false)
 {
     initSubNodes();
 }
@@ -47,12 +48,19 @@ boost::optional<RealNode<T>*> GraphNode<T>::getClosestNodeToCoordinates(Coordina
 
 template <typename T>
 Coordinates GraphNode<T>::getCoordinates() {
-    // If we have our parent, get our coordinates relative to it
-    if (parent != nullptr){
-        return parent->getCoordinatesOfNode(this);
+    // Check if we have the coordinates of this node cached
+    if (have_cached_coordinates){
+        return cached_coordinates;
+    } else {
+        // If we have our parent, get our coordinates relative to it
+        if (parent != nullptr){
+            cached_coordinates = parent->getCoordinatesOfNode(this);
+        }
+        // Otherwise we're at the top level graph
+        cached_coordinates =  Coordinates{0,0};
+        have_cached_coordinates = true;
+        return cached_coordinates;
     }
-    // Otherwise we're at the top level graph
-    return Coordinates{0,0};
 }
 
 template <typename T>
@@ -170,6 +178,21 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
     return all_matching_nodes;
 }
 
+template<typename T>
+std::vector<RealNode<T> *> GraphNode<T>::getAllSubNodes() {
+    std::vector<RealNode<T>*> all_subnodes;
+    for (auto& row : subNodes) {
+        for (Node<T>* node : row) {
+            // TODO: Better comment?
+            // Add the subnodes below this subnode to the list of all subnodes
+            std::vector<RealNode<T>*> curr_subnodes = node->getAllSubNodes();
+            all_subnodes.insert(all_subnodes.end(), curr_subnodes.begin(), curr_subnodes.end());
+        }
+    }
+    return all_subnodes;
+}
+
+
 
 template <typename T>
 std::vector<std::vector<Node<T> *>> GraphNode<T>::getSubNodes() {
@@ -177,13 +200,14 @@ std::vector<std::vector<Node<T> *>> GraphNode<T>::getSubNodes() {
 }
 
 template <typename T>
-void GraphNode<T>::changeResolutionOfNode(Node<T> *node, unsigned int resolution) {
+Node<T>* GraphNode<T>::changeResolutionOfNode(Node<T> *node,
+                                               unsigned int resolution) {
     for (auto& row : subNodes){
         for (auto& subNode : row){
             if (subNode == node){
                 delete subNode;
                 subNode = new GraphNode<T>(resolution, this);
-                return;
+                return subNode;
             }
         }
     }

@@ -27,6 +27,8 @@ public:
             const std::function<bool(Node<T> &)> &filter,
             bool search_parent = true) override;
 
+    virtual std::vector<RealNode<T>*> getAllSubNodes();
+
     Coordinates getCoordinates() override;
 
     double getScale() override;
@@ -70,13 +72,16 @@ public:
      */
     Coordinates getCoordinatesOfNode(Node<T>* node);
 
-    // TODO: Do we need this function? Is it crap?
+
+    // TODO: Add unit test to make sure we're returning the right value here
     /**
      * Change the resolution of a given sub-node
      * @param node the sub-node to increase the resolution of
      * @param resolution the new resolution of the sub-node
+     * @return a pointer to the newly created GraphNode
      */
-    void changeResolutionOfNode(Node<T> *node, unsigned int resolution);
+    Node<T> * changeResolutionOfNode(Node<T> *node,
+                                     unsigned int resolution);
 
     /**
      * Changes the resolution of the closest node to the given coordinates
@@ -109,6 +114,13 @@ public:
 
 
 private:
+
+    /**
+     * Initializes subNodes to a 2D vector of size `resolution x resolution`
+     * to RealNodes with this node as their parent
+     */
+    void initSubNodes();
+
     // the length/width of this graph node in units of number of nodes
     // (ie. this graph node will contain `resolution^2` nodes)
     unsigned int resolution;
@@ -125,11 +137,12 @@ private:
     // The possible parent of this node
     GraphNode* parent;
 
-    /**
-     * Initializes subNodes to a 2D vector of size `resolution x resolution`
-     * to RealNodes with this node as their parent
-     */
-    void initSubNodes();
+    // TODO: Is there a better way to do this then having a seperate bool and Coordinates?
+    // Whether or not the currently cached coordinates are valid
+    bool have_cached_coordinates;
+
+    // The cached coordinates of this node
+    Coordinates cached_coordinates;
 };
 
 #include <GraphNode.tpp>

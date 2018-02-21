@@ -67,7 +67,6 @@ public:
             const std::function<bool(Node<T> &)> &filter,
             bool search_parent) = 0;
 
-    // TODO: We call this function a *LOT*, so some caching here could yield big improvements
     /**
      * Gets the coordinates for this node
      * @return the coordinates for this node
@@ -79,6 +78,13 @@ public:
      * @return the length/width of this node
      */
     virtual double getScale() = 0;
+
+    // TODO: Unit test this
+    /**
+     * Gets all the RealNode's below or at this node
+     * @return a vector of all RealNode's at or below this one
+     */
+    virtual std::vector<RealNode<T>*> getAllSubNodes() = 0;
 };
 
 #endif //THUNDERBOTS_NAVIGATOR_NODE_H

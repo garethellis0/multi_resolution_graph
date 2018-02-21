@@ -21,6 +21,7 @@ public:
     using Scale = double;
 
     // TODO: We may want to replace these with Thunderbots Geometry classes at some point
+    // TODO: Make a note that an area has to be contiguous for stuff to work (ie it can't be a bunch of seperate circles)
     class Area {
     public:
         /**
@@ -30,7 +31,17 @@ public:
          */
         virtual bool pointInArea(Coordinates point) = 0;
 
-        // TODO: Comment these functions
+        // TODO: Don't think we need this function anymore - remove
+        /**
+         * Get the center point of this Area
+         * @return the center point of this Area
+         */
+        virtual Coordinates getCenter() = 0;
+
+        /**
+         * Clone this Area Object
+         * @return a pointer to a clone of this Area object
+         */
         virtual Area* clone() const = 0;
     };
 
@@ -48,6 +59,9 @@ public:
             );
             return distance_to_center < radius;
         }
+        Coordinates getCenter() override {
+            return center;
+        }
         Circle* clone() const { return new Circle(*this); };
     private:
         Radius radius;
@@ -58,11 +72,17 @@ public:
     public:
         // Delete the default constructor
         Rectangle() = delete;
-        Rectangle(double width, double height, Coordinates bottom_left_coordinates):
+        Rectangle(double width, double height, Coordinates bottom_left_point):
                 width(width),
                 height(height),
-                bottom_left_coordinates(bottom_left_coordinates)
+                bottom_left_coordinates(bottom_left_point)
         {}
+        Coordinates getCenter() override {
+            return (Coordinates){
+                    bottom_left_coordinates.x + width/2,
+                    bottom_left_coordinates.y + height/2
+            };
+        }
         bool pointInArea(Coordinates point) override {
             double min_x = bottom_left_coordinates.x;
             double max_x = bottom_left_coordinates.x + width;
@@ -81,9 +101,7 @@ public:
     /**
      * Creates a GraphFactory with default values
      */
-    GraphFactory() :
-            top_level_graph_scale(1)
-    {};
+    GraphFactory();
 
     /**
      * Sets the max scale for the generated graph at a given point
@@ -104,7 +122,14 @@ public:
      * (ie. this will set the graph to be of `size x size`)
      * @param size the length and width of the graph
      */
-    void setGraphSize(double size);
+    void setGraphScale(double size);
+
+    /**
+     * Sets the top level resolution for the graph
+     * (width/height in # of nodes)
+     * @param resolution the desired resolution for the top level of the graph
+     */
+    void setGraphTopLevelResolution(unsigned int resolution);
 
     /**
      * Creates a graph with the currently set parameters
@@ -143,7 +168,17 @@ private:
     std::vector<std::pair<Coordinates, Scale>> min_resolution_points;
 
     // The length/width of the top level graph
+    // (in terms of some unit of distance)
     double top_level_graph_scale;
+
+    // The length/width of the top level of the graph
+    // (in terms of # of nodes)
+    unsigned int top_level_graph_resolution;
+
+    // TODO: Better comment?
+    // TODO: Setter function for this
+    // The factor by which we subdivide nodes to build up the tree structure
+    unsigned int subnode_resolution;
 };
 
 #include <GraphFactory.tpp>
