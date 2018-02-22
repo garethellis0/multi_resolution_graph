@@ -115,9 +115,11 @@ void GraphFactory<T>::setMinGraphResolutionForArea(
                 // If it is, remove this node from the list
                 nodes_to_split.erase(nodes_to_split.begin()+i);
             } else {
-                // If it's not, split the node and add the new nodes to the list
-                // of nodes to split
+                // Convert the node to a GraphNode
                 Node<T>* newly_split_node = nodes_to_split[i]->convertToGraphNode(subnode_resolution);
+                // Remove the pointer to the node we just split (as it is now invalid)
+                nodes_to_split.erase(nodes_to_split.begin()+i);
+                // Add all the nodes below the new GraphNode
                 std::vector<RealNode<T>*> new_nodes_to_split = newly_split_node->getAllSubNodes();
                 nodes_to_split.insert(nodes_to_split.end(), new_nodes_to_split.begin(), new_nodes_to_split.end());
             }
