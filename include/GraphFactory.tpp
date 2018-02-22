@@ -69,6 +69,7 @@ void GraphFactory<T>::setGraphTopLevelResolution(unsigned int resolution) {
 }
 
 
+// TODO: Make sure we're unit testing this
 template <typename T>
 void GraphFactory<T>::setMinGraphResolutionForArea(
         GraphNode<T> &graph_node,
@@ -112,11 +113,9 @@ void GraphFactory<T>::setMinGraphResolutionForArea(
     }
 
     return;
-
-    // TODO: YOU ARE HERE - WE SHOULD TEST THIS!!!!
-
 }
 
+// TODO: Make sure we're unit testing this
 template<typename T>
 void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
                                                     Coordinates coordinates,
@@ -125,6 +124,7 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
     // TODO: not just setting the resolution of the first children to match
     // TODO: see `setMinGraphResolutionInArea` for an example of this being done well
     // TODO: can we apply DRY with `setMinGraphResolutionInArea`?
+    // TODO: Do we even need this function? Is it useful?
 
     // Find the closest node to the given coordinates
     boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(coordinates);

@@ -20,8 +20,8 @@ public:
     using Resolution = double;
     using Scale = double;
 
+    // TODO: YOU ARE HERE - need to move the area classes into their own files and unit test them
     // TODO: We may want to replace these with Thunderbots Geometry classes at some point
-    // TODO: Make a note that an area has to be contiguous for stuff to work (ie it can't be a bunch of seperate circles)
     class Area {
     public:
         // TODO: Don't think we need this function anymore - remove

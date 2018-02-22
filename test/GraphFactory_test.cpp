@@ -218,8 +218,6 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_overlapping_single_node){
 
 // TODO: Area overlapping node at edge of graph
 
-
-// TODO: YOU ARE HERE: Finish these tests
 // TODO: Test setMaxScaleInArea (at least one test for every area type)
 // TODO: Test generating a massive graph with lots of areas and points with increased resolution
 
