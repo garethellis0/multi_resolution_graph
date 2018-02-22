@@ -2,6 +2,8 @@
 #define THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
 
 #include <GraphFactory.h>
+#include <list>
+#include <queue>
 
 template <typename T>
 GraphFactory<T>::GraphFactory() :
@@ -77,51 +79,34 @@ void GraphFactory<T>::setMinGraphResolutionForArea(
     std::function<bool(Node<T>&)> area_filter = [&](Node<T> &n) {
         return area.overlapsNode(n);
     };
-    std::vector<RealNode<T>*> nodes_to_split = graph_node.getAllNodesThatPassFilter(area_filter);
 
-    // TODO: Tests for cases where the area is close to the node, but outside of it's "area"
-    // TODO: What if this can't find anything? (This should never happen, but....)
-    // If we didn't find any, then check for the case where this area is entirely within a node
-    //boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(area.getCenter());
-    //if (possible_closest_node){
-    //    // TODO: better comment what we're doing here
-    //    RealNode<T>* closest_node = *possible_closest_node;
-    //    double dx = closest_node->getCoordinates().x - area.getCenter().x;
-    //    double dy = closest_node->getCoordinates().y - area.getCenter().y;
-    //    // TODO: THis if statement is almost certainly confusing
-    //    // Check if this node lies within the closest one
-    //    if (closest_node->getCoordinates().x < area.getCenter().x &&
-    //        closest_node->getCoordinates().y < area.getCenter().y &&
-    //        dx < closest_node->getScale() &&
-    //        dy < closest_node->getScale()){
-    //        // If this is true, then this area is totally within the closest node
-    //        // (as the case where it just partially overlaps would have been found
-    //        // in the first search)
-    //        nodes_to_split.emplace_back(closest_node);
-    //    }
-    //}
+    // Note: we're using a Queue here to avoid thrashing memory because we
+    // constantly add and remove from it when we iteratively split below
+    std::queue<RealNode<T>*> nodes_to_split;
+
+    // Get the initial set of nodes to split
+    std::vector<RealNode<T>*> initial_nodes_to_split = graph_node.getAllNodesThatPassFilter(area_filter);
+    for (auto &node : initial_nodes_to_split){
+        nodes_to_split.push(std::move(node));
+    }
 
     // Keep splitting nodes until every node in the given area is of the desired resolution
     while (nodes_to_split.size() > 0) {
-        for (int i = 0; i < nodes_to_split.size(); i++){
-            // TODO: YOU ARE HERE:
-            /**
-             * Looks like we're not generating enough nodes, see large test for example
-             */
-            // Check if the node is totally outside (doesn't even partially overlap) the area,
-            // or if it does overlap, but the scale is small enough
-            if (!area.overlapsNode(*nodes_to_split[i]) ||
-                    nodes_to_split[i]->getScale() < max_scale){
-                // If it is, remove this node from the list
-                nodes_to_split.erase(nodes_to_split.begin()+i);
-            } else {
-                // Convert the node to a GraphNode
-                Node<T>* newly_split_node = nodes_to_split[i]->convertToGraphNode(subnode_resolution);
-                // Remove the pointer to the node we just split (as it is now invalid)
-                nodes_to_split.erase(nodes_to_split.begin()+i);
-                // Add all the nodes below the new GraphNode
-                std::vector<RealNode<T>*> new_nodes_to_split = newly_split_node->getAllSubNodes();
-                nodes_to_split.insert(nodes_to_split.end(), new_nodes_to_split.begin(), new_nodes_to_split.end());
+        // Get the first node from the queue
+        RealNode<T>* current_node = nodes_to_split.front();
+        // Remove the node we just got from the queue
+        nodes_to_split.pop();
+
+        // Check if the node is totally outside (doesn't even partially overlap) the area,
+        // or if it does overlap, but the scale is small enough
+        if (area.overlapsNode(*current_node) &&
+            current_node->getScale() >= max_scale){
+            // Convert the node to a GraphNode
+            Node<T>* newly_split_node = current_node->convertToGraphNode(subnode_resolution);
+            // Add all the nodes below the new GraphNode to the queue of nodes to consider splitting
+            std::vector<RealNode<T>*> new_nodes_to_split = newly_split_node->getAllSubNodes();
+            for (auto &node : new_nodes_to_split){
+                nodes_to_split.push(std::move(node));
             }
         }
     }
