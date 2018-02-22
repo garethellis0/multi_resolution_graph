@@ -18,7 +18,8 @@ template <typename T>
 // will be decided by the scale of it's parent (ie. only the topmost parent will have a scale)
 GraphNode<T>::GraphNode(unsigned int resolution, GraphNode *parent) :
     resolution(resolution),
-    parent(parent)
+    parent(parent),
+    have_cached_coordinates(false)
 {
     initSubNodes();
 }
@@ -55,9 +56,10 @@ Coordinates GraphNode<T>::getCoordinates() {
         // If we have our parent, get our coordinates relative to it
         if (parent != nullptr){
             cached_coordinates = parent->getCoordinatesOfNode(this);
+        } else {
+            // Otherwise we're at the top level graph
+            cached_coordinates =  Coordinates{0,0};
         }
-        // Otherwise we're at the top level graph
-        cached_coordinates =  Coordinates{0,0};
         have_cached_coordinates = true;
         return cached_coordinates;
     }
@@ -205,6 +207,7 @@ Node<T>* GraphNode<T>::changeResolutionOfNode(Node<T> *node,
     for (auto& row : subNodes){
         for (auto& subNode : row){
             if (subNode == node){
+                // TODO: We should probably be copying over data from the nodes (if it's a RealNode?)
                 delete subNode;
                 subNode = new GraphNode<T>(resolution, this);
                 return subNode;

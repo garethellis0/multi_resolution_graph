@@ -138,8 +138,10 @@ private:
     GraphNode* parent;
 
     // TODO: Is there a better way to do this then having a seperate bool and Coordinates?
+    // TODO: We should only be setting this in the constructor, not here
+    // TODO: (Just setting here for testing)
     // Whether or not the currently cached coordinates are valid
-    bool have_cached_coordinates;
+    bool have_cached_coordinates = false;
 
     // The cached coordinates of this node
     Coordinates cached_coordinates;

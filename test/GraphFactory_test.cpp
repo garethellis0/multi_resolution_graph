@@ -238,25 +238,39 @@ TEST_F(GraphFactoryTest, generate_large_and_complex_graph){
     //}
 
     GraphFactory<nullptr_t>::Rectangle rectangle =
-            GraphFactory<nullptr_t>::Rectangle(10,10,(Coordinates){10,10});
+            GraphFactory<nullptr_t>::Rectangle(0,0,(Coordinates){0,0});
+    rectangle = GraphFactory<nullptr_t>::Rectangle(10,10,(Coordinates){10,10});
     graph_factory.setMaxScaleInArea(rectangle, 1);
+    rectangle = GraphFactory<nullptr_t>::Rectangle(10,10,(Coordinates){30,40});
+    graph_factory.setMaxScaleInArea(rectangle, 1);
+    rectangle = GraphFactory<nullptr_t>::Rectangle(30,10,(Coordinates){60,40});
+    graph_factory.setMaxScaleInArea(rectangle, 1);
+    rectangle = GraphFactory<nullptr_t>::Rectangle(10,60,(Coordinates){70,40});
+    graph_factory.setMaxScaleInArea(rectangle, 0.5);
+    rectangle = GraphFactory<nullptr_t>::Rectangle(5,10,(Coordinates){80,80});
+    graph_factory.setMaxScaleInArea(rectangle, 0.5);
 
+
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     auto graph = graph_factory.createGraph();
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
 
     // Massive time dump, get all real nodes and all neighbours of all nodes
     std::function<bool(Node<nullptr_t>&)> filter = [&](Node<nullptr_t>& n) { return true; };
 
     std::vector<RealNode<nullptr_t>*> matching_nodes = graph.getAllNodesThatPassFilter(filter);
 
-    std::cout << "We have " << matching_nodes.size() << " nodes";
+    std::cout << "We have " << matching_nodes.size() << " nodes" << std::endl;
 
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    begin = std::chrono::steady_clock::now();
     for (int i = 0; i < matching_nodes.size(); i++){
         matching_nodes[i]->getNeighbours();
-        std::cout << "found neighbour";
+        //std::cout << "found neighbour" << std::endl;
     }
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Time to get all neighbours = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;    }
+    end = std::chrono::steady_clock::now();
+    std::cout << "Time to get all neighbours = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
+}
 
 int main(int argc, char** argv) {
     testing::InitGoogleTest(&argc, argv);

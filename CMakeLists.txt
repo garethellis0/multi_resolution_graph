@@ -54,7 +54,9 @@ add_executable(drawing_test
         include/RealNode.h
         include/GraphNode.h
         include/Node.h
+        include/GraphFactory.h
         include/RealNode.tpp
         include/GraphNode.tpp
+        include/GraphFactory.tpp
         )
 target_link_libraries(drawing_test ${OpenCV_LIBS})

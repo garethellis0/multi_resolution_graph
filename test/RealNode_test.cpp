@@ -7,6 +7,10 @@
 // Thunderbots Includes
 #include <RealNode.h>
 
+// Force the compiler to instantiate all the member functions for this template class
+// (so that we can use things like the `[]` operator when debugging)
+template class std::vector<RealNode<nullptr_t>*>;
+
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 
 // TODO: Finish Tests

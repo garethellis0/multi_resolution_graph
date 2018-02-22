@@ -39,6 +39,8 @@ public:
          */
         virtual Coordinates getCenter() = 0;
 
+        // TODO: Can we come up with a more generic impl. for this,
+        // TODO: so that we can reduce the amount of work required to create a new Area subclass?
         /**
          * Checks if this area overlaps the given node
          * @param node the node we're checking if this are overlaps
@@ -73,8 +75,34 @@ public:
         Coordinates getCenter() override {
             return center;
         }
-        // TODO: Implement me!
+        // TODO: Def. need to test this!
         bool overlapsNode(Node<T>& node) override {
+            // This circle intersects this node if:
+            // - the center of the circle lies within the node
+            // - the edge of the circle intersects the edge of this node
+            double nx_min = node.getCoordinates().x;
+            double ny_min = node.getCoordinates().y;
+            double nx_max = nx_min + node.getScale();
+            double ny_max = ny_min + node.getScale();
+
+            // Check if center of circle is within the node
+            if (getCenter().x > nx_min && getCenter().x < nx_max &&
+                getCenter().y > ny_min && getCenter().y < ny_max) {
+                return true;
+            }
+
+            // Check if the edge of this circle intersects any of the edges
+            // of the node
+            // Math from here:
+            // http://mathworld.wolfram.com/Circle-LineIntersection.html
+            double dx = nx_max - nx_min;
+            double dy = ny_max - ny_min;
+            double dr = std::sqrt(std::pow(dx,2) + std::pow(dy,2));
+            double D = nx_min*ny_max - nx_max*ny_min;
+            double intersection_discriminant =
+                    std::pow(radius,2)*std::pow(dr,2) - std::pow(D,2);
+            if (intersection_discriminant >= 0) { return true; }
+
             return true;
         }
         Circle* clone() const { return new Circle(*this); };
