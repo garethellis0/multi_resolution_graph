@@ -75,47 +75,42 @@ void GraphFactory<T>::setMinGraphResolutionForArea(
 
     // Find the subnodes of the graph in the given area
     std::function<bool(Node<T>&)> area_filter = [&](Node<T> &n) {
-        return area.pointInArea(n.getCoordinates());
+        return area.overlapsNode(n);
     };
     std::vector<RealNode<T>*> nodes_to_split = graph_node.getAllNodesThatPassFilter(area_filter);
 
     // TODO: Tests for cases where the area is close to the node, but outside of it's "area"
     // TODO: What if this can't find anything? (This should never happen, but....)
     // If we didn't find any, then check for the case where this area is entirely within a node
-    boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(area.getCenter());
-    if (possible_closest_node){
-        // TODO: better comment what we're doing here
-        RealNode<T>* closest_node = *possible_closest_node;
-        double dx = closest_node->getCoordinates().x - area.getCenter().x;
-        double dy = closest_node->getCoordinates().y - area.getCenter().y;
-        // TODO: THis if statement is almost certainly confusing
-        // Check if this node lies within the closest one
-        if (closest_node->getCoordinates().x < area.getCenter().x &&
-            closest_node->getCoordinates().y < area.getCenter().y &&
-            dx < closest_node->getScale() &&
-            dy < closest_node->getScale()){
-            // If this is true, then this area is totally within the closest node
-            // (as the case where it just partially overlaps would have been found
-            // in the first search)
-            nodes_to_split.emplace_back(closest_node);
-        }
-    }
+    //boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(area.getCenter());
+    //if (possible_closest_node){
+    //    // TODO: better comment what we're doing here
+    //    RealNode<T>* closest_node = *possible_closest_node;
+    //    double dx = closest_node->getCoordinates().x - area.getCenter().x;
+    //    double dy = closest_node->getCoordinates().y - area.getCenter().y;
+    //    // TODO: THis if statement is almost certainly confusing
+    //    // Check if this node lies within the closest one
+    //    if (closest_node->getCoordinates().x < area.getCenter().x &&
+    //        closest_node->getCoordinates().y < area.getCenter().y &&
+    //        dx < closest_node->getScale() &&
+    //        dy < closest_node->getScale()){
+    //        // If this is true, then this area is totally within the closest node
+    //        // (as the case where it just partially overlaps would have been found
+    //        // in the first search)
+    //        nodes_to_split.emplace_back(closest_node);
+    //    }
+    //}
 
     // Keep splitting nodes until every node in the given area is of the desired resolution
     while (nodes_to_split.size() > 0) {
         for (int i = 0; i < nodes_to_split.size(); i++){
             // TODO: YOU ARE HERE:
             /**
-             * Looks like we're not accounting for the case here where the area is totally within a node
-             * (and so the node "point" doesn't lie within the area)
-             * Need to:
-             * - add a "overlapsNode" function to `Area` to check if the area overlaps a given node
-             * - we can then call this function instead of using `pointInArea` to better check if
-             * an area overlaps a given node
+             * Looks like we're not generating enough nodes, see large test for example
              */
             // Check if the node is totally outside (doesn't even partially overlap) the area,
             // or if it does overlap, but the scale is small enough
-            if (!area.pointInArea(nodes_to_split[i]->getCoordinates()) ||
+            if (!area.overlapsNode(*nodes_to_split[i]) ||
                     nodes_to_split[i]->getScale() < max_scale){
                 // If it is, remove this node from the list
                 nodes_to_split.erase(nodes_to_split.begin()+i);

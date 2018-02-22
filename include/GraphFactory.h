@@ -24,6 +24,7 @@ public:
     // TODO: Make a note that an area has to be contiguous for stuff to work (ie it can't be a bunch of seperate circles)
     class Area {
     public:
+        // TODO: Don't think we need this function anymore - remove
         /**
          * Checks if a given point is in this area
          * @param point the point we're checking if is in this area
@@ -39,12 +40,22 @@ public:
         virtual Coordinates getCenter() = 0;
 
         /**
+         * Checks if this area overlaps the given node
+         * @param node the node we're checking if this are overlaps
+         * @return
+         *      `true` if this area *DOES* overlap the given node
+         *      `false` if this are *DOES NOT* overlap the given node
+         */
+        virtual bool overlapsNode(Node<T>& node) = 0;
+
+        /**
          * Clone this Area Object
          * @return a pointer to a clone of this Area object
          */
         virtual Area* clone() const = 0;
     };
 
+    // TODO: Implementation should be in it's own `.cpp`
     class Circle : public Area {
     public:
         // Delete the default constructor
@@ -62,12 +73,17 @@ public:
         Coordinates getCenter() override {
             return center;
         }
+        // TODO: Implement me!
+        bool overlapsNode(Node<T>& node) override {
+            return true;
+        }
         Circle* clone() const { return new Circle(*this); };
     private:
         Radius radius;
         Coordinates center;
     };
 
+    // TODO: Implementation should be in it's own `.cpp`
     class Rectangle : public Area {
     public:
         // Delete the default constructor
@@ -91,10 +107,29 @@ public:
             return point.x > min_x && point.x < max_x
                    && point.y > min_y && point.y < max_y;
         }
+        // TODO: Test me!
+        bool overlapsNode(Node<T>& node) override {
+            double nx_min = node.getCoordinates().x;
+            double ny_min = node.getCoordinates().y;
+            double nx_max = nx_min + node.getScale();
+            double ny_max = ny_min + node.getScale();
+            double rx_min = bottom_left_coordinates.x;
+            double ry_min = bottom_left_coordinates.y;
+            double rx_max = rx_min + width;
+            double ry_max = ry_min + height;
+            bool x_overlap = valueInRange(nx_min, rx_min, rx_max) ||
+                             valueInRange(rx_min, nx_min, nx_max);
+            bool y_overlap = valueInRange(ny_min, ry_min, ry_max) ||
+                             valueInRange(ry_min, ny_min, ny_max);
+            return x_overlap && y_overlap;
+        }
         Rectangle* clone() const { return new Rectangle(*this); };
     private:
         double width, height;
         Coordinates bottom_left_coordinates;
+        // TODO: Function comment
+        bool valueInRange(double value, double min, double max)
+        { return (value >= min) && (value <= max); }
     };
 
 
