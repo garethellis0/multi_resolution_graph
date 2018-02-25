@@ -53,6 +53,22 @@ add_executable(graph_factory_test
         )
 target_link_libraries(graph_factory_test ${TESTING_LIBS})
 
+add_executable(rectangle_test
+        test/Rectangle_test.cpp
+        include/Area.h
+        include/Rectangle.h
+        include/Rectangle.tpp
+        )
+target_link_libraries(rectangle_test ${TESTING_LIBS})
+
+add_executable(circle_test
+        test/Circle_test.cpp
+        include/Area.h
+        include/Circle.h
+        include/Circle.tpp
+        )
+target_link_libraries(circle_test ${TESTING_LIBS})
+
 # Misc executables
 add_executable(drawing_test
         drawing_test.cpp
