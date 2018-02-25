@@ -1,3 +1,4 @@
+// TODO: Should we add some directories to the folder structure to seperate stuff?
 #ifndef THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
 #define THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
 
@@ -22,9 +23,9 @@ void GraphFactory<T>::setMaxScaleAtPoint(Coordinates coordinates,
 }
 
 template<typename T>
-void GraphFactory<T>::setMaxScaleInArea(GraphFactory::Area &area,
+void GraphFactory<T>::setMaxScaleInArea(Area<T> &area,
                                         double max_scale) {
-    Area* cloned_area = area.clone();
+    Area<T>* cloned_area = area.clone();
     this->min_resolution_areas.emplace_back(
             std::make_pair(cloned_area, max_scale)
     );
@@ -38,7 +39,7 @@ GraphNode<T> GraphFactory<T>::createGraph() {
     // Set the resolution to the minimum requested at the given locations
     for (auto const& area_and_resolution : min_resolution_areas){
         // Get the area and resolution from the pair
-        Area* area = area_and_resolution.first;
+        Area<T>* area = area_and_resolution.first;
         Scale resolution = area_and_resolution.second;
         std::tie(area, resolution) = area_and_resolution;
         // Set the resolution in the requested area
@@ -73,7 +74,7 @@ void GraphFactory<T>::setGraphTopLevelResolution(unsigned int resolution) {
 template <typename T>
 void GraphFactory<T>::setMinGraphResolutionForArea(
         GraphNode<T> &graph_node,
-        GraphFactory::Area &area,
+        Area<T> &area,
         GraphFactory::Scale max_scale) {
 
     // Find the subnodes of the graph in the given area
@@ -95,11 +96,11 @@ void GraphFactory<T>::setMinGraphResolutionForArea(
     while (nodes_to_split.size() > 0) {
         // Get the first node from the queue
         RealNode<T>* current_node = nodes_to_split.front();
+
         // Remove the node we just got from the queue
         nodes_to_split.pop();
 
-        // Check if the node is totally outside (doesn't even partially overlap) the area,
-        // or if it does overlap, but the scale is small enough
+        // Check if the node overlaps the given area and if it's scale is too large
         if (area.overlapsNode(*current_node) &&
             current_node->getScale() >= max_scale){
             // Convert the node to a GraphNode

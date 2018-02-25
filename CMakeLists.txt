@@ -45,6 +45,11 @@ add_executable(graph_factory_test
         include/GraphNode.tpp
         include/GraphFactory.h
         include/GraphFactory.tpp
+        include/Area.h
+        include/Rectangle.h
+        include/Circle.h
+        include/Rectangle.tpp
+        include/Circle.tpp
         )
 target_link_libraries(graph_factory_test ${TESTING_LIBS})
 
@@ -58,5 +63,10 @@ add_executable(drawing_test
         include/RealNode.tpp
         include/GraphNode.tpp
         include/GraphFactory.tpp
+        include/Area.h
+        include/Rectangle.h
+        include/Circle.h
+        include/Rectangle.tpp
+        include/Circle.tpp
         )
 target_link_libraries(drawing_test ${OpenCV_LIBS})
