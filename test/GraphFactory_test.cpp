@@ -23,7 +23,7 @@ TEST_F(GraphFactoryTest, default_constructor){
     GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
 
     EXPECT_EQ(generated_graph.getScale(), 1);
-    EXPECT_EQ(generated_graph.getResolution(), 2);
+    EXPECT_EQ(generated_graph.getResolution(), 1);
 }
 
 // Test setting the top level scale of the graph
@@ -33,7 +33,7 @@ TEST_F(GraphFactoryTest, setGraphScale){
     GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
 
     EXPECT_EQ(generated_graph.getScale(), 10);
-    EXPECT_EQ(generated_graph.getResolution(), 2);
+    EXPECT_EQ(generated_graph.getResolution(), 1);
 }
 
 // Test setting the top level resolution of the graph
@@ -59,6 +59,7 @@ TEST_F(GraphFactoryTest, setGraphScale_and_setGraphResolution){
 
 TEST_F(GraphFactoryTest, setMaxScaleAtPoint_0_0){
     GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {0, 0}, 0.25);
     GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
 
@@ -78,6 +79,7 @@ TEST_F(GraphFactoryTest, setMaxScaleAtPoint_0_0){
 
 TEST_F(GraphFactoryTest, setMaxScaleAtPoint_1_1){
     GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {1, 1}, 0.25);
     GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
 
@@ -177,65 +179,248 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_within_single_node){
     EXPECT_EQ(expected_coordinates, actual_coordinates);
 }
 
-// Test setting multiple rectangular and circular areas (with overlap)
+// Test setting the area of several Rectangles, some overlapping
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles){
+    GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphScale(10);
+    graph_factory.setGraphTopLevelResolution(1);
 
+    // Choose some circular areas with associated resolutions
+    std::vector<std::pair<Rectangle<nullptr_t>, double>> areas_and_scales = {
+            // Rectangle entirely within Graph
+            {
+                    {3, 4, (Coordinates){2,3}},
+                    0.3
+            },
+            // Rectangle of higher resolution entirely within Graph
+            // and slightly overlapping the first
+            {
+                    {4, 4, (Coordinates){1,1}},
+                    0.1
+            },
+            // Rectangle that extends outside the Graph
+            {
+                    {10, 20, (Coordinates){8,8}},
+                    0.2
+            },
+            // Rectangle of higher resolution then the initial graph
+            {
+                    {3, 3, (Coordinates){5,5}},
+                    1.4
+            },
+    };
 
-// TODO: Area overlapping node at edge of graph
+    // Set the resolution of all the areas
+    for (const auto& area_scale_pair : areas_and_scales){
+        Rectangle<nullptr_t> area = area_scale_pair.first;
+        double scale = area_scale_pair.second;
+        graph_factory.setMaxScaleInArea(area, scale);
+    }
 
-// TODO: Test setMaxScaleInArea (at least one test for every area type)
-// TODO: Test generating a massive graph with lots of areas and points with increased resolution
+    // Generate the Graph and get all the RealNodes
+    GraphNode<nullptr_t> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
 
-// TODO: Is this even a valid test?
-// TODO: Some performance tests - pretty performance sensitive component (but performance is dependent on the docker container CI is running in)
-// Test generating a giant graph with lots of random shapes and resolutions
-// (mostly for runtime testing)
-//TEST_F(GraphFactoryTest, generate_large_and_complex_graph){
-//    GraphFactory<nullptr_t> graph_factory;
-//    graph_factory.setGraphScale(100);
-//
-//    // Generate some rectangles
-//    //for (int i = 0; i < 20; i++){
-//    //    GraphFactory<nullptr_t>::Rectangle rectangle = GraphFactory<nullptr_t>::Rectangle(2*i,3*i,(Coordinates){i,i});
-//    //    graph_factory.setMaxScaleInArea(rectangle, 0.01);
-//    //}
-//
-//    GraphFactory<nullptr_t>::Rectangle rectangle =
-//            GraphFactory<nullptr_t>::Rectangle(0,0,(Coordinates){0,0});
-//    rectangle = GraphFactory<nullptr_t>::Rectangle(10,10,(Coordinates){10,10});
-//    graph_factory.setMaxScaleInArea(rectangle, 1);
-//    rectangle = GraphFactory<nullptr_t>::Rectangle(10,10,(Coordinates){30,40});
-//    graph_factory.setMaxScaleInArea(rectangle, 1);
-//    rectangle = GraphFactory<nullptr_t>::Rectangle(30,10,(Coordinates){60,40});
-//    graph_factory.setMaxScaleInArea(rectangle, 1);
-//    rectangle = GraphFactory<nullptr_t>::Rectangle(10,60,(Coordinates){70,40});
-//    graph_factory.setMaxScaleInArea(rectangle, 0.5);
-//    rectangle = GraphFactory<nullptr_t>::Rectangle(5,10,(Coordinates){80,80});
-//    graph_factory.setMaxScaleInArea(rectangle, 0.5);
-//
-//
-//    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-//    auto graph = graph_factory.createGraph();
-//    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-//    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
-//
-//    // Massive time dump, get all real nodes and all neighbours of all nodes
-//    std::function<bool(Node<nullptr_t>&)> filter = [&](Node<nullptr_t>& n) { return true; };
-//
-//    std::vector<RealNode<nullptr_t>*> matching_nodes = graph.getAllNodesThatPassFilter(filter);
-//
-//    std::cout << "We have " << matching_nodes.size() << " nodes" << std::endl;
-//
-//    begin = std::chrono::steady_clock::now();
-//    for (int i = 0; i < matching_nodes.size(); i++){
-//        matching_nodes[i]->getNeighbours();
-//        //std::cout << "found neighbour" << std::endl;
-//    }
-//    end = std::chrono::steady_clock::now();
-//    std::cout << "Time to get all neighbours = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
-//}
+    for (RealNode<nullptr_t>* node : nodes){
+        // Check if this node is within any of the areas we set
+        for (const auto& area_scale_pair : areas_and_scales){
+            Rectangle<nullptr_t> area = area_scale_pair.first;
+            double scale = area_scale_pair.second;
 
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+            if (area.overlapsNode(*node)){
+                // If this node is within one of the areas we set the resolution for,
+                // check that the scale is equal to or less then the requested value
+                EXPECT_LE(node->getScale(), scale);
+            }
+        }
+    }
+
 }
 
+// Test setting the area of several circles, some overlapping
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
+    GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphScale(10);
+    graph_factory.setGraphTopLevelResolution(1);
+
+    // Choose some circular areas with associated resolutions
+    std::vector<std::pair<Circle<nullptr_t>, double>> areas_and_scales = {
+            // Circle entirely within Graph
+            {
+                    {3, (Coordinates){2,3}},
+                    0.3
+            },
+            // Circle of higher resolution entirely within Graph
+            // and slightly overlapping the first
+            {
+                    {2, (Coordinates){3,2}},
+                    0.1
+            },
+            // Circle that extends outside the Graph
+            {
+                    {10, (Coordinates){8,8}},
+                    0.2
+            },
+            // Circle of higher resolution then the initial graph
+            {
+                    {3, (Coordinates){5,5}},
+                    1.4
+            },
+    };
+
+    // Set the resolution of all the areas
+    for (const auto& area_scale_pair : areas_and_scales){
+        Circle<nullptr_t> area = area_scale_pair.first;
+        double scale = area_scale_pair.second;
+        graph_factory.setMaxScaleInArea(area, scale);
+    }
+
+    // Generate the Graph and get all the RealNodes
+    GraphNode<nullptr_t> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+
+    for (RealNode<nullptr_t>* node : nodes){
+        // Check if this node is within any of the areas we set
+        for (const auto& area_scale_pair : areas_and_scales){
+            Circle<nullptr_t> area = area_scale_pair.first;
+            double scale = area_scale_pair.second;
+
+            if (area.overlapsNode(*node)){
+                // If this node is within one of the areas we set the resolution for,
+                // check that the scale is equal to or less then the requested value
+                EXPECT_LE(node->getScale(), scale);
+            }
+        }
+    }
+
+}
+
+// Test setting the area of several circles and rectangles, some overlapping
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles){
+    GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphScale(10);
+    graph_factory.setGraphTopLevelResolution(1);
+
+    // Create some Areas with associated resolutions
+    // (Note that pointers have to be used here because we can't use
+    // the abstract "Area" class as a type in a double, because the compiler
+    // won't know how to allocate it)
+    std::vector<std::pair<Area<nullptr_t>*, double>> areas_and_scales {
+            // Create a simple rectangle totally enclosed in the graph
+            {
+                    new Rectangle<nullptr_t>(2,2, {1,1}),
+                    0.3
+            },
+            // Create a Circle of higher resolution partially overlapping the Rectangle
+            {
+                    new Circle<nullptr_t>(1,{1,1}),
+                    0.1
+            },
+            // Create a Circle extending off the side of the graph
+            {
+                    new Circle<nullptr_t>(5,{9,5}),
+                    0.1
+            },
+            // Create a Rectangle overlapping the circle we just created
+            // and extending off the side of the graph
+            {
+                    new Rectangle<nullptr_t>(5,2, {8,5}),
+                    0.5
+            },
+    };
+
+    // Set the resolution of all the areas
+    for (const auto& area_scale_pair : areas_and_scales){
+        Area<nullptr_t>* area = area_scale_pair.first;
+        double scale = area_scale_pair.second;
+        graph_factory.setMaxScaleInArea(*area, scale);
+    }
+
+    // Generate the Graph and get all the RealNodes
+    GraphNode<nullptr_t> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+
+    for (RealNode<nullptr_t>* node : nodes){
+        // Check if this node is within any of the areas we set
+        for (const auto& area_scale_pair : areas_and_scales){
+            Area<nullptr_t>* area = area_scale_pair.first;
+            double scale = area_scale_pair.second;
+
+            if (area->overlapsNode(*node)){
+                // If this node is within one of the areas we set the resolution for,
+                // check that the scale is equal to or less then the requested value
+                EXPECT_LE(node->getScale(), scale);
+            }
+        }
+    }
+
+}
+
+// Test setting many Rectangles and Circles of very high resolution
+// over a very large graph
+TEST_F(GraphFactoryTest, setMaxScaleInArea_many_rectangles_and_circles) {
+    GraphFactory<nullptr_t> graph_factory;
+    graph_factory.setGraphScale(100);
+    graph_factory.setGraphTopLevelResolution(2);
+
+    // Create some Areas with associated resolutions
+    // (Note that pointers have to be used here because we can't use
+    // the abstract "Area" class as a type in a double, because the compiler
+    // won't know how to allocate it)
+    std::vector<std::pair<Area<nullptr_t>*, double>> areas_and_scales;
+
+    // We're basically just randomly generating lots of different
+    // Rectangles and Circles
+    for (double i = 1; i < 10; i++){
+        for (double j = 1; j < 10; j++){
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Rectangle<nullptr_t>(i*3, j*2, {i*2,i*3}),
+                            10/i
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Circle<nullptr_t>(i*2, {i*2, 100 - i*3}),
+                            10/j
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Rectangle<nullptr_t>(i*2, j*3, {i*2,i*3}),
+                            10/j
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Circle<nullptr_t>(i*2, {100 - i*2, 100 - i*3}),
+                            1/j
+                    ));
+        }
+    }
+
+
+    // Set the resolution of all the areas
+    for (const auto& area_scale_pair : areas_and_scales){
+        Area<nullptr_t>* area = area_scale_pair.first;
+        double scale = area_scale_pair.second;
+        graph_factory.setMaxScaleInArea(*area, scale);
+    }
+
+    // Generate the Graph and get all the RealNodes
+    GraphNode<nullptr_t> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+
+    for (RealNode<nullptr_t>* node : nodes){
+        // Check if this node is within any of the areas we set
+        for (const auto& area_scale_pair : areas_and_scales){
+            Area<nullptr_t>* area = area_scale_pair.first;
+            double scale = area_scale_pair.second;
+
+            if (area->overlapsNode(*node)){
+                // If this node is within one of the areas we set the resolution for,
+                // check that the scale is equal to or less then the requested value
+                EXPECT_LE(node->getScale(), scale);
+            }
+        }
+    }
+}
+
+// TODO: Some performance tests - pretty performance sensitive component (but performance is dependent on the docker container CI is running in)

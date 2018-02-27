@@ -8,6 +8,8 @@
 #include <GraphFactory.h>
 #include <iostream>
 #include <chrono>
+#include <Rectangle.h>
+#include <Circle.h>
 
 // Create the mat
 int window_resolution = 800;
@@ -78,33 +80,73 @@ int main(){
 
     GraphFactory<int> graph_factory;
     graph_factory.setGraphScale(100);
-    graph_factory.setGraphTopLevelResolution(4);
+    graph_factory.setGraphTopLevelResolution(1);
 
-    GraphFactory<int>::Rectangle rectangle =
-            GraphFactory<int>::Rectangle(0,0,(Coordinates){0,0});
-    rectangle = GraphFactory<int>::Rectangle(10,10,(Coordinates){10,10});
+    Rectangle<int> rectangle =
+            Rectangle<int>(0,0,(Coordinates){0,0});
+    rectangle = Rectangle<int>(10,10,(Coordinates){10,10});
     graph_factory.setMaxScaleInArea(rectangle, 0.5);
-    rectangle = GraphFactory<int>::Rectangle(10,10,(Coordinates){30,40});
+    rectangle = Rectangle<int>(10,10,(Coordinates){30,40});
     graph_factory.setMaxScaleInArea(rectangle, 1);
-    rectangle = GraphFactory<int>::Rectangle(30,10,(Coordinates){60,40});
+    rectangle = Rectangle<int>(30,10,(Coordinates){60,40});
     graph_factory.setMaxScaleInArea(rectangle, 1);
-    rectangle = GraphFactory<int>::Rectangle(10,60,(Coordinates){70,40});
+    rectangle = Rectangle<int>(10,60,(Coordinates){70,40});
     graph_factory.setMaxScaleInArea(rectangle, 0.5);
-    rectangle = GraphFactory<int>::Rectangle(5,10,(Coordinates){80,80});
+    rectangle = Rectangle<int>(5,10,(Coordinates){80,80});
     graph_factory.setMaxScaleInArea(rectangle, 0.5);
 
-    GraphFactory<int>::Circle circle =
-            GraphFactory<int>::Circle(0,(Coordinates){0,0});
-    circle = GraphFactory<int>::Circle(10,(Coordinates){40,40});
+    Circle<int> circle =
+            Circle<int>(0,(Coordinates){0,0});
+    circle = Circle<int>(10,(Coordinates){40,40});
     graph_factory.setMaxScaleInArea(circle, 0.5);
-    circle = GraphFactory<int>::Circle(10,(Coordinates){70,70});
+    circle = Circle<int>(10,(Coordinates){70,70});
     graph_factory.setMaxScaleInArea(circle, 0.5);
 
+    /*
+    std::vector<std::pair<Area<int>*, double>> areas_and_scales;
+
+    // We're basically just randomly generating lots of different
+    // Rectangles and Circles
+    for (int i = 1; i < 10; i++){
+        for (int j = 1; j < 10; j++){
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Rectangle<int>(i*3, j*2, {i*2,i*3}),
+                            10/i
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Circle<int>(i*2, {i*2, 100 - i*3}),
+                            10/j
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Rectangle<int>(i*2, j*3, {i*2,i*3}),
+                            10/j
+                    ));
+            areas_and_scales.emplace_back(
+                    std::make_pair(
+                            new Circle<int>(i*2, {100 - i*2, 100 - i*3}),
+                            1/j
+                    ));
+        }
+    }
+
+    // Set the resolution of all the areas
+    for (const auto& area_scale_pair : areas_and_scales){
+        Area<int>* area = area_scale_pair.first;
+        double scale = area_scale_pair.second;
+        graph_factory.setMaxScaleInArea(*area, scale);
+    }
+     */
+
+    // Generate the Graph
+    std::cout << "Starting generating" << std::endl;
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     auto graphNode_val = graph_factory.createGraph();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
     std::cout << "Done generating" << std::endl;
+    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
     graphNode = &graphNode_val;
 
     // Draw the graph over the cv::Mat

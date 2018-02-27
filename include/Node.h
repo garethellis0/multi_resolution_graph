@@ -80,6 +80,7 @@ public:
     virtual double getScale() = 0;
 
     // TODO: Unit test this
+    // TODO: The function name is a bit misleading, see description of what function actually does
     /**
      * Gets all the RealNode's below or at this node
      * @return a vector of all RealNode's at or below this one

@@ -66,9 +66,9 @@ private:
      * @param area the area over which the max scale is to be set
      * @param max_scale the maximum scale every node in the given area must be
      */
-    void setMinGraphResolutionForArea(GraphNode<T> &graph_node,
-                                      Area<T> &area,
-                                      Scale max_scale);
+    void setMaxGraphScaleForArea(GraphNode<T> &graph_node,
+                                 Area<T> &area,
+                                 Scale max_scale);
 
     /**
      * Sets the max scale for the node closest to the given point
@@ -82,7 +82,7 @@ private:
 
     // TODO: Better name for this variable?
     // A list of areas with a given max scale
-    std::vector<std::pair<Area<T>*, Scale>> min_resolution_areas;
+    std::vector<std::pair<Area<T>*, Scale>> min_scale_areas;
 
     // TODO: Better name for this variable?
     // A list of points with a given max scale

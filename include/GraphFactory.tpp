@@ -8,7 +8,7 @@
 
 template <typename T>
 GraphFactory<T>::GraphFactory() :
-        top_level_graph_resolution(2),
+        top_level_graph_resolution(1),
         top_level_graph_scale(1),
         subnode_resolution(2)
 {};
@@ -26,7 +26,7 @@ template<typename T>
 void GraphFactory<T>::setMaxScaleInArea(Area<T> &area,
                                         double max_scale) {
     Area<T>* cloned_area = area.clone();
-    this->min_resolution_areas.emplace_back(
+    this->min_scale_areas.emplace_back(
             std::make_pair(cloned_area, max_scale)
     );
 }
@@ -37,14 +37,27 @@ GraphNode<T> GraphFactory<T>::createGraph() {
     GraphNode<T> graph_node(top_level_graph_resolution, top_level_graph_scale);
 
     // Set the resolution to the minimum requested at the given locations
-    for (auto const& area_and_resolution : min_resolution_areas){
+    // in order of decreasing scale
+    // (note that if we do not sort in order of decreasing scale first,
+    // then we may split nodes in such a way that we end up with greater scale
+    // nodes in areas with lesser scale)
+    std::sort(min_scale_areas.begin(), min_scale_areas.end(),
+              [&](std::pair<Area<T>*,double> p1, std::pair<Area<T>*,double> p2){
+                  return p1.second > p2.second;
+              });
+    for (auto const& area_and_resolution : min_scale_areas){
         // Get the area and resolution from the pair
         Area<T>* area = area_and_resolution.first;
         Scale resolution = area_and_resolution.second;
         std::tie(area, resolution) = area_and_resolution;
         // Set the resolution in the requested area
-        setMinGraphResolutionForArea(graph_node, *area, resolution);
+        setMaxGraphScaleForArea(graph_node, *area, resolution);
     }
+
+    std::sort(min_resolution_points.begin(), min_resolution_points.end(),
+              [&](std::pair<Coordinates,double> p1, std::pair<Coordinates,double> p2){
+                  return p1.second > p2.second;
+              });
     for (auto const& point_and_resolution : min_resolution_points){
         // Get the area and resolution from the pair
         Coordinates coordinates = point_and_resolution.first;
@@ -69,10 +82,9 @@ void GraphFactory<T>::setGraphTopLevelResolution(unsigned int resolution) {
     this->top_level_graph_resolution = resolution;
 }
 
-
 // TODO: Make sure we're unit testing this
 template <typename T>
-void GraphFactory<T>::setMinGraphResolutionForArea(
+void GraphFactory<T>::setMaxGraphScaleForArea(
         GraphNode<T> &graph_node,
         Area<T> &area,
         GraphFactory::Scale max_scale) {
