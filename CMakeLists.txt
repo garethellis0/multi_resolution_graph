@@ -3,17 +3,24 @@ project(thunderbots_navigator)
 
 set(CMAKE_CXX_STANDARD 14)
 
+find_package(PkgConfig)
 find_package(OpenCV REQUIRED)
+
+# GTest Setup
+find_package(GTest REQUIRED)
+include_directories(${GTEST_INCLUDE_DIRS} include)
+
+# GMock Setup
+pkg_check_modules(GMOCK REQUIRED)
+include_directories(${GMOCK_INCLUDE_DIRS})
+
+# General Testing Setup
+set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
+enable_testing()
 
 include_directories(include)
 
 set(SOURCE_FILES main.cpp include/Node.h include/RealNode.h include/RealNode.tpp include/GraphNode.tpp include/GraphNode.tpp include/GraphNode.h)
-
-# Setup stuff to let us use GTest
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS} include)
-set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
-enable_testing()
 
 # Test Executables
 add_executable(realnode_test
@@ -68,6 +75,13 @@ add_executable(circle_test
         include/Circle.tpp
         )
 target_link_libraries(circle_test ${TESTING_LIBS})
+
+add_executable(WorldGraphFactory_test
+        test/WorldGraphFactory_test.cpp
+        include/WorldGraphFactory.h
+        )
+target_link_libraries(WorldGraphFactory_test ${TESTING_LIBS})
+
 
 # Misc executables
 add_executable(drawing_test

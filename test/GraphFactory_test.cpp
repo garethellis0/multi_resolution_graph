@@ -424,3 +424,7 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_many_rectangles_and_circles) {
 }
 
 // TODO: Some performance tests - pretty performance sensitive component (but performance is dependent on the docker container CI is running in)
+int main(int argc, char** argv) {
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+}
