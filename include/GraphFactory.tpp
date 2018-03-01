@@ -2,6 +2,8 @@
 #ifndef THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
 #define THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
 
+// TODO: In general, look for places here that could seriously benefit from parallelism
+
 #include <GraphFactory.h>
 #include <list>
 #include <queue>
@@ -104,6 +106,7 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
         nodes_to_split.push(std::move(node));
     }
 
+    // TODO: Possible easy performance improvement from multithreading here?
     // Keep splitting nodes until every node in the given area is of the desired resolution
     while (nodes_to_split.size() > 0) {
         // Get the first node from the queue

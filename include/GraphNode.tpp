@@ -1,6 +1,8 @@
 #ifndef THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H
 #define THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H
 
+// TODO: In general, look for places here that could seriously benefit from parallelism
+
 #include <GraphNode.h>
 
 template <typename T>
@@ -168,6 +170,7 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
         }
     }
 
+    // TODO: Easy performance improvement with by using OpenMP to add parallelism?
     // If we weren't asked to search our parent, search the the sub-nodes of this node
     std::vector<RealNode<T>*> all_matching_nodes;
     for (auto& row : subNodes) {
@@ -183,6 +186,7 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
 template<typename T>
 std::vector<RealNode<T> *> GraphNode<T>::getAllSubNodes() {
     std::vector<RealNode<T>*> all_subnodes;
+    // TODO: Easy performance improvement with by using OpenMP to add parallelism?
     for (auto& row : subNodes) {
         for (Node<T>* node : row) {
             // TODO: Better comment?
