@@ -1,9 +1,6 @@
-//
-// Created by gareth on 04/01/18.
-//
-#include <opencv2/core.hpp>
-#include <opencv2/imgproc.hpp>
-#include <opencv2/highgui.hpp>
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
 #include <GraphNode.h>
 #include <GraphFactory.h>
 #include <iostream>
@@ -134,7 +131,6 @@ int main(){
     graph_factory.setMaxScaleInArea(circle, 0.05);
     circle = Circle<int>(0.2,(Coordinates){5,6});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){5.4,6.3});
     circle = Circle<int>(0.2,(Coordinates){4.8,6.4});
     graph_factory.setMaxScaleInArea(circle, 0.05);
     circle = Circle<int>(0.2,(Coordinates){3,4.5});
