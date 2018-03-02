@@ -7,6 +7,7 @@ Circle<T>::Circle(Radius radius, Coordinates center):
     center(center)
     {}
 
+// TODO: YOU ARE HERE - Looks like this implementation is buggy! With the new optimiz. circles don't work
 template <typename T>
 bool Circle<T>::overlapsNode(Node<T>& node) {
     // Get the 4 corner points of this node
@@ -60,6 +61,9 @@ bool Circle<T>::overlapsNode(Node<T>& node) {
                 // does not intersect the circle
                 // Math from here:
                 // http://mathworld.wolfram.com/Circle-LineIntersection.html
+
+                // Find the two points that will make up the line
+                // (circle is presumed to be at (0,0), so offset the line from the circle)
                 double x1 = points[i].x - center.x;
                 double y1 = points[i].y - center.y;
                 double x2 = points[j].x - center.x;
@@ -81,6 +85,19 @@ bool Circle<T>::overlapsNode(Node<T>& node) {
                                         / std::pow(dr,2);
                 intersection.y = -D*dx + std::abs(dy)*sqrt(intersection_discriminant)
                                          / std::pow(dr,2);
+
+                // Make sure the intersection is on the line segment
+                // that actually makes up the node edge
+                if (intersection.x > std::min(x1,x2) && intersection.x < std::max(x1,x2) &&
+                    intersection.y > std::min(y1,y2) && intersection.y < std::max(y1,y2)){
+                    return true;
+                }
+
+                // TODO: Better comment here
+                // TODO: DRY - we're repeating the check we just did here.....
+                // The intersection points are +/-, so negate them and check again
+                intersection.x *= -1;
+                intersection.y *= -1;
 
                 // Make sure the intersection is on the line segment
                 // that actually makes up the node edge

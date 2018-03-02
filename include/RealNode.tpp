@@ -73,7 +73,9 @@ boost::optional<RealNode<T>*> RealNode<T>::getClosestNodeToCoordinatesThatPasses
 
 template<typename T>
 std::vector<RealNode<T> *> RealNode<T>::getAllNodesThatPassFilter(
-        const std::function<bool(Node<T> &)> &filter, bool search_parent) {
+        const std::function<bool(Node<T> &)> &filter,
+        bool parent_must_pass_filter,
+        bool search_parent) {
     // If this node passes the given filter, the return a list with just
     // this node, otherwise return an empty list
     if (filter(*this)){

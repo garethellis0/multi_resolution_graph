@@ -51,7 +51,6 @@ GraphNode<T> GraphFactory<T>::createGraph() {
         // Get the area and resolution from the pair
         Area<T>* area = area_and_resolution.first;
         Scale resolution = area_and_resolution.second;
-        std::tie(area, resolution) = area_and_resolution;
         // Set the resolution in the requested area
         setMaxGraphScaleForArea(graph_node, *area, resolution);
     }
@@ -101,7 +100,8 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
     std::queue<RealNode<T>*> nodes_to_split;
 
     // Get the initial set of nodes to split
-    std::vector<RealNode<T>*> initial_nodes_to_split = graph_node.getAllNodesThatPassFilter(area_filter);
+    std::vector<RealNode<T>*> initial_nodes_to_split =
+            graph_node.getAllNodesThatPassFilter(area_filter, true);
     for (auto &node : initial_nodes_to_split){
         nodes_to_split.push(std::move(node));
     }

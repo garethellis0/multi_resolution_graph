@@ -25,6 +25,7 @@ public:
 
     std::vector<RealNode<T>*> getAllNodesThatPassFilter(
             const std::function<bool(Node<T> &)> &filter,
+            bool parent_must_pass_filter = false,
             bool search_parent = true) override;
 
     virtual std::vector<RealNode<T>*> getAllSubNodes();

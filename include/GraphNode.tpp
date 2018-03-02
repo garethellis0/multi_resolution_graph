@@ -155,7 +155,9 @@ GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
 
 template<typename T>
 std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
-        const std::function<bool(Node<T> &)> &filter, bool search_parent) {
+        const std::function<bool(Node<T> &)> &filter,
+        bool parent_must_pass_filter,
+        bool search_parent) {
 
     // TODO: This comment is likely hard to understand
     // Search through our parent (if we were asked to)
@@ -164,19 +166,27 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
         // Check that we actually have a parent
         if (parent == nullptr){
             // If we don't have a parent, we're at the top of the tree, so recurse back down
-            return this->getAllNodesThatPassFilter(filter, false);
+            return this->getAllNodesThatPassFilter(filter, parent_must_pass_filter, false);
         } else {
-            return parent->getAllNodesThatPassFilter(filter, true);
+            return parent->getAllNodesThatPassFilter(filter, parent_must_pass_filter, true);
         }
     }
 
+    // If we're checking if the parent must also pass the filter, check if this node
+    // does before checking its children
+    if (parent_must_pass_filter && !filter(*this)){
+        // We didn't pass the filter, so none of our children can either
+        return {};
+    }
+
     // TODO: Easy performance improvement with by using OpenMP to add parallelism?
-    // If we weren't asked to search our parent, search the the sub-nodes of this node
+    // Search the the sub-nodes of this node
     std::vector<RealNode<T>*> all_matching_nodes;
     for (auto& row : subNodes) {
         for (Node<T>* node : row){
             // Concatenate all nodes found below this one to those already found
-            std::vector<RealNode<T>*> matching_nodes = node->getAllNodesThatPassFilter(filter, false);
+            std::vector<RealNode<T>*> matching_nodes = node->getAllNodesThatPassFilter(
+                    filter, parent_must_pass_filter, false);
             all_matching_nodes.insert(all_matching_nodes.end(), matching_nodes.begin(), matching_nodes.end());
         }
     }

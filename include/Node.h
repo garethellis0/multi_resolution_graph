@@ -58,14 +58,17 @@ public:
     /**
      * Gets all the nodes that passes the given function
      * @param filter a function that takes a node, and returns if it passes
+     * TODO: This is a crappy @param... hard to understand
+     * @param parent_must_pass_filter dictates whether the parents of a node must pass the filter
+     * in order for the child to also pass the filter (ex. in the case of area overlap)
      * @param search_parent whether or not to try searching through this nodes parent node
      * (this is used to prevent loops when travelling all the way up the tree and back down)
      * @return a vector of matching nodes
      */
-    virtual std::vector<RealNode<T>*>
-    getAllNodesThatPassFilter(
-            const std::function<bool(Node<T> &)> &filter,
-            bool search_parent) = 0;
+    virtual std::vector<RealNode<T> *>
+    getAllNodesThatPassFilter(const std::function<bool(Node<T> &)> &filter,
+                              bool parent_must_pass_filter,
+                              bool search_parent) = 0;
 
     /**
      * Gets the coordinates for this node
