@@ -356,6 +356,66 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles){
 
 }
 
+// Test a case similar to a typical field generation for autonomous robot soccer (UBC Thunderbots)
+TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
+    GraphFactory<int> graph_factory;
+    graph_factory.setGraphScale(9);
+    graph_factory.setGraphTopLevelResolution(1);
+
+    Rectangle<int> rectangle =
+            Rectangle<int>(0,0,(Coordinates){0,0});
+    // Base Field
+    rectangle = Rectangle<int>(6,9,(Coordinates){1.5,0});
+    graph_factory.setMaxScaleInArea(rectangle, 0.2);
+    // Defensive Areas
+    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,0});
+    graph_factory.setMaxScaleInArea(rectangle, 0.1);
+    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,8});
+    graph_factory.setMaxScaleInArea(rectangle, 0.1);
+
+    Circle<int> circle =
+            Circle<int>(0,(Coordinates){0,0});
+    // Robots
+    circle = Circle<int>(0.2,(Coordinates){7,3});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){3,7});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){4.7,7.8});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){4.2,0.6});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){3,2});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){3.7,2.7});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){4.5,2.4});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){6,4});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){5.4,3.8});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){5,6});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){4.8,6.4});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+    circle = Circle<int>(0.2,(Coordinates){3,4.5});
+    graph_factory.setMaxScaleInArea(circle, 0.05);
+
+    // TODO: Should not be printing out in tests
+    // Generate the Graph
+    std::cout << "Starting generating" << std::endl;
+    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    auto graphNode_val = graph_factory.createGraph();
+    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    std::cout << "Done generating" << std::endl;
+    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
+    auto graphNode = &graphNode_val;
+
+    // Figure out how many nodes we generated
+    auto all_nodes = graphNode->getAllSubNodes();
+    std::cout << "We generated this many nodes: " << all_nodes.size() << std::endl;
+}
+
 // TODO: Scale back this test a bit so it runs in computationally feasible time
 // Test setting many Rectangles and Circles of very high resolution
 // over a very large graph
