@@ -5,6 +5,7 @@ set(CMAKE_CXX_STANDARD 14)
 
 find_package(PkgConfig)
 find_package(OpenCV REQUIRED)
+include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # GTest Setup
 find_package(GTest REQUIRED)
