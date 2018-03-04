@@ -59,6 +59,7 @@ public:
     Node<T> * convertToGraphNode(unsigned int resolution);
 
     // TODO: Better comment? Bit hard, since it's so generic
+    // TODO: YOU ARE HERE - make this return by reference and remove `setContainedValue` below
     /**
      * Gets the value contained by this node
      * @return the values contained by this node
