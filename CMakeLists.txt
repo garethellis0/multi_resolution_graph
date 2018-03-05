@@ -19,67 +19,75 @@ include_directories(${GMOCK_INCLUDE_DIRS})
 set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
 enable_testing()
 
-include_directories(include)
+include_directories(goem/multi_res_graph)
 
-set(SOURCE_FILES main.cpp include/Node.h include/RealNode.h include/RealNode.tpp include/GraphNode.tpp include/GraphNode.tpp include/GraphNode.h)
+set(SOURCE_FILES 
+    main.cpp 
+    geom/multi_res_graph/Node.h 
+    geom/multi_res_graph/RealNode.h 
+    geom/multi_res_graph/RealNode.tpp 
+    geom/multi_res_graph/GraphNode.tpp 
+    geom/multi_res_graph/GraphNode.tpp 
+    geom/multi_res_graph/GraphNode.h
+    )
 
 # Test Executables
 add_executable(realnode_test
         test/RealNode_test.cpp
-        include/RealNode.h
-        include/GraphNode.h
-        include/Node.h
-        include/RealNode.tpp
-        include/GraphNode.tpp
+        geom/multi_res_graph/RealNode.h
+        geom/multi_res_graph/GraphNode.h
+        geom/multi_res_graph/Node.h
+        geom/multi_res_graph/RealNode.tpp
+        geom/multi_res_graph/GraphNode.tpp
         )
 target_link_libraries(realnode_test ${TESTING_LIBS})
 
 add_executable(graphnode_test
         test/GraphNode_test.cpp
-        include/RealNode.h
-        include/GraphNode.h
-        include/Node.h
-        include/RealNode.tpp
-        include/GraphNode.tpp
+        geom/multi_res_graph/RealNode.h
+        geom/multi_res_graph/GraphNode.h
+        geom/multi_res_graph/Node.h
+        geom/multi_res_graph/RealNode.tpp
+        geom/multi_res_graph/GraphNode.tpp
         )
 target_link_libraries(graphnode_test ${TESTING_LIBS})
 
 add_executable(graph_factory_test
         test/GraphFactory_test.cpp
-        include/RealNode.h
-        include/GraphNode.h
-        include/Node.h
-        include/RealNode.tpp
-        include/GraphNode.tpp
-        include/GraphFactory.h
-        include/GraphFactory.tpp
-        include/Area.h
-        include/Rectangle.h
-        include/Circle.h
-        include/Rectangle.tpp
-        include/Circle.tpp
+        geom/multi_res_graph/RealNode.h
+        geom/multi_res_graph/GraphNode.h
+        geom/multi_res_graph/Node.h
+        geom/multi_res_graph/RealNode.tpp
+        geom/multi_res_graph/GraphNode.tpp
+        geom/multi_res_graph/GraphFactory.h
+        geom/multi_res_graph/GraphFactory.tpp
+        geom/multi_res_graph/Area.h
+        geom/multi_res_graph/Rectangle.h
+        geom/multi_res_graph/Circle.h
+        geom/multi_res_graph/Rectangle.tpp
+        geom/multi_res_graph/Circle.tpp
         )
 target_link_libraries(graph_factory_test ${TESTING_LIBS})
 
 add_executable(rectangle_test
         test/Rectangle_test.cpp
-        include/Area.h
-        include/Rectangle.h
-        include/Rectangle.tpp
+        geom/multi_res_graph/Area.h
+        geom/multi_res_graph/Rectangle.h
+        geom/multi_res_graph/Rectangle.tpp
         )
 target_link_libraries(rectangle_test ${TESTING_LIBS})
 
 add_executable(circle_test
         test/Circle_test.cpp
-        include/Area.h
-        include/Circle.h
-        include/Circle.tpp
+        geom/multi_res_graph/Area.h
+        geom/multi_res_graph/Circle.h
+        geom/multi_res_graph/Circle.tpp
         )
 target_link_libraries(circle_test ${TESTING_LIBS})
 
 add_executable(WorldGraphFactory_test
         test/WorldGraphFactory_test.cpp
-        include/WorldGraphFactory.h
+        geom/multi_res_graph/WorldGraphFactory.h
         )
 target_link_libraries(WorldGraphFactory_test ${TESTING_LIBS})
 
@@ -87,17 +95,17 @@ target_link_libraries(WorldGraphFactory_test ${TESTING_LIBS})
 # Misc executables
 add_executable(drawing_test
         drawing_test.cpp
-        include/RealNode.h
-        include/GraphNode.h
-        include/Node.h
-        include/GraphFactory.h
-        include/RealNode.tpp
-        include/GraphNode.tpp
-        include/GraphFactory.tpp
-        include/Area.h
-        include/Rectangle.h
-        include/Circle.h
-        include/Rectangle.tpp
-        include/Circle.tpp
+        geom/multi_res_graph/RealNode.h
+        geom/multi_res_graph/GraphNode.h
+        geom/multi_res_graph/Node.h
+        geom/multi_res_graph/GraphFactory.h
+        geom/multi_res_graph/RealNode.tpp
+        geom/multi_res_graph/GraphNode.tpp
+        geom/multi_res_graph/GraphFactory.tpp
+        geom/multi_res_graph/Area.h
+        geom/multi_res_graph/Rectangle.h
+        geom/multi_res_graph/Circle.h
+        geom/multi_res_graph/Rectangle.tpp
+        geom/multi_res_graph/Circle.tpp
         )
 target_link_libraries(drawing_test ${OpenCV_LIBS})
