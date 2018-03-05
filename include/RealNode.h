@@ -62,16 +62,9 @@ public:
     // TODO: YOU ARE HERE - make this return by reference and remove `setContainedValue` below
     /**
      * Gets the value contained by this node
-     * @return the values contained by this node
+     * @return a reference to the object contained by this node
      */
-    T getContainedValue();
-
-    // TODO: Better comment? Bit hard, since it's so generic
-    /**
-     * Sets the value contained by this node
-     * @param val the value to be contained by this node
-     */
-    void setContainedValue(T val);
+    T& containedValue();
 
 private:
     // TODO: This should *NOT* be a raw pointer
