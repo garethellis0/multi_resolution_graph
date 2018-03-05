@@ -1,9 +1,24 @@
 cmake_minimum_required(VERSION 3.4)
 project(thunderbots_navigator)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 
 find_package(PkgConfig)
+
+# OpenMP Setup
+include(FindOpenMP)
+if (OPENMP_FOUND)
+    # Enable OpenMP if the compiler supports it
+    message("Found OpenMP")
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} ${OpenMP_C_FLAGS}")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${OpenMP_CXX_FLAGS}")
+    set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
+else(OPENMP_FOUND)
+    # TODO: Should we error and fail here?
+    message("EROR: OpenMP not found - may have reduced performance")
+endif(OPENMP_FOUND)
+
+# OpenCV Setup
 find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 

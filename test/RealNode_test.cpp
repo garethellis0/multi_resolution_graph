@@ -110,9 +110,9 @@ TEST_F(RealNodeTest, get_and_set_containedValue) {
     GraphNode<int> graph_node;
     RealNode<int> real_node(&graph_node);
 
-    real_node.setContainedValue(39);
+    real_node.containedValue() = 39;
 
-    EXPECT_EQ(39, real_node.getContainedValue());
+    EXPECT_EQ(39, real_node.containedValue());
 }
 
 int main(int argc, char** argv) {
