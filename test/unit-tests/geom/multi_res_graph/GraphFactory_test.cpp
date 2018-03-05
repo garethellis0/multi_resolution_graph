@@ -405,17 +405,17 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
 
     // TODO: Should not be printing out in tests
     // Generate the Graph
-    std::cout << "Starting generating" << std::endl;
-    std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+    //std::cout << "Starting generating" << std::endl;
+    //std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
     auto graphNode_val = graph_factory.createGraph();
-    std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
-    std::cout << "Done generating" << std::endl;
-    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
+    //std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+    //std::cout << "Done generating" << std::endl;
+    //std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
     auto graphNode = &graphNode_val;
 
     // Figure out how many nodes we generated
     auto all_nodes = graphNode->getAllSubNodes();
-    std::cout << "We generated this many nodes: " << all_nodes.size() << std::endl;
+    //std::cout << "We generated this many nodes: " << all_nodes.size() << std::endl;
 }
 
 // TODO: Scale back this test a bit so it runs in computationally feasible time
