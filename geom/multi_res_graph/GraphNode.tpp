@@ -3,7 +3,7 @@
 
 // TODO: In general, look for places here that could seriously benefit from parallelism
 
-#include <GraphNode.h>
+#include "geom/multi_res_graph/GraphNode.h"
 
 template <typename T>
 GraphNode<T>::GraphNode(unsigned int resolution, double scale) :

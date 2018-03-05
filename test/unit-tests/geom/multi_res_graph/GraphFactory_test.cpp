@@ -7,9 +7,11 @@
 #include <chrono>
 
 // Thunderbots Includes
-#include <GraphFactory.h>
-#include <Rectangle.h>
-#include <Circle.h>
+#include "geom/multi_res_graph/GraphFactory.h"
+#include "geom/multi_res_graph/Rectangle.h"
+#include "geom/multi_res_graph/Circle.h"
+
+namespace {
 
 class GraphFactoryTest : public testing::Test {
 protected:
@@ -485,7 +487,5 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
 //}
 
 // TODO: Some performance tests - pretty performance sensitive component (but performance is dependent on the docker container CI is running in)
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
+
 }

@@ -1,12 +1,12 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
-#include <GraphNode.h>
-#include <GraphFactory.h>
+#include "geom/multi_res_graph/GraphNode.h"
+#include "geom/multi_res_graph/GraphFactory.h"
 #include <iostream>
 #include <chrono>
-#include <Rectangle.h>
-#include <Circle.h>
+#include "geom/multi_res_graph/Rectangle.h"
+#include "geom/multi_res_graph/Circle.h"
 
 // Create the mat
 int window_resolution = 800;

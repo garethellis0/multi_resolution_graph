@@ -2,9 +2,10 @@
 #include <gtest/gtest.h>
 
 // Thunderbots Includes
-#include "GraphNode.h"
-#include "Rectangle.h"
+#include "geom/multi_res_graph/GraphNode.h"
+#include "geom/multi_res_graph/Rectangle.h"
 
+namespace {
 class RectangleTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -53,8 +54,6 @@ TEST_F(RectangleTest, ovelapsNode_fully_overlaps){
     EXPECT_TRUE(rectangle.overlapsNode(node));
 }
 
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }
+
 

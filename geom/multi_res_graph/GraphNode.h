@@ -6,10 +6,10 @@
 
 // TODO: In general, function order in `.cpp` should match that in the relevent `.h` file
 
-#include <Node.h>
+#include "geom/multi_res_graph/Node.h"
 #include <stdexcept>
 #include <array>
-#include <RealNode.h>
+#include "geom/multi_res_graph/RealNode.h"
 
 // TODO: Really detailed comment explaining what exactly this class is
 template <typename T>
@@ -148,6 +148,6 @@ private:
     Coordinates cached_coordinates;
 };
 
-#include <GraphNode.tpp>
+#include "geom/multi_res_graph/GraphNode.tpp"
 
 #endif //THUNDERBOTS_NAVIGATOR_GRAPHNODE_H

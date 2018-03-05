@@ -2,11 +2,12 @@
 #include <gtest/gtest.h>
 
 // Thunderbots Includes
-#include "GraphNode.h"
-#include "Circle.h"
+#include "geom/multi_res_graph/GraphNode.h"
+#include "geom/multi_res_graph/Circle.h"
 
-class CircleTest : public testing::Test {
-protected:
+namespace {
+
+class CircleTest : public testing::Test { protected:
     virtual void SetUp() {
     }
 };
@@ -72,8 +73,4 @@ TEST_F(CircleTest, overlapsNode_node_within_circle){
     EXPECT_TRUE(circle.overlapsNode(node));
 }
 
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }
-

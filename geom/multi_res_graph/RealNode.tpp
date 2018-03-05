@@ -1,7 +1,7 @@
 #ifndef THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
 #define THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
 
-#include <RealNode.h>
+#include "geom/multi_res_graph/RealNode.h"
 
 template <typename T>
 RealNode<T>::RealNode(GraphNode<T>* parent):
@@ -103,14 +103,8 @@ Node<T> * RealNode<T>::convertToGraphNode(unsigned int resolution) {
 }
 
 template <typename T>
-T RealNode<T>::getContainedValue() {
+T& RealNode<T>::containedValue() {
     return contained_value;
 }
-
-template <typename T>
-void RealNode<T>::setContainedValue(T val) {
-    this->contained_value = val;
-}
-
 
 #endif // THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H

@@ -4,9 +4,12 @@
 
 // TODO: In general, look for places here that could seriously benefit from parallelism
 
-#include <GraphFactory.h>
+// STD Includes
 #include <list>
 #include <queue>
+
+// Thunderbots Includes
+#include "geom/multi_res_graph/GraphFactory.h"
 
 template <typename T>
 GraphFactory<T>::GraphFactory() :

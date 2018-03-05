@@ -1,8 +1,10 @@
 #include <gtest/gtest.h>
-#include <RealNode.h>
+
+#include "geom/multi_res_graph/RealNode.h"
 
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 
+namespace {
 class GraphNodeTest : public testing::Test {
 protected:
     virtual void SetUp() {
@@ -93,7 +95,7 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
     // Sort the coordinates so this test is deterministic
     // (will always produce the same result, even if some implementation details change)
     std::sort(coordinates.begin(), coordinates.end(),
-              [&](auto& c1, auto& c2){
+              [&](Coordinates& c1, Coordinates& c2){
                   return c1.x < c2.x && c1.y < c2.y;
               });
 
@@ -188,7 +190,7 @@ TEST_F(GraphNodeTest, getCoordinates_for_subnodes){
     // Sort the coordinates so this test is deterministic
     // (will always produce the same result, even if some implementation details change)
     std::sort(coordinates.begin(), coordinates.end(),
-              [&](auto& c1, auto& c2){
+              [&](Coordinates& c1, Coordinates& c2){
                   return c1.x < c2.x && c1.y < c2.y;
               });
 
@@ -432,8 +434,5 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
 
 // TODO: Test conditions that would cause functions to throw exceptions (which GraphNode *DOES*)
 
-int main(int argc, char** argv) {
-    testing::InitGoogleTest(&argc, argv);
-    return RUN_ALL_TESTS();
 }
 

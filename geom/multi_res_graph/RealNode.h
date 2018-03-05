@@ -1,8 +1,8 @@
 #ifndef THUNDERBOTS_NAVIGATOR_REALNODE_H
 #define THUNDERBOTS_NAVIGATOR_REALNODE_H
 
-#include <Node.h>
-#include <GraphNode.h>
+#include "geom/multi_res_graph/Node.h"
+#include "geom/multi_res_graph/GraphNode.h"
 
 template <typename T>
 class GraphNode;
@@ -59,18 +59,12 @@ public:
     Node<T> * convertToGraphNode(unsigned int resolution);
 
     // TODO: Better comment? Bit hard, since it's so generic
+    // TODO: YOU ARE HERE - make this return by reference and remove `setContainedValue` below
     /**
      * Gets the value contained by this node
-     * @return the values contained by this node
+     * @return a reference to the object contained by this node
      */
-    T getContainedValue();
-
-    // TODO: Better comment? Bit hard, since it's so generic
-    /**
-     * Sets the value contained by this node
-     * @param val the value to be contained by this node
-     */
-    void setContainedValue(T val);
+    T& containedValue();
 
 private:
     // TODO: This should *NOT* be a raw pointer
@@ -89,7 +83,7 @@ private:
     Coordinates cached_coordinates;
 };
 
-#include <RealNode.tpp>
+#include "geom/multi_res_graph/RealNode.tpp"
 
 
 #endif //THUNDERBOTS_NAVIGATOR_REALNODE_H
