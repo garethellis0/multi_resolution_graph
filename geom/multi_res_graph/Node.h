@@ -2,6 +2,7 @@
 #define THUNDERBOTS_NAVIGATOR_NODE_H
 
 // TODO: naming conventions? do we use snake case for variables? Fix!
+// TODO: Mathew - Yes use snake case
 
 // C++ STD Includes
 #include <vector>

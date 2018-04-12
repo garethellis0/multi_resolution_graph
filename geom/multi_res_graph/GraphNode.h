@@ -63,6 +63,7 @@ public:
      */
     GraphNode(unsigned int resolution, GraphNode* parent);
 
+    // TODO: Mathew - This should have @throws
     /**
      * Gets the coordinates of a given node below this one
      * Throws a NodeNotFoundException if given node is not found below this one
@@ -107,6 +108,7 @@ public:
     int getResolution();
 
     // TODO: Better comment
+    // TODO: Mathew - specify this only returns the next layer
     /**
      * Get the subnodes for this graph node
      * @return the subnodes for this graph node
@@ -143,6 +145,9 @@ private:
     // TODO: (Just setting here for testing)
     // Whether or not the currently cached coordinates are valid
     bool have_cached_coordinates = false;
+
+    // TODO: Mathew - Please make a deep copy function
+    // TODO: Mathew - Implement destructor
 
     // The cached coordinates of this node
     Coordinates cached_coordinates;

@@ -135,6 +135,7 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
 }
 
 // TODO: Make sure we're unit testing this
+// TODO: Mathew - Coordinates should be an area class so that we can perform "in area" checks to speed up the function below and be generic
 template<typename T>
 void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
                                                     Coordinates coordinates,
@@ -144,6 +145,7 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
     // TODO: see `setMinGraphResolutionInArea` for an example of this being done well
     // TODO: can we apply DRY with `setMinGraphResolutionInArea`?
     // TODO: Do we even need this function? Is it useful?
+
 
     // Find the closest node to the given coordinates
     boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(coordinates);
