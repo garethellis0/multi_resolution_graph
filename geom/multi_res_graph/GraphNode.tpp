@@ -9,7 +9,7 @@ template <typename T>
 GraphNode<T>::GraphNode(unsigned int resolution, double scale) :
     resolution(resolution),
     scale(std::abs(scale)),
-    parent(nullptr),
+    parent((GraphNode<T>*)NULL),
     have_cached_coordinates(false)
 {
     initSubNodes();
@@ -24,6 +24,39 @@ GraphNode<T>::GraphNode(unsigned int resolution, GraphNode *parent) :
     have_cached_coordinates(false)
 {
     initSubNodes();
+}
+
+template<typename T>
+Node<T>* GraphNode<T>::clone(GraphNode<T>* parent) const {
+    return this->cloneAsGraphNode(parent);
+}
+
+template<typename T>
+GraphNode<T> *GraphNode<T>::cloneAsGraphNode(GraphNode<T> *parent) const {
+    // Make a shallow copy of this GraphNode
+    GraphNode* new_graph_node = new GraphNode<T>(*this);
+
+    // Set the parent to the one we were given
+    new_graph_node->parent = parent;
+
+    // TODO: Phrase better, literal mind-fuck right now
+    // Replace all the children in our shallow copy of the GraphNode
+    // with deep copies of them
+    for (int rowIndex = 0; rowIndex < resolution; rowIndex++){
+        for (int colIndex = 0; colIndex < resolution; colIndex++){
+            new_graph_node->subNodes[rowIndex][colIndex] =
+                    new_graph_node->subNodes[rowIndex][colIndex]->clone(new_graph_node);
+        }
+    }
+
+    // Return the (now deep copy) of this Node
+    return new_graph_node;
+}
+
+
+template<typename T>
+GraphNode<T> &GraphNode<T>::operator=(const GraphNode &graph_node) {
+    return *this->cloneAsGraphNode(nullptr);
 }
 
 template <typename T>
@@ -243,6 +276,18 @@ void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
         RealNode<T>* closestNode = *possibleClosestNode;
         closestNode->convertToGraphNode(resolution);
     }
+}
+
+template<typename T>
+GraphNode<T>::~GraphNode() {
+
+    // Destroy all children
+    for (auto& row : subNodes){
+        for (auto& subNode : row){
+            subNode->~Node();
+        }
+    }
+
 }
 
 #endif // THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H

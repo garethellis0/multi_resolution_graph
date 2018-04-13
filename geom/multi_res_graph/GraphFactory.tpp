@@ -37,9 +37,9 @@ void GraphFactory<T>::setMaxScaleInArea(Area<T> &area,
 }
 
 template <typename T>
-GraphNode<T> GraphFactory<T>::createGraph() {
+GraphNode<T>& GraphFactory<T>::createGraph() {
     // Create a new Graph
-    GraphNode<T> graph_node(top_level_graph_resolution, top_level_graph_scale);
+    GraphNode<T>* graph_node = new GraphNode<T>(top_level_graph_resolution, top_level_graph_scale);
 
     // Set the resolution to the minimum requested at the given locations
     // in order of decreasing scale
@@ -55,7 +55,7 @@ GraphNode<T> GraphFactory<T>::createGraph() {
         Area<T>* area = area_and_resolution.first;
         Scale resolution = area_and_resolution.second;
         // Set the resolution in the requested area
-        setMaxGraphScaleForArea(graph_node, *area, resolution);
+        setMaxGraphScaleForArea(*graph_node, *area, resolution);
     }
 
     std::sort(min_resolution_points.begin(), min_resolution_points.end(),
@@ -68,11 +68,11 @@ GraphNode<T> GraphFactory<T>::createGraph() {
         Scale resolution = point_and_resolution.second;
         std::tie(coordinates, resolution) = point_and_resolution;
         // Set the resolution in the requested area
-        setMinGraphResolutionForPoint(graph_node, coordinates, resolution);
+        setMinGraphResolutionForPoint(*graph_node, coordinates, resolution);
     }
 
     // Return the graph, setup as requested
-    return graph_node;
+    return *graph_node;
 }
 
 // TODO: What if this function gets a negative value?

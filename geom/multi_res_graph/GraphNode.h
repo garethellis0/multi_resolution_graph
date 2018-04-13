@@ -34,6 +34,9 @@ public:
 
     double getScale() override;
 
+    // TODO: Make sure deep copy is working
+    Node<T>* clone(GraphNode<T>* parent) const override;
+
     /**
      * Creates a GraphNode with default values
      */
@@ -62,6 +65,26 @@ public:
      * @param parent the parent node of this node
      */
     GraphNode(unsigned int resolution, GraphNode* parent);
+
+    /**
+     * Assignment Operator - returns a deep copy of this Node
+     *
+     * @param graph_node the graph node we're trying to copy
+     * @return a deep copy of this node
+     */
+    GraphNode& operator=(const GraphNode& graph_node);
+
+    /**
+     * Create a clone of this GraphNode
+     *
+     * This performs a deep copy of the GraphNode (including children if it is
+     * a GraphNode). We need this instead of just `clone` so that the assigment
+     * operator (`operator=`) can return a GraphNode (instead of just a node)
+     *
+     * @param parent the parent of the copy of this Node (`nullptr` if no parent)
+     * @return a pointer to a clone of this node
+     */
+    GraphNode* cloneAsGraphNode(GraphNode<T> *parent) const;
 
     // TODO: Mathew - This should have @throws
     /**
@@ -115,8 +138,19 @@ public:
      */
     std::vector<std::vector<Node<T>*>> getSubNodes();
 
+    /**
+     * We provide our own implementation of the deconstructor
+     *
+     * We do this so we properly deallocate all child nodes
+     */
+    ~GraphNode();
 
 private:
+
+    /**
+     * Make the copy constructor private
+     */
+    GraphNode(GraphNode const&) = default;
 
     /**
      * Initializes subNodes to a 2D vector of size `resolution x resolution`
@@ -138,7 +172,7 @@ private:
 
     // TODO: This should *NOT* be a raw pointer
     // The possible parent of this node
-    GraphNode* parent;
+    GraphNode<T>* parent;
 
     // TODO: Is there a better way to do this then having a seperate bool and Coordinates?
     // TODO: We should only be setting this in the constructor, not here

@@ -56,7 +56,7 @@ public:
      * Creates a graph with the currently set parameters
      * @return a new graph with the currently set parameters
      */
-    GraphNode<T> createGraph();
+    GraphNode<T> & createGraph();
 
 private:
 

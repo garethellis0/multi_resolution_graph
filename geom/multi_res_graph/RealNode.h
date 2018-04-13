@@ -29,6 +29,13 @@ public:
 
     double getScale() override;
 
+    Node<T>* clone(GraphNode<T>* parent) const override;
+
+    /**
+     * Delete the assignment operator
+     */
+    RealNode& operator=(const RealNode&) = delete;
+
     /**
      * Default constructor is deleted to force the caller to pass in a parent node
      * (this is basically equivalent to declaring the default constructor private)
@@ -67,6 +74,11 @@ public:
     T& containedValue();
 
 private:
+    /**
+     * Make the copy constructor private
+     */
+    RealNode(const RealNode&) = default;
+
     // TODO: This should *NOT* be a raw pointer
     // TODO: Better comment here?
     // The parent "graph" node to this node
