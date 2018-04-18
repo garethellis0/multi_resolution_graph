@@ -22,30 +22,30 @@ protected:
 // Test that we get the expected graph from the default constructor
 TEST_F(GraphFactoryTest, default_constructor){
     GraphFactory<nullptr_t> graph_factory;
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
-    EXPECT_EQ(generated_graph.getScale(), 1);
-    EXPECT_EQ(generated_graph.getResolution(), 1);
+    EXPECT_EQ(generated_graph->getScale(), 1);
+    EXPECT_EQ(generated_graph->getResolution(), 1);
 }
 
 // Test setting the top level scale of the graph
 TEST_F(GraphFactoryTest, setGraphScale){
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(10);
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
-    EXPECT_EQ(generated_graph.getScale(), 10);
-    EXPECT_EQ(generated_graph.getResolution(), 1);
+    EXPECT_EQ(generated_graph->getScale(), 10);
+    EXPECT_EQ(generated_graph->getResolution(), 1);
 }
 
 // Test setting the top level resolution of the graph
 TEST_F(GraphFactoryTest, setGraphResolution){
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(10);
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
-    EXPECT_EQ(generated_graph.getScale(), 1);
-    EXPECT_EQ(generated_graph.getResolution(), 10);
+    EXPECT_EQ(generated_graph->getScale(), 1);
+    EXPECT_EQ(generated_graph->getResolution(), 10);
 }
 
 // Test that setting the size and resolution at the same time works
@@ -53,20 +53,20 @@ TEST_F(GraphFactoryTest, setGraphScale_and_setGraphResolution){
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(20);
     graph_factory.setGraphTopLevelResolution(10);
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
-    EXPECT_EQ(generated_graph.getScale(), 20);
-    EXPECT_EQ(generated_graph.getResolution(), 10);
+    EXPECT_EQ(generated_graph->getScale(), 20);
+    EXPECT_EQ(generated_graph->getResolution(), 10);
 }
 
 TEST_F(GraphFactoryTest, setMaxScaleAtPoint_0_0){
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {0, 0}, 0.25);
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get the top-level subnodes
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph.getSubNodes();
+    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph->getSubNodes();
 
     // We should have expanded the bottom left node, so it should now be a GraphNode
     Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
@@ -83,10 +83,10 @@ TEST_F(GraphFactoryTest, setMaxScaleAtPoint_1_1){
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {1, 1}, 0.25);
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get the top-level subnodes
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph.getSubNodes();
+    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph->getSubNodes();
 
     // We should have expanded the bottom left node, so it should now be a GraphNode
     Node<nullptr_t>* expanded_node = top_level_sub_nodes[1][1];
@@ -112,14 +112,14 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Rectangle_area_within_single_node){
     graph_factory.setMaxScaleInArea(rectangle, 0.51);
 
     // Generate the graph
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get all the RealNodes
     std::function<bool(Node<nullptr_t>&)> always_true_filter = [&](Node<nullptr_t> &n) {
         return true;
     };
     std::vector<RealNode<nullptr_t>*> all_real_nodes =
-            generated_graph.getAllNodesThatPassFilter(always_true_filter);
+            generated_graph->getAllNodesThatPassFilter(always_true_filter);
 
     // The area we choose should have forced the top level node to split into
     // 4 sub-nodes
@@ -153,14 +153,14 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_within_single_node){
     graph_factory.setMaxScaleInArea(circle, 0.51);
 
     // Generate the graph
-    GraphNode<nullptr_t> generated_graph = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get all the RealNodes
     std::function<bool(Node<nullptr_t>&)> always_true_filter = [&](Node<nullptr_t> &n) {
         return true;
     };
     std::vector<RealNode<nullptr_t>*> all_real_nodes =
-            generated_graph.getAllNodesThatPassFilter(always_true_filter);
+            generated_graph->getAllNodesThatPassFilter(always_true_filter);
 
     // The area we choose should have forced the top level node to split into
     // 4 sub-nodes
@@ -220,8 +220,8 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles){
     }
 
     // Generate the Graph and get all the RealNodes
-    GraphNode<nullptr_t> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+    std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
 
     for (RealNode<nullptr_t>* node : nodes){
         // Check if this node is within any of the areas we set
@@ -278,8 +278,8 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
     }
 
     // Generate the Graph and get all the RealNodes
-    GraphNode<nullptr_t> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+    std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
 
     for (RealNode<nullptr_t>* node : nodes){
         // Check if this node is within any of the areas we set
@@ -339,8 +339,8 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles){
     }
 
     // Generate the Graph and get all the RealNodes
-    GraphNode<nullptr_t> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+    std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
+    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
 
     for (RealNode<nullptr_t>* node : nodes){
         // Check if this node is within any of the areas we set
@@ -407,11 +407,10 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
     // Generate the Graph
     std::cout << "Starting generating" << std::endl;
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    auto graphNode_val = graph_factory.createGraph();
+    std::shared_ptr<GraphNode<int>> graphNode = graph_factory.createGraph();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Done generating" << std::endl;
     std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
-    auto graphNode = &graphNode_val;
 
     // Figure out how many nodes we generated
     auto all_nodes = graphNode->getAllSubNodes();
@@ -468,8 +467,8 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
 //    }
 //
 //    // Generate the Graph and get all the RealNodes
-//    GraphNode<nullptr_t> graph = graph_factory.createGraph();
-//    std::vector<RealNode<nullptr_t>*> nodes = graph.getAllSubNodes();
+//    std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
+//    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
 //
 //    for (RealNode<nullptr_t>* node : nodes){
 //        // Check if this node is within any of the areas we set

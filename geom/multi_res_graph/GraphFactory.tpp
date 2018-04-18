@@ -37,9 +37,15 @@ void GraphFactory<T>::setMaxScaleInArea(Area<T> &area,
 }
 
 template <typename T>
-GraphNode<T> GraphFactory<T>::createGraph() {
+std::shared_ptr<GraphNode<T>> GraphFactory<T>::createGraph() {
     // Create a new Graph
-    GraphNode<T> graph_node(top_level_graph_resolution, top_level_graph_scale);
+    // The reason we're not using `make_shared` here is that the `GraphNode`
+    // copy constructor is private (for good reason, copying them will certainly
+    // break child nodes pointers to their parent), but for *SOME* reason
+    // `make_shared` requires the copy constructor.... so we're using raw
+    // pointers and the "regular" `shared_ptr` constructor
+    GraphNode<T>* raw_ptr = new GraphNode<T>(top_level_graph_resolution, top_level_graph_scale);
+    std::shared_ptr<GraphNode<T>> graph_node_ptr(new GraphNode<T>(top_level_graph_resolution, top_level_graph_scale));
 
     // Set the resolution to the minimum requested at the given locations
     // in order of decreasing scale
@@ -55,7 +61,7 @@ GraphNode<T> GraphFactory<T>::createGraph() {
         Area<T>* area = area_and_resolution.first;
         Scale resolution = area_and_resolution.second;
         // Set the resolution in the requested area
-        setMaxGraphScaleForArea(graph_node, *area, resolution);
+        setMaxGraphScaleForArea(*graph_node_ptr, *area, resolution);
     }
 
     std::sort(min_resolution_points.begin(), min_resolution_points.end(),
@@ -68,11 +74,11 @@ GraphNode<T> GraphFactory<T>::createGraph() {
         Scale resolution = point_and_resolution.second;
         std::tie(coordinates, resolution) = point_and_resolution;
         // Set the resolution in the requested area
-        setMinGraphResolutionForPoint(graph_node, coordinates, resolution);
+        setMinGraphResolutionForPoint(graph_node_ptr, coordinates, resolution);
     }
 
     // Return the graph, setup as requested
-    return graph_node;
+    return graph_node_ptr;
 }
 
 // TODO: What if this function gets a negative value?
@@ -137,9 +143,10 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
 // TODO: Make sure we're unit testing this
 // TODO: Mathew - Coordinates should be an area class so that we can perform "in area" checks to speed up the function below and be generic
 template<typename T>
-void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
-                                                    Coordinates coordinates,
-                                                    GraphFactory::Scale max_scale) {
+void GraphFactory<T>::setMinGraphResolutionForPoint(
+        std::shared_ptr<GraphNode<T>> graph_node,
+        Coordinates coordinates,
+        GraphFactory::Scale max_scale) {
     // TODO: We should be setting layers of resolution more intelligently (doing something like only make a quadtree),
     // TODO: not just setting the resolution of the first children to match
     // TODO: see `setMinGraphResolutionInArea` for an example of this being done well
@@ -148,7 +155,7 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
 
 
     // Find the closest node to the given coordinates
-    boost::optional<RealNode<T>*> possible_closest_node = graph_node.getClosestNodeToCoordinates(coordinates);
+    boost::optional<RealNode<T>*> possible_closest_node = graph_node->getClosestNodeToCoordinates(coordinates);
     if (possible_closest_node){
         RealNode<T>* closest_node = *possible_closest_node;
         if (closest_node->getScale() > max_scale) {

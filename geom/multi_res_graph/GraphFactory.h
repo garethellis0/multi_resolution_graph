@@ -56,7 +56,7 @@ public:
      * Creates a graph with the currently set parameters
      * @return a new graph with the currently set parameters
      */
-    GraphNode<T> createGraph();
+    std::shared_ptr<GraphNode<T>> createGraph();
 
 private:
 
@@ -76,7 +76,7 @@ private:
      * @param coordinates the point we want to set the scale of
      * @param max_scale the maximum scale the node closest to the given point must be
      */
-    void setMinGraphResolutionForPoint(GraphNode<T> &graph_node,
+    void setMinGraphResolutionForPoint(std::shared_ptr<GraphNode<T>> graph_node,
                                        Coordinates coordinates,
                                        Scale max_scale);
 
