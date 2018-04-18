@@ -115,8 +115,22 @@ public:
      */
     std::vector<std::vector<Node<T>*>> getSubNodes();
 
+    /**
+     * We provide our own implementation of the deconstructor
+     *
+     * We do this so we properly deallocate all child nodes
+     */
+    ~GraphNode();
+
 
 private:
+
+
+    /**
+     * Make the copy constructor private, as using it will likely break the
+     * pointers that the subnodes hold to this node (as their parent)
+     */
+    GraphNode(GraphNode const&) = default;
 
     /**
      * Initializes subNodes to a 2D vector of size `resolution x resolution`

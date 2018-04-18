@@ -245,4 +245,14 @@ void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
     }
 }
 
+template<typename T>
+GraphNode<T>::~GraphNode() {
+    // Destroy all children
+    for (auto& row : subNodes){
+        for (auto& subNode : row){
+            subNode->~Node();
+        }
+    }
+}
+
 #endif // THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H
