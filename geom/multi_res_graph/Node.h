@@ -26,35 +26,14 @@ bool inline operator==(const Coordinates& c1, const Coordinates& c2){
     return c1.x == c2.x && c1.y == c2.y;
 }
 
-// We need to forward declare these so that we can use them as arguments
-// and return values in the "Node" class
+// We need to forward declare this here so that we can use it as a return type in the "Node" class
 template <typename T>
 class RealNode;
-template <typename T>
-class GraphNode;
 
 // TODO: Really detailed comment explaining what exactly this class is
 template <typename T>
 class Node {
 public:
-
-    /**
-     * Default Constructor
-     */
-    Node() {};
-
-    /**
-     * Create a clone of this node
-     *
-     * This performs a deep copy of the Node (including children if it is
-     * a GraphNode)
-     *
-     * @param parent the parent of the copy of this Node (`nullptr` if no parent)
-     * @return a pointer to a clone of this node
-     */
-    virtual Node* clone(GraphNode<T>* parent) const = 0;
-
-    // ...
     /**
      * Get the node closest to the given coordinates at, or below, this node
      * @param coordinates the coordinates that we're looking for a node at
@@ -111,7 +90,6 @@ public:
      * @return a vector of all RealNode's at or below this one
      */
     virtual std::vector<RealNode<T>*> getAllSubNodes() = 0;
-
 };
 
 #endif //THUNDERBOTS_NAVIGATOR_NODE_H

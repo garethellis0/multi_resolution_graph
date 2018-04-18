@@ -10,16 +10,6 @@ RealNode<T>::RealNode(GraphNode<T>* parent):
 {
 }
 
-template<typename T>
-Node<T>* RealNode<T>::clone(GraphNode<T> *parent) const {
-    // Since this node has no children, all we have to do here is do
-    // a shallow copy and update the parent to the one given
-    RealNode<T>* new_real_node = new RealNode<T>(*this);
-    new_real_node->parent = parent;
-
-    return new_real_node;
-}
-
 template <typename T>
 boost::optional<RealNode<T>*> RealNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
     // We have no sub-nodes, so the closest node is this node
