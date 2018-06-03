@@ -6,6 +6,7 @@
 
 // C++ STD Includes
 #include <vector>
+#include <memory>
 #include <cmath>
 
 // Boost Includes
@@ -34,12 +35,13 @@ class RealNode;
 template <typename T>
 class Node {
 public:
+    // TODO: Should we even use `boost::optional` here or is just an empty shared_ptr sufficient
     /**
      * Get the node closest to the given coordinates at, or below, this node
      * @param coordinates the coordinates that we're looking for a node at
      * @return a reference to the node closest to the given coordinates
      */
-    virtual boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) = 0;
+    virtual boost::optional<std::shared_ptr<RealNode<T>>> getClosestNodeToCoordinates(Coordinates coordinates) = 0;
 
     // TODO: Better doc comment here
     // TODO: Better function name
@@ -51,7 +53,7 @@ public:
      * (this is used to prevent loops when travelling all the way up the tree and back down)
      * @return a possible matching node
      */
-    virtual boost::optional<RealNode<T> *>
+    virtual boost::optional<std::shared_ptr<RealNode<T>>>
     getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
             bool search_parent) = 0;
@@ -66,7 +68,7 @@ public:
      * (this is used to prevent loops when travelling all the way up the tree and back down)
      * @return a vector of matching nodes
      */
-    virtual std::vector<RealNode<T> *>
+    virtual std::vector<std::shared_ptr<RealNode<T>>>
     getAllNodesThatPassFilter(const std::function<bool(Node<T> &)> &filter,
                               bool parent_must_pass_filter,
                               bool search_parent) = 0;
@@ -89,7 +91,7 @@ public:
      * Gets all the RealNode's below or at this node
      * @return a vector of all RealNode's at or below this one
      */
-    virtual std::vector<RealNode<T>*> getAllSubNodes() = 0;
+    virtual std::vector<std::shared_ptr<RealNode<T>>> getAllSubNodes() = 0;
 };
 
 #endif //THUNDERBOTS_NAVIGATOR_NODE_H

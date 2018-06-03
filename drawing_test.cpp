@@ -11,7 +11,7 @@
 // Create the mat
 int window_resolution = 800;
 //TODO: This should be neither a raw pointer, nor a global variable
-GraphNode<int>* graphNode;
+std::shared_ptr<GraphNode<int>> graph_node;
 cv::Mat globalImage;
 
 template <typename T>
@@ -26,7 +26,7 @@ cv::Mat drawRealNode(RealNode<T> node, int window_resolution){
 }
 
 template <typename T>
-cv::Mat drawGraphNode(GraphNode<T> node, int window_resolution){
+cv::Mat drawGraphNode(GraphNode<T>& node, int window_resolution){
     cv::Mat image = cv::Mat::zeros(window_resolution, window_resolution, CV_8UC3);
     for (int rowIndex = 0; rowIndex < node.getResolution(); rowIndex++){
         for (int colIndex = 0; colIndex < node.getResolution(); colIndex++){
@@ -48,7 +48,7 @@ cv::Mat drawGraphNode(GraphNode<T> node, int window_resolution){
 template <typename T>
 cv::Mat drawNode(Node<T>& node, int window_resolution){
     if (typeid(node) == typeid(GraphNode<T>)){
-        return drawGraphNode(static_cast<GraphNode<T>&>(node), window_resolution);
+        return drawGraphNode(dynamic_cast<GraphNode<T>&>(node), window_resolution);
     }
     if (typeid(node) == typeid(RealNode<T>)){
         return drawRealNode(static_cast<RealNode<T>&>(node), window_resolution);
@@ -61,11 +61,11 @@ void callBack(int event, int y, int x, int flags, void* userdata){
     if (event == CV_EVENT_LBUTTONUP) {
         // Convert window coordinates to graph coordinates
         Coordinates coordinates = {
-                (y / (double)window_resolution) * graphNode->getScale(),
-                (x / (double)window_resolution) * graphNode->getScale(),
+                (y / (double)window_resolution) * graph_node->getScale(),
+                (x / (double)window_resolution) * graph_node->getScale(),
         };
-        graphNode->changeResolutionOfClosestNode(coordinates, 2);
-        globalImage = drawNode(*graphNode, window_resolution);
+        graph_node->changeResolutionOfClosestNode(coordinates, 2);
+        globalImage = drawNode(*graph_node, window_resolution);
         imshow("Graph", globalImage);
         cvSetMouseCallback("Graph", callBack, NULL);
         cv::waitKey(0);
@@ -177,18 +177,17 @@ int main(){
     // Generate the Graph
     std::cout << "Starting generating" << std::endl;
     std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-    auto graphNode_val = graph_factory.createGraph();
+    graph_node = graph_factory.createGraph();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Done generating" << std::endl;
     std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
-    graphNode = &graphNode_val;
 
     // Figure out how many nodes we generated
-    auto all_nodes = graphNode->getAllSubNodes();
+    auto all_nodes = graph_node->getAllSubNodes();
     std::cout << "We generated this many nodes: " << all_nodes.size() << std::endl;
 
     // Draw the graph over the cv::Mat
-    globalImage = drawNode(*graphNode, window_resolution);
+    globalImage = drawNode(*graph_node, window_resolution);
     // Display the graph
     imshow("Graph", globalImage);
     cvSetMouseCallback("Graph", callBack, NULL);

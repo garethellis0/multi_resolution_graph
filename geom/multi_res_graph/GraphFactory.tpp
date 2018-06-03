@@ -103,10 +103,10 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
 
     // Note: we're using a Queue here to avoid thrashing memory because we
     // constantly add and remove from it when we iteratively split below
-    std::queue<RealNode<T> *> nodes_to_split;
+    std::queue<std::shared_ptr<RealNode<T>>> nodes_to_split;
 
     // Get the initial set of nodes to split
-    std::vector<RealNode<T> *> initial_nodes_to_split =
+    std::vector<std::shared_ptr<RealNode<T>>> initial_nodes_to_split =
             graph_node.getAllNodesThatPassFilter(area_filter, true);
     for (auto &node : initial_nodes_to_split) {
         nodes_to_split.push(std::move(node));
@@ -116,7 +116,7 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
     // Keep splitting nodes until every node in the given area is of the desired resolution
     while (nodes_to_split.size() > 0) {
         // Get the first node from the queue
-        RealNode<T> *current_node = nodes_to_split.front();
+        std::shared_ptr<RealNode<T>> current_node = nodes_to_split.front();
 
         // Remove the node we just got from the queue
         nodes_to_split.pop();
@@ -125,12 +125,12 @@ void GraphFactory<T>::setMaxGraphScaleForArea(
         if (area.overlapsNode(*current_node) &&
             current_node->getScale() >= max_scale) {
             // Convert the node to a GraphNode
-            Node<T> *newly_split_node = current_node->convertToGraphNode(
+            std::shared_ptr<Node<T>> newly_split_node = current_node->convertToGraphNode(
                     subnode_resolution);
             // Add all the nodes below the new GraphNode to the queue of nodes to consider splitting
-            std::vector<RealNode<T> *> new_nodes_to_split = newly_split_node->getAllSubNodes();
+            std::vector<std::shared_ptr<RealNode<T>>> new_nodes_to_split = newly_split_node->getAllSubNodes();
             for (auto &node : new_nodes_to_split) {
-                nodes_to_split.push(std::move(node));
+                nodes_to_split.push(node);
             }
         }
     }
@@ -153,10 +153,10 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(
 
 
     // Find the closest node to the given coordinates
-    boost::optional<RealNode<T> *> possible_closest_node = graph_node->getClosestNodeToCoordinates(
-            coordinates);
+    boost::optional<std::shared_ptr<RealNode<T>>> possible_closest_node =
+            graph_node->getClosestNodeToCoordinates(coordinates);
     if (possible_closest_node) {
-        RealNode<T> *closest_node = *possible_closest_node;
+        std::shared_ptr<RealNode<T>> closest_node = *possible_closest_node;
         if (closest_node->getScale() > max_scale) {
             // Choose a high enough resolution that the scale is
             // equal to or greater then the requested scale

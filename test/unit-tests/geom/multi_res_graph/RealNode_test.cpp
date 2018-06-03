@@ -23,41 +23,43 @@ protected:
 // TODO: Larger test case
 TEST_F(RealNodeTest, getNeighbours_small_case){
     GraphNode<nullptr_t> graph_node(2,2);
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes = graph_node.getSubNodes();
 
     // Expand the bottom left subnode
     graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
+
+        // TODO: Uncomment this test, just for debugging
 
     // Get the new top level subnodes
     top_level_sub_nodes = graph_node.getSubNodes();
 
     // Get the node we just expanded
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     // Get the subnodes of the node we just expanded
-    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
     // TODO: All below cases should probably be their own test cases
-    std::vector<RealNode<nullptr_t>*> neighbours;
-    std::vector<RealNode<nullptr_t>*> expected;
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> neighbours;
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> expected;
     RealNode<nullptr_t>* real_node;
 
     // Find the neighbours of the bottom left node
     ASSERT_EQ(typeid(RealNode<nullptr_t>), typeid(*expanded_node_sub_nodes[0][0]));
-    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[0][0]);
+    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[0][0].get());
     neighbours = real_node->getNeighbours();
     // The bottom left node should only have two neighbours (above and to the right)
     EXPECT_EQ(2, neighbours.size());
     expected = {
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][1]
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][1]),
     };
     // TODO: Add in GMock for unordered vector comparison
     // NOTE: This equality check is *order-sensitive*. If it fails, check
@@ -67,15 +69,15 @@ TEST_F(RealNodeTest, getNeighbours_small_case){
 
     // Find the neighbours of 1 up (in the y direction) from the bottom left node
     ASSERT_EQ(typeid(RealNode<nullptr_t>), typeid(*expanded_node_sub_nodes[1][0]));
-    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[1][0]);
+    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[1][0].get());
     neighbours = real_node->getNeighbours();
     // We should have 3 neighbours (below, above, and the to right)
     // The top neighbour should be in the parent node
     EXPECT_EQ(3, neighbours.size());
     expected = {
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][0],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][1]
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][1]),
     };
     // TODO: Add in GMock for unordered vector comparison
     // NOTE: This equality check is *order-sensitive*. If it fails, check
@@ -85,17 +87,17 @@ TEST_F(RealNodeTest, getNeighbours_small_case){
 
     // Find the neighbours of the top right node OF the bottom left expandeded node
     ASSERT_EQ(typeid(RealNode<nullptr_t>), typeid(*expanded_node_sub_nodes[1][1]));
-    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[1][1]);
+    real_node = dynamic_cast<RealNode<nullptr_t>*>(expanded_node_sub_nodes[1][1].get());
     neighbours = real_node->getNeighbours();
     // We should have 4 neighbours:
     // the ones on the top and right should be in the super node
     // the ones on the bottom and left should be in the lower left expanded node
     EXPECT_EQ(4, neighbours.size());
     expected = {
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][1],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[0][1]
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[0][1])
     };
     // TODO: Add in GMock for unordered vector comparison
     // NOTE: This equality check is *order-sensitive*. If it fails, check

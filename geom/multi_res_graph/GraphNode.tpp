@@ -28,18 +28,17 @@ GraphNode<T>::GraphNode(unsigned int resolution, GraphNode *parent) :
 
 template <typename T>
 void GraphNode<T>::initSubNodes() {
-    for (int rowIndex = 0; rowIndex < resolution; rowIndex++){
-        // Add a new row
-        subNodes.emplace_back(std::vector<Node<T>*>{});
-        // Populate the row with nodes
-        for (int colIndex = 0; colIndex < resolution; colIndex++){
-            subNodes[rowIndex].emplace_back(new RealNode<T>(this));
+    // Initialise the subnodes to all RealNodes
+    subNodes = std::vector<std::vector<std::shared_ptr<Node<T>>>>(resolution);
+    for (int i = 0; i < resolution; i++){
+        for (int j = 0; j < resolution; j++){
+            subNodes[i].emplace_back(std::make_shared<RealNode<T>>(this));
         }
     }
 }
 
 template <typename T>
-boost::optional<RealNode<T>*> GraphNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
+boost::optional<std::shared_ptr<RealNode<T>>> GraphNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
     // In this case, we just setup the filter so that all nodes pass,
     // so that we just find the closest node with no restrictions
     return this->getClosestNodeToCoordinatesThatPassesFilter(coordinates,
@@ -57,7 +56,7 @@ Coordinates GraphNode<T>::getCoordinates() {
     } else {
         // If we have our parent, get our coordinates relative to it
         if (parent != nullptr){
-            cached_coordinates = parent->getCoordinatesOfNode(this);
+            cached_coordinates = parent->getCoordinatesOfNode(this->shared_from_this());
         } else {
             // Otherwise we're at the top level graph
             cached_coordinates =  Coordinates{0,0};
@@ -68,12 +67,12 @@ Coordinates GraphNode<T>::getCoordinates() {
 }
 
 template <typename T>
-Coordinates GraphNode<T>::getCoordinatesOfNode(Node<T>* node) {
+Coordinates GraphNode<T>::getCoordinatesOfNode(std::shared_ptr<Node<T>> node) {
     // Look through all the sub-nodes to see if any match the given node
     for (int rowIndex = 0; rowIndex < resolution; rowIndex++){
-        std::vector<Node<T>*>& row = subNodes[rowIndex];
+        std::vector<std::shared_ptr<Node<T>>>& row = subNodes[rowIndex];
         for (int colIndex = 0; colIndex < resolution; colIndex++){
-            Node<T>* potentialNode = row[colIndex];
+            std::shared_ptr<Node<T>> potentialNode = row[colIndex];
             // Check if this is the node we're looking for
             if (potentialNode == node){
                 Coordinates coordinates;
@@ -108,19 +107,19 @@ double GraphNode<T>::getScale() {
 }
 
 template <typename T>
-boost::optional<RealNode<T> *>
+boost::optional<std::shared_ptr<RealNode<T>>>
 GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
         Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
         bool search_parent) {
 
     // First, look in the sub-nodes of this node
     // Find the closest node below this one that passes the filter
-    boost::optional<RealNode<T>*> closest_node_found = boost::optional<RealNode<T>*>{};
+    auto closest_node_found = (boost::optional<std::shared_ptr<RealNode<T>>>());
     double distance_to_closest_node_found = -1;
     for (auto& row : subNodes) {
-        for (Node<T>* node : row){
-            boost::optional<RealNode<T>*> closest_sub_node = node->getClosestNodeToCoordinatesThatPassesFilter(
-                    coordinates, filter, false);
+        for (std::shared_ptr<Node<T>> node : row){
+            boost::optional<std::shared_ptr<RealNode<T>>> closest_sub_node =
+                    node->getClosestNodeToCoordinatesThatPassesFilter(coordinates, filter, false);
             // Check that we found a node that passed the filter
             if (closest_sub_node){
                 double distance_to_closest_sub_node = distance((*closest_sub_node)->getCoordinates(), coordinates);
@@ -150,11 +149,11 @@ GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
     }
 
     // Couldn't find any node that passes the given filter
-    return boost::optional<RealNode<T>*>{};
+    return boost::optional<std::shared_ptr<RealNode<T>>>{};
 }
 
 template<typename T>
-std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
+std::vector<std::shared_ptr<RealNode<T>>> GraphNode<T>::getAllNodesThatPassFilter(
         const std::function<bool(Node<T> &)> &filter,
         bool parent_must_pass_filter,
         bool search_parent) {
@@ -181,11 +180,11 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
 
     // TODO: Easy performance improvement with by using OpenMP to add parallelism?
     // Search the the sub-nodes of this node
-    std::vector<RealNode<T>*> all_matching_nodes;
+    std::vector<std::shared_ptr<RealNode<T>>> all_matching_nodes;
     for (auto& row : subNodes) {
-        for (Node<T>* node : row){
+        for (std::shared_ptr<Node<T>> node : row){
             // Concatenate all nodes found below this one to those already found
-            std::vector<RealNode<T>*> matching_nodes = node->getAllNodesThatPassFilter(
+            std::vector<std::shared_ptr<RealNode<T>>> matching_nodes = node->getAllNodesThatPassFilter(
                     filter, parent_must_pass_filter, false);
             all_matching_nodes.insert(all_matching_nodes.end(), matching_nodes.begin(), matching_nodes.end());
         }
@@ -194,14 +193,14 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllNodesThatPassFilter(
 }
 
 template<typename T>
-std::vector<RealNode<T> *> GraphNode<T>::getAllSubNodes() {
-    std::vector<RealNode<T>*> all_subnodes;
+std::vector<std::shared_ptr<RealNode<T>>> GraphNode<T>::getAllSubNodes() {
+    std::vector<std::shared_ptr<RealNode<T>>> all_subnodes;
     // TODO: Easy performance improvement with by using OpenMP to add parallelism?
     for (auto& row : subNodes) {
-        for (Node<T>* node : row) {
+        for (std::shared_ptr<Node<T>> node : row) {
             // TODO: Better comment?
             // Add the subnodes below this subnode to the list of all subnodes
-            std::vector<RealNode<T>*> curr_subnodes = node->getAllSubNodes();
+            std::vector<std::shared_ptr<RealNode<T>>> curr_subnodes = node->getAllSubNodes();
             all_subnodes.insert(all_subnodes.end(), curr_subnodes.begin(), curr_subnodes.end());
         }
     }
@@ -211,19 +210,18 @@ std::vector<RealNode<T> *> GraphNode<T>::getAllSubNodes() {
 
 
 template <typename T>
-std::vector<std::vector<Node<T> *>> GraphNode<T>::getSubNodes() {
+std::vector<std::vector<std::shared_ptr<Node<T>>>> GraphNode<T>::getSubNodes() {
     return subNodes;
 }
 
 template <typename T>
-Node<T>* GraphNode<T>::changeResolutionOfNode(Node<T> *node,
+std::shared_ptr<Node<T>> GraphNode<T>::changeResolutionOfNode(const std::shared_ptr<Node<T>>& node,
                                                unsigned int resolution) {
     for (auto& row : subNodes){
         for (auto& subNode : row){
             if (subNode == node){
                 // TODO: We should probably be copying over data from the nodes (if it's a RealNode?)
-                delete subNode;
-                subNode = new GraphNode<T>(resolution, this);
+                subNode = std::make_shared<GraphNode<T>>(resolution, this);
                 return subNode;
             }
         }
@@ -236,22 +234,13 @@ Node<T>* GraphNode<T>::changeResolutionOfNode(Node<T> *node,
 template <typename T>
 void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
                                               unsigned int resolution) {
-    boost::optional<RealNode<T>*> possibleClosestNode = this->getClosestNodeToCoordinates(coordinates);
+    boost::optional<std::shared_ptr<RealNode<T>>> possibleClosestNode =
+            this->getClosestNodeToCoordinates(coordinates);
 
     // TODO: What if we can't find any node (should never happen, but.....)
     if (possibleClosestNode){
-        RealNode<T>* closestNode = *possibleClosestNode;
+        std::shared_ptr<RealNode<T>> closestNode = *possibleClosestNode;
         closestNode->convertToGraphNode(resolution);
-    }
-}
-
-template<typename T>
-GraphNode<T>::~GraphNode() {
-    // Destroy all children
-    for (auto& row : subNodes){
-        for (auto& subNode : row){
-            subNode->~Node();
-        }
     }
 }
 

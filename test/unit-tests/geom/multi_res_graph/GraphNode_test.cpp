@@ -28,15 +28,18 @@ TEST_F(GraphNodeTest, constructor_with_parent){
     GraphNode<nullptr_t> graphNode(3, parent);
     EXPECT_EQ(3, graphNode.getResolution());
     EXPECT_EQ(0.5, graphNode.getScale());
+
+    // Clean up
+    delete parent;
 }
 
 TEST_F(GraphNodeTest, getScale_with_subnodes){
     GraphNode<nullptr_t> graph_node(2,1);
 
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes = graph_node.getSubNodes();
 
     // Choose an arbitrary node to expand
-    Node<nullptr_t>* node_to_expand = sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> node_to_expand = sub_nodes[0][0];
 
     // Before we expand it, this node should be a RealNode
     EXPECT_EQ(typeid(RealNode<nullptr_t>), typeid(*node_to_expand));
@@ -46,16 +49,17 @@ TEST_F(GraphNodeTest, getScale_with_subnodes){
 
     // Get the subnodes again
     sub_nodes = graph_node.getSubNodes();
-    Node<nullptr_t>* expanded_node = sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     // Get the subnodes of our newly expanded node
-    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes = new_graph_node->getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
+            new_graph_node->getSubNodes();
 
     // Check the scale of the top level node
     EXPECT_EQ(1, graph_node.getScale());
@@ -79,12 +83,13 @@ TEST_F(GraphNodeTest, getScale_with_subnodes){
 // TODO: Do larger case (a few levels of nodes deep, and odd resolution and scale would be good)
 TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
     GraphNode<nullptr_t> graph_node(2,1);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes =
+            graph_node.getSubNodes();
 
     // Get a list of coordinates from the subnodes
     std::vector<Coordinates> coordinates;
     for (auto& row : sub_nodes){
-        for (Node<nullptr_t>* node : row) {
+        for (std::shared_ptr<Node<nullptr_t>> node : row) {
             coordinates.push_back(graph_node.getCoordinatesOfNode(node));
         }
     }
@@ -117,10 +122,10 @@ TEST_F(GraphNodeTest, getCoordinatesOfNode_small_case){
 // TODO: A larger case that's a few levels deep
 TEST_F(GraphNodeTest, changeResolutionOfNode_small_case) {
     GraphNode<nullptr_t> graph_node(2,1);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes = graph_node.getSubNodes();
 
     // Choose an arbitrary node to expand
-    Node<nullptr_t>* node_to_expand = sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> node_to_expand = sub_nodes[0][0];
 
     // Before we expand it, this node should be a RealNode
     EXPECT_EQ(typeid(RealNode<nullptr_t>), typeid(*node_to_expand));
@@ -130,13 +135,13 @@ TEST_F(GraphNodeTest, changeResolutionOfNode_small_case) {
 
     // Get the subnodes again
     sub_nodes = graph_node.getSubNodes();
-    Node<nullptr_t>* expanded_node = sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     EXPECT_EQ(3, new_graph_node->getResolution());
     EXPECT_EQ(0.5, new_graph_node->getScale());
@@ -150,14 +155,14 @@ TEST_F(GraphNodeTest, changeResolutionOfClosestNode_small_case){
     graph_node.changeResolutionOfClosestNode({0.5,0.5}, 3);
 
     // Get the subnodes
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
-    Node<nullptr_t>* expanded_node = sub_nodes[1][1];
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes = graph_node.getSubNodes();
+    std::shared_ptr<Node<nullptr_t>> expanded_node = sub_nodes[1][1];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     EXPECT_EQ(3, new_graph_node->getResolution());
     EXPECT_EQ(0.5, new_graph_node->getScale());
@@ -165,7 +170,7 @@ TEST_F(GraphNodeTest, changeResolutionOfClosestNode_small_case){
 
 TEST_F(GraphNodeTest, getCoordinates_top_level_graphnode){
     GraphNode<nullptr_t> graph_node(2,1);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes = graph_node.getSubNodes();
 
     // Check the coordinates of the top level node
     Coordinates expected_top_level_node_coordinates = {0,0};
@@ -174,12 +179,12 @@ TEST_F(GraphNodeTest, getCoordinates_top_level_graphnode){
 
 TEST_F(GraphNodeTest, getCoordinates_for_subnodes){
     GraphNode<nullptr_t> graph_node(2,1);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes = graph_node.getSubNodes();
 
     // Check the coordinates of subnodes
     std::vector<Coordinates> coordinates;
     for (auto& row : sub_nodes){
-        for (Node<nullptr_t>* node : row){
+        for (std::shared_ptr<Node<nullptr_t>> node : row){
             coordinates.emplace_back(node->getCoordinates());
         }
     }
@@ -211,10 +216,11 @@ TEST_F(GraphNodeTest, getCoordinates_for_subnodes){
 
 TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
     GraphNode<nullptr_t> graph_node(2,1);
-    std::vector<std::vector<Node<nullptr_t>*>> sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> sub_nodes =
+            graph_node.getSubNodes();
 
     // Expand one of the subnodes
-    Node<nullptr_t>* expanded_sub_node = sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_sub_node = sub_nodes[0][0];
     graph_node.changeResolutionOfNode(expanded_sub_node, 3);
 
     // Get the new subnodes
@@ -229,7 +235,7 @@ TEST_F(GraphNodeTest, getCoordinates_for_expanded_subnodes){
 // it's likely other, smaller/more focused tests are also failing
 TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     GraphNode<nullptr_t> graph_node(4,8);
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes = graph_node.getSubNodes();
 
     // Expand the bottom left subnode
     graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
@@ -238,19 +244,19 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     top_level_sub_nodes = graph_node.getSubNodes();
 
     // Get the node we just expanded
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     // Get the subnodes of the node we just expanded
-    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
-    boost::optional<RealNode<nullptr_t>*> found_node;
+    boost::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
     Coordinates expected_coordinates;
 
     // TODO: These should def. be seperate tests
@@ -289,7 +295,8 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
 // it's likely other, smaller/more focused tests are also failing
 TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     GraphNode<nullptr_t> graph_node(4,8);
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes =
+            graph_node.getSubNodes();
 
     // Expand the bottom left subnode
     graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
@@ -298,19 +305,19 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     top_level_sub_nodes = graph_node.getSubNodes();
 
     // Get the node we just expanded
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     // Get the subnodes of the node we just expanded
-    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
-    boost::optional<RealNode<nullptr_t>*> found_node;
+    boost::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
     Coordinates expected_coordinates;
     std::function<bool(Node<nullptr_t>&)> filter;
 
@@ -353,7 +360,8 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
 
 TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
     GraphNode<nullptr_t> graph_node(4,8);
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = graph_node.getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes =
+            graph_node.getSubNodes();
 
     // Expand the bottom left subnode
     graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
@@ -362,20 +370,20 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
     top_level_sub_nodes = graph_node.getSubNodes();
 
     // Get the node we just expanded
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
 
     // The node we just expanded should now be GraphNode
     ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     // Get the subnodes of the node we just expanded
-    std::vector<std::vector<Node<nullptr_t>*>> expanded_node_sub_nodes =
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
-    std::vector<RealNode<nullptr_t>*> found_nodes;
-    std::vector<RealNode<nullptr_t>*> expected_nodes;
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> found_nodes;
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> expected_nodes;
     std::function<bool(Node<nullptr_t>&)> filter;
 
     // TODO: These should def. be seperate tests
@@ -388,7 +396,7 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
 
     // This filter forces us to find a node with specific coordinates
     expected_nodes = {
-            (RealNode<nullptr_t>*)top_level_sub_nodes[3][2]
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][2])
     };
     filter = [&](Node<nullptr_t> &n) { return n.getCoordinates() == (Coordinates){4,6}; };
     found_nodes = graph_node.getAllNodesThatPassFilter(filter);
@@ -398,14 +406,14 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
 
     // This filter forces us to find nodes in the top 1/2 of the graph
     expected_nodes = {
-            (RealNode<nullptr_t>*)top_level_sub_nodes[2][0],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[2][1],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[2][2],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[2][3],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[3][0],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[3][1],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[3][2],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[3][3],
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][2]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][3]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][2]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][3]),
     };
     filter = [&](Node<nullptr_t> &n) { return n.getCoordinates().y > 3; };
     found_nodes = graph_node.getAllNodesThatPassFilter(filter);
@@ -415,14 +423,14 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
     // This filter forces us to find a node in the bottom left 1/4 of the graph
     expected_nodes = {
             // All the RealNodes under the expanded node
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][0],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[0][1],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)expanded_node_sub_nodes[1][1],
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][1]),
             // All the top level RealNodes in the bottom left 1/4
-            (RealNode<nullptr_t>*)top_level_sub_nodes[0][1],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[1][0],
-            (RealNode<nullptr_t>*)top_level_sub_nodes[1][1],
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[0][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][1]),
     };
     filter = [&](Node<nullptr_t> &n) {
         return n.getCoordinates().y < 4 && n.getCoordinates().x < 4;

@@ -5,30 +5,31 @@
 #define THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
 
 // TODO: In general, function order in `.cpp` should match that in the relevent `.h` file
-
-#include "geom/multi_res_graph/Node.h"
+#include <vector>
 #include <stdexcept>
 #include <array>
+
+#include "geom/multi_res_graph/Node.h"
 #include "geom/multi_res_graph/RealNode.h"
 
 // TODO: Really detailed comment explaining what exactly this class is
 template <typename T>
-class GraphNode : public Node<T> {
+class GraphNode : public Node<T>, public std::enable_shared_from_this<GraphNode<T>> {
 public:
 
     // TODO: Can we make this just return a pointer directly? This is guaranteed to find a node....
-    boost::optional<RealNode<T>*> getClosestNodeToCoordinates(Coordinates coordinates) override;
+    boost::optional<std::shared_ptr<RealNode<T>>> getClosestNodeToCoordinates(Coordinates coordinates) override;
 
-    boost::optional<RealNode<T> *> getClosestNodeToCoordinatesThatPassesFilter(
+    boost::optional<std::shared_ptr<RealNode<T>>> getClosestNodeToCoordinatesThatPassesFilter(
             Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
             bool search_parent = true) override;
 
-    std::vector<RealNode<T>*> getAllNodesThatPassFilter(
+    std::vector<std::shared_ptr<RealNode<T>>> getAllNodesThatPassFilter(
             const std::function<bool(Node<T> &)> &filter,
             bool parent_must_pass_filter = false,
             bool search_parent = true) override;
 
-    virtual std::vector<RealNode<T>*> getAllSubNodes();
+    virtual std::vector<std::shared_ptr<RealNode<T>>> getAllSubNodes();
 
     Coordinates getCoordinates() override;
 
@@ -72,7 +73,7 @@ public:
      * - the coordinates of the given node if the the node was found
      * - throws a NodeNotFoundException if the given node was not found
      */
-    Coordinates getCoordinatesOfNode(Node<T>* node);
+    Coordinates getCoordinatesOfNode(std::shared_ptr<Node<T>> node);
 
 
     // TODO: Add unit test to make sure we're returning the right value here
@@ -82,7 +83,7 @@ public:
      * @param resolution the new resolution of the sub-node
      * @return a pointer to the newly created GraphNode
      */
-    Node<T> * changeResolutionOfNode(Node<T> *node,
+    std::shared_ptr<Node<T>> changeResolutionOfNode(const std::shared_ptr<Node<T>>& node,
                                      unsigned int resolution);
 
     /**
@@ -113,18 +114,10 @@ public:
      * Get the subnodes for this graph node
      * @return the subnodes for this graph node
      */
-    std::vector<std::vector<Node<T>*>> getSubNodes();
-
-    /**
-     * We provide our own implementation of the de-constructor
-     *
-     * We do this so we properly deallocate all child nodes
-     */
-    ~GraphNode();
+    std::vector<std::vector<std::shared_ptr<Node<T>>>> getSubNodes();
 
 
 private:
-
 
     /**
      * Make the copy constructor private, as using it will likely break the
@@ -145,12 +138,15 @@ private:
     // the length/width of this graph node in some arbitrary unit of measurement
     double scale;
 
+    // TODO: Make this a unique pointer if possible
+    // TODO: We should change this to just be a 1D vector and lookup stuff by index math if location is needed
     // TODO: NOTE THAT THIS IS STORED IN THE FORM subNodes[y][x]
-    // TODO: We should *NOT* be using raw pointers here
     // Nodes located below this one
-    std::vector<std::vector<Node<T>*>> subNodes;
+    std::vector<std::vector<std::shared_ptr<Node<T>>>> subNodes;
 
-    // TODO: This should *NOT* be a raw pointer
+    // This is a raw pointer because we if this is a child of another node, then
+    // that node owns this one, and hence this one has no knowledge of if it
+    // is owned or who it is owned by
     // The possible parent of this node
     GraphNode* parent;
 

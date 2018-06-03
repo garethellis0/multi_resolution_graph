@@ -20,7 +20,7 @@ protected:
 };
 
 // Test that we get the expected graph from the default constructor
-TEST_F(GraphFactoryTest, default_constructor){
+TEST_F(GraphFactoryTest, default_constructor) {
     GraphFactory<nullptr_t> graph_factory;
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
@@ -29,7 +29,7 @@ TEST_F(GraphFactoryTest, default_constructor){
 }
 
 // Test setting the top level scale of the graph
-TEST_F(GraphFactoryTest, setGraphScale){
+TEST_F(GraphFactoryTest, setGraphScale) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(10);
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
@@ -39,7 +39,7 @@ TEST_F(GraphFactoryTest, setGraphScale){
 }
 
 // Test setting the top level resolution of the graph
-TEST_F(GraphFactoryTest, setGraphResolution){
+TEST_F(GraphFactoryTest, setGraphResolution) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(10);
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
@@ -49,7 +49,7 @@ TEST_F(GraphFactoryTest, setGraphResolution){
 }
 
 // Test that setting the size and resolution at the same time works
-TEST_F(GraphFactoryTest, setGraphScale_and_setGraphResolution){
+TEST_F(GraphFactoryTest, setGraphScale_and_setGraphResolution) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(20);
     graph_factory.setGraphTopLevelResolution(10);
@@ -59,41 +59,43 @@ TEST_F(GraphFactoryTest, setGraphScale_and_setGraphResolution){
     EXPECT_EQ(generated_graph->getResolution(), 10);
 }
 
-TEST_F(GraphFactoryTest, setMaxScaleAtPoint_0_0){
+TEST_F(GraphFactoryTest, setMaxScaleAtPoint_0_0) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {0, 0}, 0.25);
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get the top-level subnodes
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph->getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes =
+            generated_graph->getSubNodes();
 
     // We should have expanded the bottom left node, so it should now be a GraphNode
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[0][0];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
     EXPECT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
 
     EXPECT_EQ(new_graph_node->getResolution(), 2);
     EXPECT_EQ(new_graph_node->getScale(), 0.5);
 }
 
-TEST_F(GraphFactoryTest, setMaxScaleAtPoint_1_1){
+TEST_F(GraphFactoryTest, setMaxScaleAtPoint_1_1) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphTopLevelResolution(2);
     graph_factory.setMaxScaleAtPoint((Coordinates) {1, 1}, 0.25);
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get the top-level subnodes
-    std::vector<std::vector<Node<nullptr_t>*>> top_level_sub_nodes = generated_graph->getSubNodes();
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes =
+            generated_graph->getSubNodes();
 
     // We should have expanded the bottom left node, so it should now be a GraphNode
-    Node<nullptr_t>* expanded_node = top_level_sub_nodes[1][1];
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[1][1];
     EXPECT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
 
     // Cast the expanded node to a GraphNode so we can do some more checks
-    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node);
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t> *>(expanded_node.get());
 
     EXPECT_EQ(new_graph_node->getResolution(), 2);
     EXPECT_EQ(new_graph_node->getScale(), 0.5);
@@ -101,37 +103,39 @@ TEST_F(GraphFactoryTest, setMaxScaleAtPoint_1_1){
 
 // Test setting the scale for a rectangular area which is entirely within a single node
 // (that is, the node does not overlay more then a single node)
-TEST_F(GraphFactoryTest, setMaxScaleInArea_Rectangle_area_within_single_node){
+TEST_F(GraphFactoryTest,
+       setMaxScaleInArea_Rectangle_area_within_single_node) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(1);
     graph_factory.setGraphTopLevelResolution(1);
 
     // Set the scale for a single rectangular area that is entirely within
     // the single top level node
-    Rectangle<nullptr_t> rectangle(0.1,0.1,(Coordinates){0.25,0.25});
+    Rectangle<nullptr_t> rectangle(0.1, 0.1, (Coordinates) {0.25, 0.25});
     graph_factory.setMaxScaleInArea(rectangle, 0.51);
 
     // Generate the graph
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get all the RealNodes
-    std::function<bool(Node<nullptr_t>&)> always_true_filter = [&](Node<nullptr_t> &n) {
+    std::function<bool(Node<nullptr_t> &)> always_true_filter = [&](
+            Node<nullptr_t> &n) {
         return true;
     };
-    std::vector<RealNode<nullptr_t>*> all_real_nodes =
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> all_real_nodes =
             generated_graph->getAllNodesThatPassFilter(always_true_filter);
 
     // The area we choose should have forced the top level node to split into
     // 4 sub-nodes
     EXPECT_EQ(4, all_real_nodes.size());
     std::vector<Coordinates> expected_coordinates = {
-            (Coordinates){0,0},
-            (Coordinates){0.5,0},
-            (Coordinates){0,0.5},
-            (Coordinates){0.5,0.5},
+            (Coordinates) {0, 0},
+            (Coordinates) {0.5, 0},
+            (Coordinates) {0, 0.5},
+            (Coordinates) {0.5, 0.5},
     };
     std::vector<Coordinates> actual_coordinates;
-    for (auto& node : all_real_nodes){
+    for (auto &node : all_real_nodes) {
         actual_coordinates.emplace_back(node->getCoordinates());
     }
     // TODO: Add in GMock for unordered vector comparison
@@ -142,37 +146,38 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Rectangle_area_within_single_node){
 
 // Test setting the scale for a circular area which is entirely within a single node
 // (that is, the node does not overlay more then a single node)
-TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_within_single_node){
+TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_within_single_node) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(1);
     graph_factory.setGraphTopLevelResolution(1);
 
     // Set the scale for a single circular area that is entirely within
     // the single top level node
-    Circle<nullptr_t> circle(0.1, (Coordinates){0.1,0.1});
+    Circle<nullptr_t> circle(0.1, (Coordinates) {0.1, 0.1});
     graph_factory.setMaxScaleInArea(circle, 0.51);
 
     // Generate the graph
     std::shared_ptr<GraphNode<nullptr_t>> generated_graph = graph_factory.createGraph();
 
     // Get all the RealNodes
-    std::function<bool(Node<nullptr_t>&)> always_true_filter = [&](Node<nullptr_t> &n) {
+    std::function<bool(Node<nullptr_t> &)> always_true_filter = [&](
+            Node<nullptr_t> &n) {
         return true;
     };
-    std::vector<RealNode<nullptr_t>*> all_real_nodes =
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> all_real_nodes =
             generated_graph->getAllNodesThatPassFilter(always_true_filter);
 
     // The area we choose should have forced the top level node to split into
     // 4 sub-nodes
     EXPECT_EQ(4, all_real_nodes.size());
     std::vector<Coordinates> expected_coordinates = {
-            (Coordinates){0,0},
-            (Coordinates){0.5,0},
-            (Coordinates){0,0.5},
-            (Coordinates){0.5,0.5},
+            (Coordinates) {0, 0},
+            (Coordinates) {0.5, 0},
+            (Coordinates) {0, 0.5},
+            (Coordinates) {0.5, 0.5},
     };
     std::vector<Coordinates> actual_coordinates;
-    for (auto& node : all_real_nodes){
+    for (auto &node : all_real_nodes) {
         actual_coordinates.emplace_back(node->getCoordinates());
     }
     // TODO: Add in GMock for unordered vector comparison
@@ -182,38 +187,38 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_Circle_area_within_single_node){
 }
 
 // Test setting the area of several Rectangles, some overlapping
-TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles){
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(10);
     graph_factory.setGraphTopLevelResolution(1);
 
-    // Choose some circular areas with associated resolutions
+    // Choose some areas with associated resolutions
     std::vector<std::pair<Rectangle<nullptr_t>, double>> areas_and_scales = {
             // Rectangle entirely within Graph
             {
-                    {3, 4, (Coordinates){2,3}},
+                    {3,  4,  (Coordinates) {2, 3}},
                     0.3
             },
             // Rectangle of higher resolution entirely within Graph
             // and slightly overlapping the first
             {
-                    {4, 4, (Coordinates){1,1}},
+                    {4,  4,  (Coordinates) {1, 1}},
                     0.1
             },
             // Rectangle that extends outside the Graph
             {
-                    {10, 20, (Coordinates){8,8}},
+                    {10, 20, (Coordinates) {8, 8}},
                     0.2
             },
             // Rectangle of higher resolution then the initial graph
             {
-                    {3, 3, (Coordinates){5,5}},
+                    {3,  3,  (Coordinates) {5, 5}},
                     1.4
             },
     };
 
     // Set the resolution of all the areas
-    for (const auto& area_scale_pair : areas_and_scales){
+    for (const auto &area_scale_pair : areas_and_scales) {
         Rectangle<nullptr_t> area = area_scale_pair.first;
         double scale = area_scale_pair.second;
         graph_factory.setMaxScaleInArea(area, scale);
@@ -221,15 +226,15 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles){
 
     // Generate the Graph and get all the RealNodes
     std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> nodes = graph->getAllSubNodes();
 
-    for (RealNode<nullptr_t>* node : nodes){
+    for (std::shared_ptr<RealNode<nullptr_t>>& node : nodes) {
         // Check if this node is within any of the areas we set
-        for (const auto& area_scale_pair : areas_and_scales){
+        for (const auto &area_scale_pair : areas_and_scales) {
             Rectangle<nullptr_t> area = area_scale_pair.first;
             double scale = area_scale_pair.second;
 
-            if (area.overlapsNode(*node)){
+            if (area.overlapsNode(*node)) {
                 // If this node is within one of the areas we set the resolution for,
                 // check that the scale is equal to or less then the requested value
                 EXPECT_LE(node->getScale(), scale);
@@ -240,7 +245,7 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_rectangles){
 }
 
 // Test setting the area of several circles, some overlapping
-TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(10);
     graph_factory.setGraphTopLevelResolution(1);
@@ -249,29 +254,29 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
     std::vector<std::pair<Circle<nullptr_t>, double>> areas_and_scales = {
             // Circle entirely within Graph
             {
-                    {3, (Coordinates){2,3}},
+                    {3,  (Coordinates) {2, 3}},
                     0.3
             },
             // Circle of higher resolution entirely within Graph
             // and slightly overlapping the first
             {
-                    {2, (Coordinates){3,2}},
+                    {2,  (Coordinates) {3, 2}},
                     0.1
             },
             // Circle that extends outside the Graph
             {
-                    {10, (Coordinates){8,8}},
+                    {10, (Coordinates) {8, 8}},
                     0.2
             },
             // Circle of higher resolution then the initial graph
             {
-                    {3, (Coordinates){5,5}},
+                    {3,  (Coordinates) {5, 5}},
                     1.4
             },
     };
 
     // Set the resolution of all the areas
-    for (const auto& area_scale_pair : areas_and_scales){
+    for (const auto &area_scale_pair : areas_and_scales) {
         Circle<nullptr_t> area = area_scale_pair.first;
         double scale = area_scale_pair.second;
         graph_factory.setMaxScaleInArea(area, scale);
@@ -279,15 +284,15 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
 
     // Generate the Graph and get all the RealNodes
     std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> nodes = graph->getAllSubNodes();
 
-    for (RealNode<nullptr_t>* node : nodes){
+    for (std::shared_ptr<RealNode<nullptr_t>> node : nodes) {
         // Check if this node is within any of the areas we set
-        for (const auto& area_scale_pair : areas_and_scales){
+        for (const auto &area_scale_pair : areas_and_scales) {
             Circle<nullptr_t> area = area_scale_pair.first;
             double scale = area_scale_pair.second;
 
-            if (area.overlapsNode(*node)){
+            if (area.overlapsNode(*node)) {
                 // If this node is within one of the areas we set the resolution for,
                 // check that the scale is equal to or less then the requested value
                 EXPECT_LE(node->getScale(), scale);
@@ -298,57 +303,54 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles){
 }
 
 // Test setting the area of several circles and rectangles, some overlapping
-TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles){
+TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles) {
     GraphFactory<nullptr_t> graph_factory;
     graph_factory.setGraphScale(10);
     graph_factory.setGraphTopLevelResolution(1);
 
-    // Create some Areas with associated resolutions
-    // (Note that pointers have to be used here because we can't use
-    // the abstract "Area" class as a type in a double, because the compiler
-    // won't know how to allocate it)
-    std::vector<std::pair<Area<nullptr_t>*, double>> areas_and_scales {
+    // Create some Areas with associated scales
+    std::vector<std::pair<std::shared_ptr<Area<nullptr_t>>, double>> areas_and_scales{
             // Create a simple rectangle totally enclosed in the graph
             {
-                    new Rectangle<nullptr_t>(2,2, {1,1}),
+                    Rectangle<nullptr_t>(2, 2, {1, 1}).clone(),
                     0.3
             },
             // Create a Circle of higher resolution partially overlapping the Rectangle
             {
-                    new Circle<nullptr_t>(1,{1,1}),
+                    Circle<nullptr_t>(1, {1, 1}).clone(),
                     0.1
             },
             // Create a Circle extending off the side of the graph
             {
-                    new Circle<nullptr_t>(5,{9,5}),
+                    Circle<nullptr_t>(5, {9, 5}).clone(),
                     0.1
             },
             // Create a Rectangle overlapping the circle we just created
             // and extending off the side of the graph
             {
-                    new Rectangle<nullptr_t>(5,2, {8,5}),
+                    Rectangle<nullptr_t>(5, 2, {8, 5}).clone(),
                     0.5
             },
     };
 
     // Set the resolution of all the areas
-    for (const auto& area_scale_pair : areas_and_scales){
-        Area<nullptr_t>* area = area_scale_pair.first;
+    for (const auto &area_scale_pair : areas_and_scales) {
+        std::shared_ptr<Area<nullptr_t>> area = area_scale_pair.first;
         double scale = area_scale_pair.second;
         graph_factory.setMaxScaleInArea(*area, scale);
     }
 
     // Generate the Graph and get all the RealNodes
     std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
-    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> nodes = graph->getAllSubNodes();
 
-    for (RealNode<nullptr_t>* node : nodes){
+    for (std::shared_ptr<RealNode<nullptr_t>> node : nodes) {
         // Check if this node is within any of the areas we set
-        for (const auto& area_scale_pair : areas_and_scales){
-            Area<nullptr_t>* area = area_scale_pair.first;
+        for (const auto &area_scale_pair : areas_and_scales) {
+            std::shared_ptr<Area<nullptr_t>> area = area_scale_pair.first;
             double scale = area_scale_pair.second;
 
-            if (area->overlapsNode(*node)){
+            if (area->overlapsNode(*node)) {
                 // If this node is within one of the areas we set the resolution for,
                 // check that the scale is equal to or less then the requested value
                 EXPECT_LE(node->getScale(), scale);
@@ -359,48 +361,48 @@ TEST_F(GraphFactoryTest, setMaxScaleInArea_several_circles_and_rectangles){
 }
 
 // Test a case similar to a typical field generation for autonomous robot soccer (UBC Thunderbots)
-TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
+TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation) {
     GraphFactory<int> graph_factory;
     graph_factory.setGraphScale(9);
     graph_factory.setGraphTopLevelResolution(1);
 
     Rectangle<int> rectangle =
-            Rectangle<int>(0,0,(Coordinates){0,0});
+            Rectangle<int>(0, 0, (Coordinates) {0, 0});
     // Base Field
-    rectangle = Rectangle<int>(6,9,(Coordinates){1.5,0});
+    rectangle = Rectangle<int>(6, 9, (Coordinates) {1.5, 0});
     graph_factory.setMaxScaleInArea(rectangle, 0.2);
     // Defensive Areas
-    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,0});
+    rectangle = Rectangle<int>(2, 1, (Coordinates) {3.5, 0});
     graph_factory.setMaxScaleInArea(rectangle, 0.1);
-    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,8});
+    rectangle = Rectangle<int>(2, 1, (Coordinates) {3.5, 8});
     graph_factory.setMaxScaleInArea(rectangle, 0.1);
 
     Circle<int> circle =
-            Circle<int>(0,(Coordinates){0,0});
+            Circle<int>(0, (Coordinates) {0, 0});
     // Robots
-    circle = Circle<int>(0.2,(Coordinates){7,3});
+    circle = Circle<int>(0.2, (Coordinates) {7, 3});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,7});
+    circle = Circle<int>(0.2, (Coordinates) {3, 7});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.7,7.8});
+    circle = Circle<int>(0.2, (Coordinates) {4.7, 7.8});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.2,0.6});
+    circle = Circle<int>(0.2, (Coordinates) {4.2, 0.6});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,2});
+    circle = Circle<int>(0.2, (Coordinates) {3, 2});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3.7,2.7});
+    circle = Circle<int>(0.2, (Coordinates) {3.7, 2.7});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.5,2.4});
+    circle = Circle<int>(0.2, (Coordinates) {4.5, 2.4});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){6,4});
+    circle = Circle<int>(0.2, (Coordinates) {6, 4});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){5.4,3.8});
+    circle = Circle<int>(0.2, (Coordinates) {5.4, 3.8});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){5,6});
+    circle = Circle<int>(0.2, (Coordinates) {5, 6});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.8,6.4});
+    circle = Circle<int>(0.2, (Coordinates) {4.8, 6.4});
     graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,4.5});
+    circle = Circle<int>(0.2, (Coordinates) {3, 4.5});
     graph_factory.setMaxScaleInArea(circle, 0.05);
 
     // TODO: Should not be printing out in tests
@@ -410,11 +412,14 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
     std::shared_ptr<GraphNode<int>> graphNode = graph_factory.createGraph();
     std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
     std::cout << "Done generating" << std::endl;
-    std::cout << "Time to generate graph = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() <<std::endl;
+    std::cout << "Time to generate graph = "
+              << std::chrono::duration_cast<std::chrono::milliseconds>(
+                      end - begin).count() << std::endl;
 
     // Figure out how many nodes we generated
     auto all_nodes = graphNode->getAllSubNodes();
-    std::cout << "We generated this many nodes: " << all_nodes.size() << std::endl;
+    std::cout << "We generated this many nodes: " << all_nodes.size()
+              << std::endl;
 }
 
 // TODO: Scale back this test a bit so it runs in computationally feasible time
@@ -468,9 +473,9 @@ TEST_F(GraphFactoryTest, ubc_thunderbots_field_generation){
 //
 //    // Generate the Graph and get all the RealNodes
 //    std::shared_ptr<GraphNode<nullptr_t>> graph = graph_factory.createGraph();
-//    std::vector<RealNode<nullptr_t>*> nodes = graph->getAllSubNodes();
+//    std::vector<std::shared_ptr<RealNode<nullptr_t>>*> nodes = graph->getAllSubNodes();
 //
-//    for (RealNode<nullptr_t>* node : nodes){
+//    for (std::shared_ptr<RealNode<nullptr_t>>* node : nodes){
 //        // Check if this node is within any of the areas we set
 //        for (const auto& area_scale_pair : areas_and_scales){
 //            Area<nullptr_t>* area = area_scale_pair.first;
