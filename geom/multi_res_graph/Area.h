@@ -1,6 +1,8 @@
 #ifndef THUNDERBOTS_NAVIGATOR_AREA_H
 #define THUNDERBOTS_NAVIGATOR_AREA_H
 
+#include <memory>
+
 #include "Node.h"
 
 // TODO: Should we namespace this?
@@ -21,9 +23,9 @@ public:
 
     /**
      * Clone this Area Object
-     * @return a pointer to a clone of this Area object
+     * @return a shared pointer to a clone of this Area object
      */
-    virtual Area* clone() const = 0;
+    virtual std::shared_ptr<Area<T>> clone() const = 0;
 };
 
 #endif //THUNDERBOTS_NAVIGATOR_AREA_H

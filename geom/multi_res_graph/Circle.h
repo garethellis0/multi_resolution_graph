@@ -21,7 +21,12 @@ public:
     // TODO: Def. need to test this!
     bool overlapsNode(Node<T>& node) override;
 
-    Circle* clone() const { return new Circle(*this); };
+    std::shared_ptr<Area<T>> clone() const {
+        return std::make_shared<Circle<T>>(Circle(*this));
+        //Area<T>* area = new Circle<T>(*this);
+        //return std::make_shared<Area<T>>(*area);
+    };
+
 private:
     Radius radius;
     Coordinates center;

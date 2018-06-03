@@ -116,7 +116,7 @@ public:
     std::vector<std::vector<Node<T>*>> getSubNodes();
 
     /**
-     * We provide our own implementation of the deconstructor
+     * We provide our own implementation of the de-constructor
      *
      * We do this so we properly deallocate all child nodes
      */

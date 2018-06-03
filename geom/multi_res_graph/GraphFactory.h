@@ -13,7 +13,7 @@
 #include "RealNode.h"
 #include "Area.h"
 
-template <typename T>
+template<typename T>
 class GraphFactory {
 public:
     using Resolution = double;
@@ -82,7 +82,7 @@ private:
 
     // TODO: Better name for this variable?
     // A list of areas with a given max scale
-    std::vector<std::pair<Area<T>*, Scale>> min_scale_areas;
+    std::vector<std::pair<std::shared_ptr<Area<T>>, Scale>> min_scale_areas;
 
     // TODO: Better name for this variable?
     // A list of points with a given max scale

@@ -21,7 +21,10 @@ public:
 
     bool overlapsNode(Node<T>& node) override;
 
-    Rectangle* clone() const { return new Rectangle<T>(*this); };
+    std::shared_ptr<Area<T>> clone() const {
+        return std::make_shared<Rectangle<T>>(Rectangle(*this));
+    };
+
 private:
     double width, height;
     Coordinates bottom_left_coordinates;
