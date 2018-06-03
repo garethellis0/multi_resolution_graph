@@ -38,16 +38,9 @@ void GraphFactory<T>::setMaxScaleInArea(Area<T> &area,
 template<typename T>
 std::shared_ptr<GraphNode<T>> GraphFactory<T>::createGraph() {
     // Create a new Graph
-    // The reason we're not using `make_shared` here is that the `GraphNode`
-    // copy constructor is private (for good reason, copying them will certainly
-    // break child nodes pointers to their parent), but for *SOME* reason
-    // `make_shared` requires the copy constructor.... so we're using raw
-    // pointers and the "regular" `shared_ptr` constructor
-    GraphNode<T> *raw_ptr = new GraphNode<T>(top_level_graph_resolution,
-                                             top_level_graph_scale);
-    std::shared_ptr<GraphNode<T>> graph_node_ptr(
-            new GraphNode<T>(top_level_graph_resolution,
-                             top_level_graph_scale));
+    std::shared_ptr<GraphNode<T>> graph_node_ptr = std::make_shared<GraphNode<T>>(
+            top_level_graph_resolution,
+            top_level_graph_scale);
 
     // Set the resolution to the minimum requested at the given locations
     // in order of decreasing scale

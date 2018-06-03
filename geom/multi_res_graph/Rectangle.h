@@ -4,7 +4,7 @@
 #include "Area.h"
 
 // TODO: Implementation should be in it's own `.cpp`
-template <typename T>
+template<typename T>
 class Rectangle : public Area<T> {
 public:
     // Delete the default constructor
@@ -19,10 +19,10 @@ public:
      */
     Rectangle(double width, double height, Coordinates bottom_left_point);
 
-    bool overlapsNode(Node<T>& node) override;
+    bool overlapsNode(Node<T> &node) override;
 
     std::shared_ptr<Area<T>> clone() const {
-        return std::make_shared<Rectangle<T>>(Rectangle(*this));
+        return std::make_shared<Rectangle<T>>(*this);
     };
 
 private:

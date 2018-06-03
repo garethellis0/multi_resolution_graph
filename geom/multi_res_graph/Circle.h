@@ -3,7 +3,7 @@
 
 #include "Area.h"
 
-template <typename T>
+template<typename T>
 class Circle : public Area<T> {
 public:
     using Radius = double;
@@ -19,10 +19,10 @@ public:
     Circle(Radius radius, Coordinates center);
 
     // TODO: Def. need to test this!
-    bool overlapsNode(Node<T>& node) override;
+    bool overlapsNode(Node<T> &node) override;
 
     std::shared_ptr<Area<T>> clone() const {
-        return std::make_shared<Circle<T>>(Circle(*this));
+        return std::make_shared<Circle<T>>(*this);
         //Area<T>* area = new Circle<T>(*this);
         //return std::make_shared<Area<T>>(*area);
     };
