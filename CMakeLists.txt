@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(thunderbots_navigator)
+project(multi_res_graph)
 
 set(CMAKE_CXX_STANDARD 17)
 
@@ -18,13 +18,14 @@ else(OPENMP_FOUND)
     message("EROR: OpenMP not found - may have reduced performance")
 endif(OPENMP_FOUND)
 
+# TODO: Conditionally build demo executable ("drawing_test") if opencv present
 # OpenCV Setup
 find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 
 # GTest Setup
 find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS} include)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # GMock Setup
 pkg_check_modules(GMOCK REQUIRED)
@@ -35,7 +36,7 @@ set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
 enable_testing()
 
 # Include headers
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 
 # Find Header Files
 FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/geom/*.h")
@@ -48,7 +49,7 @@ FILE(GLOB_RECURSE TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp")
 
 # Create the test executable
 add_executable(all_tests
-    test/unit-tests/main.cpp
+    test/main.cpp
     ${TEST_FILES}
     ${HEADER_FILES}
     ${SRC_FILES}
