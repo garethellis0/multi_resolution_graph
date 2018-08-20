@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 // Thunderbots Includes
-#include "geom/multi_res_graph/GraphNode.h"
-#include "geom/multi_res_graph/Circle.h"
+#include "multi_res_graph/GraphNode.h"
+#include "multi_res_graph/Circle.h"
 
 namespace {
 

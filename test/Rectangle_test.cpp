@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 // Thunderbots Includes
-#include "geom/multi_res_graph/GraphNode.h"
-#include "geom/multi_res_graph/Rectangle.h"
+#include "multi_res_graph/GraphNode.h"
+#include "multi_res_graph/Rectangle.h"
 
 namespace {
 class RectangleTest : public testing::Test {

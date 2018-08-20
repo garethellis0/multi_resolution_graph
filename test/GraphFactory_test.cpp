@@ -7,9 +7,9 @@
 #include <chrono>
 
 // Thunderbots Includes
-#include "geom/multi_res_graph/GraphFactory.h"
-#include "geom/multi_res_graph/Rectangle.h"
-#include "geom/multi_res_graph/Circle.h"
+#include "multi_res_graph/GraphFactory.h"
+#include "multi_res_graph/Rectangle.h"
+#include "multi_res_graph/Circle.h"
 
 namespace {
 
