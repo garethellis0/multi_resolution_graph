@@ -1,8 +1,8 @@
 #ifndef THUNDERBOTS_NAVIGATOR_REALNODE_H
 #define THUNDERBOTS_NAVIGATOR_REALNODE_H
 
-#include "geom/multi_res_graph/Node.h"
-#include "geom/multi_res_graph/GraphNode.h"
+#include "multi_res_graph/Node.h"
+#include "multi_res_graph/GraphNode.h"
 
 template <typename T>
 class GraphNode;
@@ -86,7 +86,7 @@ private:
     Coordinates cached_coordinates;
 };
 
-#include "geom/multi_res_graph/RealNode.tpp"
+#include "multi_res_graph/RealNode.tpp"
 
 
 #endif //THUNDERBOTS_NAVIGATOR_REALNODE_H

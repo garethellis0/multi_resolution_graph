@@ -9,7 +9,7 @@
 #include <queue>
 
 // Thunderbots Includes
-#include "geom/multi_res_graph/GraphFactory.h"
+#include "GraphFactory.h"
 
 template<typename T>
 GraphFactory<T>::GraphFactory() :

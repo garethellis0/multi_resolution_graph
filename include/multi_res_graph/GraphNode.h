@@ -9,8 +9,8 @@
 #include <stdexcept>
 #include <array>
 
-#include "geom/multi_res_graph/Node.h"
-#include "geom/multi_res_graph/RealNode.h"
+#include "multi_res_graph/Node.h"
+#include "multi_res_graph/RealNode.h"
 
 // TODO: Really detailed comment explaining what exactly this class is
 template <typename T>
@@ -163,6 +163,6 @@ private:
     Coordinates cached_coordinates;
 };
 
-#include "geom/multi_res_graph/GraphNode.tpp"
+#include "multi_res_graph/GraphNode.tpp"
 
 #endif //THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
