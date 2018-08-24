@@ -42,13 +42,48 @@ public:
     explicit RealNode(GraphNode<T>* parent);
 
 
-    // TODO: This is a likely spot to start for performance improvements
-    // TODO: Should not be using raw pointers here
     /**
      * Get the neighbouring nodes to this node
      * @return a vector of all neighbouring nodes
      */
     std::vector<std::shared_ptr<RealNode<T>>> getNeighbours();
+
+
+    // TODO: Test me
+    /**
+     * Get the closest RealNode to the left of this one
+     *
+     * @return The closest RealNode to the left of this one.
+     *         If there is no node to the left, returns null
+     */
+    std::shared_ptr<RealNode<T>> getLeftNeighbour();
+
+    // TODO: Test me
+    /**
+     * Get the closest RealNode to the right of this one
+     *
+     * @return The closest RealNode to the right of this one.
+     *         If there is no node to the right, returns null
+     */
+    std::shared_ptr<RealNode<T>> getRightNeighbour();
+
+    // TODO: Test me
+    /**
+     * Get the closest RealNode to the top of this one
+     *
+     * @return The closest RealNode to the top of this one.
+     *         If there is no node on top of this node, returns null
+     */
+    std::shared_ptr<RealNode<T>> getTopNeighbour();
+
+    // TODO: Test me
+    /**
+     * Get the closest RealNode to the bottom of this one
+     *
+     * @return The closest RealNode to the bottom of this one.
+     *         If there is no node below this node, returns null
+     */
+    std::shared_ptr<RealNode<T>> getBottomNeighbour();
 
     // TODO: Add unit test to make sure that this is returning the right value
     /**
@@ -71,14 +106,14 @@ private:
     // We use a raw pointer here so that we may initialise it in the GraphNode
     // constructor without having to call `share_from_this`
     // This is acceptable because each parent may be said to own it's children
-    // and thus we ensure this node will be properly deallocated
+    // and thus we ensure this node will be properly de-allocated
     // The parent "graph" node to this node
     GraphNode<T>* parent;
 
     // The value this node contains
     T contained_value;
 
-    // TODO: Is there a better way to do this then having a separate bool and Coordinates?
+    // TODO: Is there a better way to do this then having a separate bool and Coordinates? std::optional maybe?
     // Whether or not the currently cached coordinates are valid
     bool have_cached_coordinates;
 

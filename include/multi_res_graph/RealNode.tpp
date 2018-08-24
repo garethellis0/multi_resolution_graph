@@ -18,30 +18,69 @@ boost::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoord
 
 template <typename T>
 std::vector<std::shared_ptr<RealNode<T>>> RealNode<T>::getNeighbours() {
-    // Find the closest nodes above, below, to the left, and to the right of this node
-    std::vector<std::function<bool(Node<T>&)>> filters = {
-            // Filter to find the node below this one
-            [&](Node<T> &n) { return n.getCoordinates().y < this->getCoordinates().y; },
-            // Filter to find the node above this one
-            [&](Node<T> &n) { return n.getCoordinates().y > this->getCoordinates().y; },
-            // Filter to find the node to the left of this one
-            [&](Node<T> &n) { return n.getCoordinates().x < this->getCoordinates().x; },
-            // Filter to find the node to the right of this one
-            [&](Node<T> &n) { return n.getCoordinates().x > this->getCoordinates().x; }
-    };
+    std::vector<std::shared_ptr<RealNode<T>>> possible_neighbours = {
+            this->getBottomNeighbour(),
+            this->getTopNeighbour(),
+            this->getLeftNeighbour(),
+            this->getRightNeighbour()
+            };
 
     std::vector<std::shared_ptr<RealNode<T>>> neighbours;
-    for (auto& filter : filters){
-        boost::optional<std::shared_ptr<RealNode<T>>> node =
-                parent->getClosestNodeToCoordinatesThatPassesFilter(
-                    this->getCoordinates(), filter,
-                    true);
-        if (node) {
-            neighbours.push_back(*node);
+    for (auto& possible_neighbour : possible_neighbours){
+        if (possible_neighbour) {
+            neighbours.emplace_back(possible_neighbour);
         }
     }
 
     return neighbours;
+}
+
+template<typename T>
+std::shared_ptr<RealNode<T>> RealNode<T>::getLeftNeighbour() {
+    auto filter = [&](Node<T> &n) {
+        return n.getCoordinates().x < this->getCoordinates().x;
+    };
+    boost::optional<std::shared_ptr<RealNode<T>>> neighbour =
+            parent->getClosestNodeToCoordinatesThatPassesFilter(
+            this->getCoordinates(), filter, true
+            );
+    return neighbour.get_value_or(std::shared_ptr<RealNode<T>>{});
+}
+
+template<typename T>
+std::shared_ptr<RealNode<T>> RealNode<T>::getRightNeighbour() {
+    auto filter = [&](Node<T> &n) {
+        return n.getCoordinates().x > this->getCoordinates().x;
+    };
+    boost::optional<std::shared_ptr<RealNode<T>>> neighbour =
+            parent->getClosestNodeToCoordinatesThatPassesFilter(
+                    this->getCoordinates(), filter, true
+            );
+    return neighbour.get_value_or(std::shared_ptr<RealNode<T>>{});
+}
+
+template<typename T>
+std::shared_ptr<RealNode<T>> RealNode<T>::getTopNeighbour() {
+    auto filter = [&](Node<T> &n) {
+        return n.getCoordinates().y > this->getCoordinates().y;
+    };
+    boost::optional<std::shared_ptr<RealNode<T>>> neighbour =
+            parent->getClosestNodeToCoordinatesThatPassesFilter(
+                    this->getCoordinates(), filter, true
+            );
+    return neighbour.get_value_or(std::shared_ptr<RealNode<T>>{});
+}
+
+template<typename T>
+std::shared_ptr<RealNode<T>> RealNode<T>::getBottomNeighbour() {
+    auto filter = [&](Node<T> &n) {
+        return n.getCoordinates().y < this->getCoordinates().y;
+    };
+    boost::optional<std::shared_ptr<RealNode<T>>> neighbour =
+            parent->getClosestNodeToCoordinatesThatPassesFilter(
+                    this->getCoordinates(), filter, true
+            );
+    return neighbour.get_value_or(std::shared_ptr<RealNode<T>>{});
 }
 
 template <typename T>

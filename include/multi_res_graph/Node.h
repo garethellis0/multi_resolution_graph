@@ -35,7 +35,7 @@ class RealNode;
 template <typename T>
 class Node {
 public:
-    // TODO: Should we even use `boost::optional` here or is just an empty shared_ptr sufficient
+    // TODO: stop using `boost::optional` here, just use an empty shared_ptr
     /**
      * Get the node closest to the given coordinates at, or below, this node
      * @param coordinates the coordinates that we're looking for a node at
@@ -43,6 +43,7 @@ public:
      */
     virtual boost::optional<std::shared_ptr<RealNode<T>>> getClosestNodeToCoordinates(Coordinates coordinates) = 0;
 
+    // TODO: stop using `boost::optional` here, just use an empty shared_ptr
     // TODO: Better doc comment here
     // TODO: Better function name
     /**
