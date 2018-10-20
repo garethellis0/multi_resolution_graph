@@ -18,10 +18,6 @@ else(OPENMP_FOUND)
     message("EROR: OpenMP not found - may have reduced performance")
 endif(OPENMP_FOUND)
 
-# OpenCV Setup
-find_package(OpenCV REQUIRED)
-include_directories( ${OpenCV_INCLUDE_DIRS} )
-
 # GTest Setup
 find_package(GTest REQUIRED)
 include_directories(${GTEST_INCLUDE_DIRS} include)
@@ -49,10 +45,14 @@ add_executable(all_tests
 )
 target_link_libraries(all_tests ${TESTING_LIBS})
 
-# Misc executables
-add_executable(drawing_test
-        drawing_test.cpp
-        ${HEADER_FILES}
-        ${SRC_FILES}
-        )
-target_link_libraries(drawing_test ${OpenCV_LIBS})
+# Demo Executable - Only build if we can find OpenCV
+find_package(OpenCV)
+if (OPENCV_FOUND)
+    include_directories( ${OpenCV_INCLUDE_DIRS} )
+    add_executable(drawing_test
+            drawing_test.cpp
+            ${HEADER_FILES}
+            ${SRC_FILES}
+            )
+    target_link_libraries(drawing_test ${OpenCV_LIBS})
+endif
