@@ -1,17 +1,23 @@
-set(GOOGLETEST_ROOT gtest/googletest CACHE STRING "Google Test source root")
+# Only build gtest if it's not defined already
+find_library(GTEST_LIB gtest)
+if(NOT GTEST_LIB)
 
-include_directories(SYSTEM
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
-    )
+    set(GOOGLETEST_ROOT gtest/googletest CACHE STRING "Google Test source root")
 
-set(GOOGLETEST_SOURCES
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
-    ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
-    )
+    include_directories(SYSTEM
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/include
+        )
 
-foreach(_source ${GOOGLETEST_SOURCES})
-    set_source_files_properties(${_source} PROPERTIES GENERATED 1)
-endforeach()
+    set(GOOGLETEST_SOURCES
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest-all.cc
+        ${PROJECT_SOURCE_DIR}/${GOOGLETEST_ROOT}/src/gtest_main.cc
+        )
 
-add_library(gtest ${GOOGLETEST_SOURCES})
+    foreach(_source ${GOOGLETEST_SOURCES})
+        set_source_files_properties(${_source} PROPERTIES GENERATED 1)
+    endforeach()
+
+    add_library(gtest ${GOOGLETEST_SOURCES})
+
+endif()
