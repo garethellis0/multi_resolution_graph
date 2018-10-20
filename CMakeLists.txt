@@ -20,14 +20,9 @@ endif(OPENMP_FOUND)
 
 # GTest Setup
 include(gtest.cmake)
-include_directories(${GTEST_INCLUDE_DIRS})
-
-# GMock Setup
-pkg_check_modules(GMOCK REQUIRED)
-include_directories(${GMOCK_INCLUDE_DIRS})
 
 # General Testing Setup
-set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
+set(TESTING_LIBS gtest pthread)
 enable_testing()
 
 # Include headers (and templated files, since this is a primarily templated project)
