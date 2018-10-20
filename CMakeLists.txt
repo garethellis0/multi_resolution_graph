@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.4)
-project(thunderbots_navigator)
+project(multi_resolution_graph)
 
 set(CMAKE_CXX_STANDARD 17)
 
