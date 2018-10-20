@@ -1,4 +1,4 @@
-# multi_res_graph
+# multi_resolution_graph
 ### A performant multi-resolution graph implementation
 ## Current Applications
 - **UBC Thundebots**: Robotic soccer player pathfinding
