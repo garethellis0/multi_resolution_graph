@@ -34,21 +34,15 @@ include_directories(${GMOCK_INCLUDE_DIRS})
 set(TESTING_LIBS ${GTEST_BOTH_LIBRARIES} pthread)
 enable_testing()
 
-# Include headers
-include_directories(${CMAKE_CURRENT_SOURCE_DIR})
-
-# Find Header Files
-FILE(GLOB_RECURSE HEADER_FILES "${CMAKE_CURRENT_SOURCE_DIR}/geom/*.h")
-
-# Find Source Files
-FILE(GLOB_RECURSE SRC_FILES "${CMAKE_CURRENT_SOURCE_DIR}/geom/*.tpp")
+# Include headers (and templated files, since this is a primarily templated project)
+include_directories(./include)
 
 # Find Test Files
 FILE(GLOB_RECURSE TEST_FILES "${CMAKE_CURRENT_SOURCE_DIR}/test/*.cpp")
 
 # Create the test executable
 add_executable(all_tests
-    test/unit-tests/main.cpp
+        test/multi_resolution_graph/main.cpp
     ${TEST_FILES}
     ${HEADER_FILES}
     ${SRC_FILES}

@@ -1,6 +1,6 @@
 #include <gtest/gtest.h>
 
-#include "geom/multi_res_graph/RealNode.h"
+#include "multi_resolution_graph/RealNode.h"
 
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 

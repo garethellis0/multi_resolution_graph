@@ -5,7 +5,7 @@
 #include <memory>
 
 // Thunderbots Includes
-#include "geom/multi_res_graph/RealNode.h"
+#include "multi_resolution_graph/RealNode.h"
 
 // Force the compiler to instantiate all the member functions for this template class
 // (so that we can use things like the `[]` operator when debugging)

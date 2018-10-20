@@ -1,9 +1,9 @@
 // Testing Includes
 #include <gtest/gtest.h>
 
-// Thunderbots Includes
-#include "geom/multi_res_graph/GraphNode.h"
-#include "geom/multi_res_graph/Circle.h"
+// Project Includes
+#include "multi_resolution_graph/GraphNode.h"
+#include "multi_resolution_graph/Circle.h"
 
 namespace {
 

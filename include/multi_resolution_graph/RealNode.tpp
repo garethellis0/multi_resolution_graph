@@ -1,7 +1,7 @@
 #ifndef THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
 #define THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
 
-#include "geom/multi_res_graph/RealNode.h"
+#include "RealNode.h"
 
 template <typename T>
 RealNode<T>::RealNode(GraphNode<T>* parent):
