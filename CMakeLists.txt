@@ -47,7 +47,7 @@ target_link_libraries(all_tests ${TESTING_LIBS})
 
 # Demo Executable - Only build if we can find OpenCV
 find_package(OpenCV)
-if (OPENCV_FOUND)
+if(OPENCV_FOUND)
     include_directories( ${OpenCV_INCLUDE_DIRS} )
     add_executable(drawing_test
             drawing_test.cpp
@@ -55,4 +55,4 @@ if (OPENCV_FOUND)
             ${SRC_FILES}
             )
     target_link_libraries(drawing_test ${OpenCV_LIBS})
-endif
+endif(OPENCV_FOUND)
