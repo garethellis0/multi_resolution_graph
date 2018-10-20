@@ -5,6 +5,8 @@
 #include "multi_resolution_graph/GraphNode.h"
 #include "multi_resolution_graph/Rectangle.h"
 
+using namespace multi_resolution_graph;
+
 namespace {
 class RectangleTest : public testing::Test {
 protected:

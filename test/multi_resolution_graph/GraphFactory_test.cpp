@@ -11,6 +11,8 @@
 #include "multi_resolution_graph/Rectangle.h"
 #include "multi_resolution_graph/Circle.h"
 
+using namespace multi_resolution_graph;
+
 namespace {
 
 class GraphFactoryTest : public testing::Test {

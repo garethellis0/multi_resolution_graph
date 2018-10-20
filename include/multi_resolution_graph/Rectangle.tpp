@@ -1,5 +1,7 @@
 #pragma once
 
+namespace multi_resolution_graph {
+
 template <typename T>
 Rectangle<T>::Rectangle(double width, double height, Coordinates bottom_left_point):
         width(width),
@@ -28,3 +30,4 @@ bool Rectangle<T>::overlapsNode(Node<T>& node) {
     return x_overlap && y_overlap;
 }
 
+}

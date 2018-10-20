@@ -7,6 +7,8 @@
 // Thunderbots Includes
 #include "multi_resolution_graph/RealNode.h"
 
+using namespace multi_resolution_graph;
+
 // Force the compiler to instantiate all the member functions for this template class
 // (so that we can use things like the `[]` operator when debugging)
 template class std::vector<RealNode<nullptr_t>*>;

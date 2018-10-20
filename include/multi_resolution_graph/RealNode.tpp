@@ -1,6 +1,6 @@
-#pragma once
-
 #include "RealNode.h"
+
+namespace multi_resolution_graph {
 
 template <typename T>
 RealNode<T>::RealNode(GraphNode<T>* parent):
@@ -107,3 +107,4 @@ T& RealNode<T>::containedValue() {
     return contained_value;
 }
 
+}

@@ -2,13 +2,14 @@
 
 #include "Node.h"
 
+namespace multi_resolution_graph {
+
 template <typename T>
 Circle<T>::Circle(Radius radius, Coordinates center):
     radius(radius),
     center(center)
     {}
 
-// TODO: YOU ARE HERE - Looks like this implementation is buggy! With the new optimiz. circles don't work
 template <typename T>
 bool Circle<T>::overlapsNode(Node<T>& node) {
     // Get the 4 corner points of this node
@@ -109,5 +110,7 @@ bool Circle<T>::overlapsNode(Node<T>& node) {
     // If none of the above checks passed, then this circle
     // does not overlap the given node
     return false;
+}
+
 }
 

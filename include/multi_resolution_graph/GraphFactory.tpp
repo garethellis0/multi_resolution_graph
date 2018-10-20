@@ -9,6 +9,8 @@
 // Thunderbots Includes
 #include "GraphFactory.h"
 
+namespace multi_resolution_graph {
+
 template<typename T>
 GraphFactory<T>::GraphFactory() :
         top_level_graph_resolution(1),
@@ -168,4 +170,6 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(
     // TODO: We should probably throw an exception here
 
     // TODO: Need to test this function
+}
+
 }

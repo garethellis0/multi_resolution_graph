@@ -4,6 +4,8 @@
 
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 
+using namespace multi_resolution_graph;
+
 namespace {
 class GraphNodeTest : public testing::Test {
 protected:

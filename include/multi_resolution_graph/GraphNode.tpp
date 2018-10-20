@@ -2,6 +2,8 @@
 
 #include "GraphNode.h"
 
+namespace multi_resolution_graph {
+
 template <typename T>
 GraphNode<T>::GraphNode(unsigned int resolution, double scale) :
     resolution(resolution),
@@ -239,4 +241,6 @@ void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
         std::shared_ptr<RealNode<T>> closestNode = *possibleClosestNode;
         closestNode->convertToGraphNode(resolution);
     }
+}
+
 }
