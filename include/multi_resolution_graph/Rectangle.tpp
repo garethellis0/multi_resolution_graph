@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_RECTANGLE_IMPL_H
-#define THUNDERBOTS_NAVIGATOR_RECTANGLE_IMPL_H
+#pragma once
 
 template <typename T>
 Rectangle<T>::Rectangle(double width, double height, Coordinates bottom_left_point):
@@ -29,4 +28,3 @@ bool Rectangle<T>::overlapsNode(Node<T>& node) {
     return x_overlap && y_overlap;
 }
 
-#endif //THUNDERBOTS_NAVIGATOR_RECTANGLE_IMPL_H

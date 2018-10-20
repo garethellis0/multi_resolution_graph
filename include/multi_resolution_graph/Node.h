@@ -1,8 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_NODE_H
-#define THUNDERBOTS_NAVIGATOR_NODE_H
-
-// TODO: naming conventions? do we use snake case for variables? Fix!
-// TODO: Mathew - Yes use snake case
+#pragma once
 
 // C++ STD Includes
 #include <vector>
@@ -93,5 +89,3 @@ public:
      */
     virtual std::vector<std::shared_ptr<RealNode<T>>> getAllSubNodes() = 0;
 };
-
-#endif //THUNDERBOTS_NAVIGATOR_NODE_H

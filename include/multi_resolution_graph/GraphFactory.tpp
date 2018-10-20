@@ -1,6 +1,4 @@
-// TODO: Should we add some directories to the folder structure to seperate stuff?
-#ifndef THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
-#define THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H
+#pragma once
 
 // TODO: In general, look for places here that could seriously benefit from parallelism
 
@@ -171,5 +169,3 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(
 
     // TODO: Need to test this function
 }
-
-#endif // THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_IMPL_H

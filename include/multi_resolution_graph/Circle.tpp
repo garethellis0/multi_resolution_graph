@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_CIRCLE_IMPL_H
-#define THUNDERBOTS_NAVIGATOR_CIRCLE_IMPL_H
+#pragma once
 
 #include "Node.h"
 
@@ -112,4 +111,3 @@ bool Circle<T>::overlapsNode(Node<T>& node) {
     return false;
 }
 
-#endif //THUNDERBOTS_NAVIGATOR_CIRCLE_IMPL_H

@@ -1,8 +1,6 @@
-// TODO: In general, redo header guards to "match" the rest of the repo
-// TODO: `boost::optional` should be replaced with `std::optional` if we migrate to `c++17`, create an issue for this and delete this TODO
+#pragma once
 
-#ifndef THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
-#define THUNDERBOTS_NAVIGATOR_GRAPHNODE_H
+// TODO: `boost::optional` should be replaced with `std::optional` if we migrate to `c++17`, create an issue for this and delete this TODO
 
 // TODO: In general, function order in `.cpp` should match that in the relevent `.h` file
 #include <vector>
@@ -164,5 +162,3 @@ private:
 };
 
 #include "GraphNode.tpp"
-
-#endif //THUNDERBOTS_NAVIGATOR_GRAPHNODE_H

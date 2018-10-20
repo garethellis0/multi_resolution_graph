@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_H
-#define THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_H
+#pragma once
 
 // C++ STD Includes
 #include <cmath>
@@ -103,5 +102,3 @@ private:
 };
 
 #include "GraphFactory.tpp"
-
-#endif //THUNDERBOTS_NAVIGATOR_GRAPHFACTORY_H

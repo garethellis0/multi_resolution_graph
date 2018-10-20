@@ -1,7 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H
-#define THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H
-
-// TODO: In general, look for places here that could seriously benefit from parallelism
+#pragma once
 
 #include "GraphNode.h"
 
@@ -243,5 +240,3 @@ void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
         closestNode->convertToGraphNode(resolution);
     }
 }
-
-#endif // THUNDERBOTS_NAVIGATOR_GRAPHNODE_IMPL_H

@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_REALNODE_H
-#define THUNDERBOTS_NAVIGATOR_REALNODE_H
+#pragma once
 
 #include "Node.h"
 #include "GraphNode.h"
@@ -88,5 +87,3 @@ private:
 
 #include "RealNode.tpp"
 
-
-#endif //THUNDERBOTS_NAVIGATOR_REALNODE_H

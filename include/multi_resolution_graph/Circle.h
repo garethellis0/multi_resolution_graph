@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_CIRCLE_H
-#define THUNDERBOTS_NAVIGATOR_CIRCLE_H
+#pragma once
 
 #include "Area.h"
 
@@ -33,5 +32,3 @@ private:
 };
 
 #include "Circle.tpp"
-
-#endif //THUNDERBOTS_NAVIGATOR_CIRCLE_H

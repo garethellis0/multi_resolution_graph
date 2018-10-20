@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
-#define THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H
+#pragma once
 
 #include "RealNode.h"
 
@@ -108,4 +107,3 @@ T& RealNode<T>::containedValue() {
     return contained_value;
 }
 
-#endif // THUNDERBOTS_NAVIGATOR_REALNODE_IMPL_H

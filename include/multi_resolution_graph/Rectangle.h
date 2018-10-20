@@ -1,5 +1,4 @@
-#ifndef THUNDERBOTS_NAVIGATOR_RECTANGLE_H
-#define THUNDERBOTS_NAVIGATOR_RECTANGLE_H
+#pragma once
 
 #include "Area.h"
 
@@ -31,5 +30,3 @@ private:
 };
 
 #include "Rectangle.tpp"
-
-#endif //THUNDERBOTS_NAVIGATOR_RECTANGLE_H

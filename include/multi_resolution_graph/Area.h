@@ -1,12 +1,9 @@
-#ifndef THUNDERBOTS_NAVIGATOR_AREA_H
-#define THUNDERBOTS_NAVIGATOR_AREA_H
+#pragma once
 
 #include <memory>
 
 #include "Node.h"
 
-// TODO: Should we namespace this?
-// TODO: We may want to replace this with a Thunderbots Geometry class at some point
 template <typename T>
 class Area {
 public:
@@ -27,5 +24,3 @@ public:
      */
     virtual std::shared_ptr<Area<T>> clone() const = 0;
 };
-
-#endif //THUNDERBOTS_NAVIGATOR_AREA_H
