@@ -1,2 +1,9 @@
 language: cpp
+addons:
+  apt:
+    sources:
+      - boost-latest
+    packages:
+      - libboost1.62-all-dev
+      - cmake
 script: cmake . && make && ./all_test
