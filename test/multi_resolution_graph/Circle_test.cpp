@@ -18,9 +18,7 @@ TEST_F(CircleTest, overlapsNode_not_overlapping){
     Circle<nullptr_t> circle(3, (Coordinates){15,15});
     EXPECT_FALSE(circle.overlapsNode(node));
 }
-
-// Test checking the overlap of a partially overlapping circle and node
-// where the corner of the node lies within the circle
+// Test checking the overlap of a partially overlapping circle and node // where the corner of the node lies within the circle
 TEST_F(CircleTest, overlapsNode_partially_overlapping_node_corner_in_circle){
     GraphNode<nullptr_t> node(1,10);
     Circle<nullptr_t> circle(3, (Coordinates){-1,-1});
@@ -71,6 +69,10 @@ TEST_F(CircleTest, overlapsNode_node_within_circle){
     GraphNode<nullptr_t> node(1,2);
     Circle<nullptr_t> circle(5, (Coordinates){-1,-1});
     EXPECT_TRUE(circle.overlapsNode(node));
+}
+
+TEST_F(CircleTest, delete_me) {
+    EXPECT_TRUE(false);
 }
 
 }
