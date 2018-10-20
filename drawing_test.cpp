@@ -8,6 +8,8 @@
 #include "multi_resolution_graph/Rectangle.h"
 #include "multi_resolution_graph/Circle.h"
 
+using namespace multi_resolution_graph;
+
 // Create the mat
 int window_resolution = 800;
 //TODO: This should be neither a raw pointer, nor a global variable
@@ -108,9 +110,8 @@ int main(){
     //rectangle = Rectangle<int>(5,10,(Coordinates){80,80});
     //graph_factory.setMaxScaleInArea(rectangle, 0.5);
 
-    Circle<int> circle =
-            Circle<int>(0,(Coordinates){0,0});
     // Robots
+    Circle<int> circle = Circle<int>(0,(Coordinates){0,0});
     circle = Circle<int>(0.2,(Coordinates){7,3});
     graph_factory.setMaxScaleInArea(circle, 0.05);
     circle = Circle<int>(0.2,(Coordinates){3,7});
