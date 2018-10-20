@@ -12,3 +12,4 @@ cmake-build-debug/
 all_tests
 drawing_test
 *.cbp
+*.a
