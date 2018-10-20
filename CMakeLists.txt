@@ -19,8 +19,8 @@ else(OPENMP_FOUND)
 endif(OPENMP_FOUND)
 
 # GTest Setup
-find_package(GTest REQUIRED)
-include_directories(${GTEST_INCLUDE_DIRS} include)
+include(gtest.cmake)
+include_directories(${GTEST_INCLUDE_DIRS})
 
 # GMock Setup
 pkg_check_modules(GMOCK REQUIRED)
