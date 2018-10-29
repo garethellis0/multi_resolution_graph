@@ -1,6 +1,5 @@
 # Only build gtest if it's not defined already
-find_library(GTEST_LIB gtest)
-if(NOT GTEST_LIB)
+if(NOT TARGET GTEST_LIB)
 
     set(GOOGLETEST_ROOT gtest/googletest CACHE STRING "Google Test source root")
 
