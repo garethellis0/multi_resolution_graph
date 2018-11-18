@@ -7,6 +7,7 @@
 #include <chrono>
 #include "multi_resolution_graph/Rectangle.h"
 #include "multi_resolution_graph/Circle.h"
+#include "multi_resolution_graph/Polygon.h"
 
 using namespace multi_resolution_graph;
 
@@ -83,14 +84,14 @@ int main(){
 
     Rectangle<int> rectangle =
             Rectangle<int>(0,0,(Coordinates){0,0});
-    // Base Field
-    rectangle = Rectangle<int>(6,9,(Coordinates){1.5,0});
-    graph_factory.setMaxScaleInArea(rectangle, 0.2);
-    // Defensive Areas
-    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,0});
-    graph_factory.setMaxScaleInArea(rectangle, 0.1);
-    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,8});
-    graph_factory.setMaxScaleInArea(rectangle, 0.1);
+//    // Base Field
+//    rectangle = Rectangle<int>(6,9,(Coordinates){1.5,0});
+//    graph_factory.setMaxScaleInArea(rectangle, 0.2);
+//    // Defensive Areas
+//    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,0});
+//    graph_factory.setMaxScaleInArea(rectangle, 0.1);
+//    rectangle = Rectangle<int>(2,1,(Coordinates){3.5,8});
+//    graph_factory.setMaxScaleInArea(rectangle, 0.1);
 //    rectangle = Rectangle<int>(3,2,(Coordinates){4.5,0});
 //    graph_factory.setMaxScaleInArea(rectangle, 0.1);
 //    rectangle = Rectangle<int>(1,1,(Coordinates){4.5,4.5});
@@ -107,35 +108,42 @@ int main(){
     //graph_factory.setMaxScaleInArea(rectangle, 1);
     //rectangle = Rectangle<int>(10,60,(Coordinates){70,40});
     //graph_factory.setMaxScaleInArea(rectangle, 0.5);
-    //rectangle = Rectangle<int>(5,10,(Coordinates){80,80});
-    //graph_factory.setMaxScaleInArea(rectangle, 0.5);
+//    rectangle = Rectangle<int>(2,2,(Coordinates){2,2});
+//    graph_factory.setMaxScaleInArea(rectangle, 0.1);
 
+    Polygon<int> polygon = Polygon<int>({
+                                                {2,2},
+                                                {2,4},
+                                                {4,4},
+                                                {4,2},
+    });
+    graph_factory.setMaxScaleInArea(polygon, 0.1);
     // Robots
-    Circle<int> circle = Circle<int>(0,(Coordinates){0,0});
-    circle = Circle<int>(0.2,(Coordinates){7,3});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,7});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.7,7.8});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.2,0.6});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,2});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3.7,2.7});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.5,2.4});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){6,4});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){5.4,3.8});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){5,6});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){4.8,6.4});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
-    circle = Circle<int>(0.2,(Coordinates){3,4.5});
-    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    Circle<int> circle = Circle<int>(0,(Coordinates){0,0});
+//    circle = Circle<int>(0.2,(Coordinates){7,3});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){3,7});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){4.7,7.8});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){4.2,0.6});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){3,2});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){3.7,2.7});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){4.5,2.4});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){6,4});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){5.4,3.8});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){5,6});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){4.8,6.4});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
+//    circle = Circle<int>(0.2,(Coordinates){3,4.5});
+//    graph_factory.setMaxScaleInArea(circle, 0.05);
 
     /*
     std::vector<std::pair<Area<int>*, double>> areas_and_scales;
