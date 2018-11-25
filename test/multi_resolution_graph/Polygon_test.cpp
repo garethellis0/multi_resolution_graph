@@ -165,5 +165,17 @@ TEST_F(PolygonTest, overlapsNode_node_fully_inside_funky_polygon){
     EXPECT_TRUE(polygon.overlapsNode(node));
 }
 
+// Test checking for when a triangular polygon completely encompasses a node
+// (This was created as the result of a specific bug)
+TEST_F(PolygonTest, overlaps_node_fully_inside_triangular_polygon) {
+        GraphNode<nullptr_t> node(1,1);
+        Polygon<nullptr_t> polygon({
+                                           (Coordinates){-1, 1},
+                                           (Coordinates){-1, -5},
+                                           (Coordinates){10, 1},
+                                   });
+        EXPECT_TRUE(polygon.overlapsNode(node));
+}
+
 }
 
