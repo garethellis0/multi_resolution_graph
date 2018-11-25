@@ -42,6 +42,32 @@ namespace multi_resolution_graph {
          */
         static bool lineSegmentsIntersect(std::pair<Coordinates, Coordinates> line1, std::pair<Coordinates, Coordinates> line2);
 
+
+        /**
+         * Checks if a given value is within given bounds
+         *
+         * It does not matter what order the bounds are in
+         *
+         * @param val
+         * @param bound1
+         * @param bound2
+         *
+         * @return if `val` is between `bound1` and `bound2`
+         */
+        static bool valueInRange(double val, double bound1, double bound2){
+            double min = std::min(bound1, bound2);
+            double max = std::max(bound1, bound2);
+            return (val >= min) && (val <= max);
+        };
+
+        /**
+         * Checks if a given point lies within this polygon
+         *
+         * @param point
+         * @return if `point` lies within this polygon
+         */
+        bool containsPoint(Coordinates& point);
+
         // A list of points that make up the boundary of the polynomial. The
         // first and last points are assumed to be connected
         std::vector<Coordinates> boundary_points;

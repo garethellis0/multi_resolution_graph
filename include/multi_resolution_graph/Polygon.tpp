@@ -39,6 +39,9 @@ bool Polygon<T>::overlapsNode(Node<T>& node) {
     // OR
     // 2) A vertex of this polygon lies within the node (to catch the case
     // where the entire polygon is within the node)
+    // OR
+    // 3) A vertex of the node lies within this polygon (to catch the case
+    // where the entire node is within the polygon)
 
     // Check if any edge of this polygon intersects any edge of the node
     for (const auto& node_edge : node_edges) {
@@ -71,56 +74,71 @@ bool Polygon<T>::overlapsNode(Node<T>& node) {
         }
     }
 
+    // Check if any vertex of the node lies within this polygon
+    for (auto point : node_points) {
+        if(this->containsPoint(point)) {
+            return true;
+        }
+    }
+
     // If we got here, then there is no intersection
     return false;
 }
 
-    template<typename T>
-    bool
-    Polygon<T>::lineSegmentsIntersect(std::pair<Coordinates, Coordinates> line1,
-                                      std::pair<Coordinates, Coordinates> line2) {
-        // TODO: You are here, this is broken for vertical lines
-        // TODO: Probably need to check intersection, flip lines to diff. axis, and check again
+template<typename T>
+bool
+Polygon<T>::lineSegmentsIntersect(std::pair<Coordinates, Coordinates> line1,
+                                  std::pair<Coordinates, Coordinates> line2) {
+    // Check for vertical lines
+    bool line1_vertical = line1.second.x - line1.first.x == 0;
+    bool line2_vertical = line2.second.x - line2.first.x == 0;
 
-        // Check for vertical lines
-        bool line1_vertical = line1.second.x - line1.first.x == 0;
-        bool line2_vertical = line2.second.x - line2.first.x == 0;
-
-        // Check for vertical lines
-        // If either line is vertical, the x intersection (if there is one)
-        // must line on the x value for that line
-        double x_intersection = 0;
-        if (line1_vertical) {
-            x_intersection = line1.first.x;
-        } else if (line2_vertical) {
-            x_intersection = line2.first.x;
-        } else {
-            // Neither line is vertical
-            // Compute the intersection of the two lines
-            double slope1 = (line1.second.y - line1.first.y) /
-                    (line1.second.x - line1.first.x);
-            double slope2 = (line2.second.y - line2.first.y) /
-                    (line2.second.x - line2.first.x);
-            double intercept1 = line1.first.y + line1.first.x * slope1;
-            double intercept2 = line2.first.y + line2.first.x * slope2;
-            x_intersection = (intercept2 - intercept1) / (slope1 - slope2);
-        }
-
-        double y_intersection = 0;
-
-        auto valueInRange = [&](double val, double min, double max){
-            return (val >= min) && (val <= max);
-        };
-
-        // Check that the intersection of the two lines lies within
-        // the bounds of both line segments
+    bool lines_intersect;
+    if (line1_vertical && line2_vertical) {
+        bool same_x_value = line1.first.x == line2.first.x;
+        bool y_values_overlap =
+                valueInRange(line2.first.y, line1.first.y, line1.second.y) ||
+                valueInRange(line2.second.y, line1.first.y, line1.second.y) ||
+                valueInRange(line1.first.y, line2.first.y, line2.second.y) ||
+                valueInRange(line1.second.y, line2.first.y, line2.second.y);
+        lines_intersect = same_x_value && y_values_overlap;
+    } else if (line1_vertical) {
+        // Compute the potential x and y intersects
+        double slope = (line2.second.y - line2.first.y) /
+                       (line2.second.x - line2.first.x);
+        double y_intersect = line2.first.y +
+                             slope * (line1.first.x - line2.first.x);
+        double x_intersect = line1.first.x;
+        lines_intersect =
+                valueInRange(y_intersect, line1.first.y, line1.second.y) &&
+                valueInRange(x_intersect, line2.first.x, line2.second.x);
+    } else if (line2_vertical) {
+        // Compute the potential x and y intersects
+        double slope = (line1.second.y - line1.first.y) /
+                       (line1.second.x - line1.first.x);
+        double y_intersect = line1.first.y +
+                             slope * (line2.first.x - line1.first.x);
+        double x_intersect = line2.first.x;
+        lines_intersect =
+                valueInRange(y_intersect, line2.first.y, line2.second.y) &&
+                valueInRange(x_intersect, line1.first.x, line1.second.x);
+    } else  {
+        // Neither line is vertical
+        // Compute the intersection of the two lines
+        double slope1 = (line1.second.y - line1.first.y) /
+                        (line1.second.x - line1.first.x);
+        double slope2 = (line2.second.y - line2.first.y) /
+                        (line2.second.x - line2.first.x);
+        double intercept1 = line1.first.y - line1.first.x * slope1;
+        double intercept2 = line2.first.y - line2.first.x * slope2;
+        double x_intersection = (intercept2 - intercept1) / (slope1 - slope2);
         bool x_intersection_on_line1 = valueInRange(x_intersection, line1.first.x, line1.second.x);
         bool x_intersection_on_line2 = valueInRange(x_intersection, line2.first.x, line2.second.x);
-        bool y_intersection_on_line1 = valueInRange(y_intersection, line1.first.y, line1.second.y);
-        bool y_intersection_on_line2 = valueInRange(y_intersection, line2.first.y, line2.second.y);
-        return x_intersection_on_line1 && x_intersection_on_line2
-            && y_intersection_on_line1 && y_intersection_on_line2;
+        lines_intersect = x_intersection_on_line1 && x_intersection_on_line2;
     }
+
+    return lines_intersect;
+}
 
     template<typename T>
 std::vector<std::pair<Coordinates, Coordinates>> Polygon<T>::getEdges() {
@@ -139,6 +157,44 @@ std::vector<std::pair<Coordinates, Coordinates>> Polygon<T>::getEdges() {
     }
 
     return edges;
+}
+
+template <typename T>
+bool Polygon<T>::containsPoint(multi_resolution_graph::Coordinates &point) {
+    /*
+     * Our strategy for this is to draw a from the point to infinity in the x
+     * direction, then check how many edges that line intersects
+     *
+     * Odd # of edges: point is within polygon
+     * Even # of edges: point is not within polygon
+     *
+     * (https://www.geeksforgeeks.org/how-to-check-if-a-given-point-lies-inside-a-polygon/)
+     */
+    auto edges = getEdges();
+
+    int num_overlapping_edges = 0;
+    for (auto const& edge : edges) {
+        // Check if the point overlaps the edge in the y
+        if (valueInRange(point.y, edge.first.y, edge.second.y)){
+            // Find where our infinite line overlaps the edge in x
+            bool edge_is_vertical = edge.first.x - edge.second.x == 0;
+            double x_intersect = 0;
+            if (edge_is_vertical) {
+                x_intersect = edge.first.x;
+            } else { // Edge is not vertical
+                double slope = (edge.second.y - edge.first.y) /
+                        (edge.second.x - edge.first.x);
+                x_intersect = edge.first.x + (point.y - edge.first.y) / slope;
+            }
+
+            if (x_intersect > point.x) {
+                num_overlapping_edges++;
+            }
+        }
+    }
+
+    bool odd_num_of_overlapping_edges = num_overlapping_edges % 2 != 0;
+    return odd_num_of_overlapping_edges;
 }
 
 }
