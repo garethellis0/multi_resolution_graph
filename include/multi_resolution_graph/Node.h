@@ -9,14 +9,13 @@
 // TODO: C++ 17 has `std::optional`. We should use it if possible (instead of `boost::optional`)
 #include <boost/optional.hpp>
 
-
 namespace multi_resolution_graph {
     struct Coordinates {
         double x;
         double y;
     };
 
-// TODO: Should this functions be within `Coordinates`? Should `Coordinates` be a class?
+    // TODO: Should this functions be within `Coordinates`? Should `Coordinates` be a class?
     inline double distance(Coordinates c1, Coordinates c2) {
         double dx = c1.x - c2.x;
         double dy = c1.y - c2.y;
@@ -27,11 +26,14 @@ namespace multi_resolution_graph {
         return c1.x == c2.x && c1.y == c2.y;
     }
 
-// We need to forward declare this here so that we can use it as a return type in the "Node" class
+    // We need to forward declare these here so that we can use it in
+    // in the "Node" class
     template<typename T>
     class RealNode;
+    template<typename T>
+    class Area;
 
-// TODO: Really detailed comment explaining what exactly this class is
+    // TODO: Really detailed comment explaining what exactly this class is
     template<typename T>
     class Node {
     public:
@@ -74,6 +76,17 @@ namespace multi_resolution_graph {
                                   bool parent_must_pass_filter,
                                   bool search_parent) = 0;
 
+        // TODO: `area` should really be const here...
+        /**
+         * Gets all RealNodes in a given area
+         *
+         * @param area TODO?
+         *
+         * @return all RealNodes in the given Area
+         */
+        std::vector<std::shared_ptr<RealNode<T>>>
+        getAllNodesInArea(Area<T>& area);
+
         /**
          * Gets the coordinates for this node
          * @return the coordinates for this node
@@ -94,4 +107,7 @@ namespace multi_resolution_graph {
          */
         virtual std::vector<std::shared_ptr<RealNode<T>>> getAllSubNodes() = 0;
     };
+
 }
+
+#include "Node.tpp"

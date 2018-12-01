@@ -1,6 +1,8 @@
 #include <gtest/gtest.h>
 
 #include "multi_resolution_graph/RealNode.h"
+#include "multi_resolution_graph/Area.h"
+#include "multi_resolution_graph/Rectangle.h"
 
 // TODO: Some note about how intertwined GraphNode and RealNode  are (and hence the all the tests of both are)
 
@@ -407,6 +409,7 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
 
 
     // This filter forces us to find nodes in the top 1/2 of the graph
+    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates().y > 3; };
     expected_nodes = {
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][0]),
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][1]),
@@ -417,12 +420,14 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][2]),
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][3]),
     };
-    filter = [&](Node<nullptr_t> &n) { return n.getCoordinates().y > 3; };
     found_nodes = graph_node.getAllNodesThatPassFilter(filter);
     EXPECT_EQ(found_nodes.size(), 8);
     EXPECT_EQ(expected_nodes, found_nodes);
 
     // This filter forces us to find a node in the bottom left 1/4 of the graph
+    filter = [&](Node<nullptr_t> &n) {
+        return n.getCoordinates().y < 4 && n.getCoordinates().x < 4;
+    };
     expected_nodes = {
             // All the RealNodes under the expanded node
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][0]),
@@ -434,13 +439,80 @@ TEST_F(GraphNodeTest, getAllNodesThatPassFilter_small_case){
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][0]),
             std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][1]),
     };
-    filter = [&](Node<nullptr_t> &n) {
-        return n.getCoordinates().y < 4 && n.getCoordinates().x < 4;
-    };
     found_nodes = graph_node.getAllNodesThatPassFilter(filter);
     EXPECT_EQ(found_nodes.size(), 7);
     EXPECT_EQ(expected_nodes, found_nodes);
 }
+
+TEST_F(GraphNodeTest, getAllNodesInArea_small_case){
+    GraphNode<nullptr_t> graph_node(4,8.0);
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> top_level_sub_nodes =
+            graph_node.getSubNodes();
+
+    // Expand the bottom left subnode
+    graph_node.changeResolutionOfNode(top_level_sub_nodes[0][0],2);
+
+    // Get the new top level subnodes
+    top_level_sub_nodes = graph_node.getSubNodes();
+
+    // Get the node we just expanded
+    std::shared_ptr<Node<nullptr_t>> expanded_node = top_level_sub_nodes[0][0];
+
+    // The node we just expanded should now be GraphNode
+    ASSERT_EQ(typeid(GraphNode<nullptr_t>), typeid(*expanded_node));
+
+    // Cast the expanded node to a GraphNode so we can do some more checks
+    auto new_graph_node = dynamic_cast<GraphNode<nullptr_t>*>(expanded_node.get());
+
+    // Get the subnodes of the node we just expanded
+    std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
+            new_graph_node->getSubNodes();
+
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> found_nodes;
+    std::vector<std::shared_ptr<RealNode<nullptr_t>>> expected_nodes;
+
+    // TODO: These should def. be seperate tests
+    // For every one of the following coordinates:
+    // - check that we got the right number of nodes
+    // - check that it was the nodes we were expecting
+    // TODO: Add in GMock for unordered vector comparison
+    // NOTE: List equality checks are *order-sensitive*. If it fails, check
+    // that it's just not because the order has changed (which is fine)
+
+    // This area forces us to find nodes in the top 1/2 of the graph
+    Rectangle<nullptr_t> area(8, 4, {0,4.1});
+    expected_nodes = {
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][2]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[2][3]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][2]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[3][3]),
+    };
+    found_nodes = graph_node.getAllNodesInArea(area);
+    EXPECT_EQ(found_nodes.size(), 8);
+    EXPECT_EQ(expected_nodes, found_nodes);
+
+    // This area forces us to find a node in the bottom left 1/4 of the graph
+    area = Rectangle<nullptr_t>(3.9, 3.9, {0,0});
+    expected_nodes = {
+            // All the RealNodes under the expanded node
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[0][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(expanded_node_sub_nodes[1][1]),
+            // All the top level RealNodes in the bottom left 1/4
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[0][1]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][0]),
+            std::dynamic_pointer_cast<RealNode<nullptr_t>>(top_level_sub_nodes[1][1]),
+    };
+    found_nodes = graph_node.getAllNodesInArea(area);
+    EXPECT_EQ(found_nodes.size(), 7);
+    EXPECT_EQ(expected_nodes, found_nodes);
+}
+
 
 // TODO: Test conditions that would cause functions to throw exceptions (which GraphNode *DOES*)
 
