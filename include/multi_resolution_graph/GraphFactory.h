@@ -4,9 +4,6 @@
 #include <cmath>
 #include <functional>
 
-// Boost Includes
-#include <boost/optional.hpp>
-
 // Thunderbots Includes
 #include "GraphNode.h"
 #include "RealNode.h"

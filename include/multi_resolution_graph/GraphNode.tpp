@@ -37,7 +37,7 @@ void GraphNode<T>::initSubNodes() {
 }
 
 template <typename T>
-boost::optional<std::shared_ptr<RealNode<T>>> GraphNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
+std::optional<std::shared_ptr<RealNode<T>>> GraphNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
     // In this case, we just setup the filter so that all nodes pass,
     // so that we just find the closest node with no restrictions
     return this->getClosestNodeToCoordinatesThatPassesFilter(coordinates,
@@ -106,25 +106,25 @@ double GraphNode<T>::getScale() {
 }
 
 template <typename T>
-boost::optional<std::shared_ptr<RealNode<T>>>
+std::optional<std::shared_ptr<RealNode<T>>>
 GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
         Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
         bool search_parent) {
 
     // First, look in the sub-nodes of this node
     // Find the closest node below this one that passes the filter
-    auto closest_node_found = (boost::optional<std::shared_ptr<RealNode<T>>>());
+    auto closest_node_found = (std::optional<std::shared_ptr<RealNode<T>>>());
     double distance_to_closest_node_found = -1;
     for (auto& row : subNodes) {
         for (std::shared_ptr<Node<T>> node : row){
-            boost::optional<std::shared_ptr<RealNode<T>>> closest_sub_node =
+            std::optional<std::shared_ptr<RealNode<T>>> closest_sub_node =
                     node->getClosestNodeToCoordinatesThatPassesFilter(coordinates, filter, false);
             // Check that we found a node that passed the filter
             if (closest_sub_node){
                 double distance_to_closest_sub_node = distance((*closest_sub_node)->getCoordinates(), coordinates);
                 // If we haven't found any node yet, or if this one is closer
                 // the the closest one found so far, save it as the closest
-                if (!closest_node_found.is_initialized() ||
+                if (!closest_node_found.has_value() ||
                         distance_to_closest_sub_node < distance_to_closest_node_found) {
                     closest_node_found = closest_sub_node;
                     distance_to_closest_node_found = distance_to_closest_sub_node;
@@ -148,7 +148,7 @@ GraphNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
     }
 
     // Couldn't find any node that passes the given filter
-    return boost::optional<std::shared_ptr<RealNode<T>>>{};
+    return std::optional<std::shared_ptr<RealNode<T>>>{};
 }
 
 template<typename T>
@@ -233,7 +233,7 @@ std::shared_ptr<Node<T>> GraphNode<T>::changeResolutionOfNode(const std::shared_
 template <typename T>
 void GraphNode<T>::changeResolutionOfClosestNode(Coordinates coordinates,
                                               unsigned int resolution) {
-    boost::optional<std::shared_ptr<RealNode<T>>> possibleClosestNode =
+    std::optional<std::shared_ptr<RealNode<T>>> possibleClosestNode =
             this->getClosestNodeToCoordinates(coordinates);
 
     // TODO: What if we can't find any node (should never happen, but.....)

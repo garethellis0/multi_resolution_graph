@@ -153,7 +153,7 @@ void GraphFactory<T>::setMinGraphResolutionForPoint(
 
 
     // Find the closest node to the given coordinates
-    boost::optional<std::shared_ptr<RealNode<T>>> possible_closest_node =
+    std::optional<std::shared_ptr<RealNode<T>>> possible_closest_node =
             graph_node->getClosestNodeToCoordinates(coordinates);
     if (possible_closest_node) {
         std::shared_ptr<RealNode<T>> closest_node = *possible_closest_node;

@@ -260,7 +260,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
-    boost::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
+    std::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
     Coordinates expected_coordinates;
 
     // TODO: These should def. be seperate tests
@@ -270,26 +270,26 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinates_small_case){
     // - check that the result has the coordinates we were expecting
 
     found_node = graph_node.getClosestNodeToCoordinates({0,0});
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(expanded_node_sub_nodes[0][0], *found_node);
     expected_coordinates = {0, 0};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({0.9,0});
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(expanded_node_sub_nodes[0][1], *found_node);
     expected_coordinates = {1, 0};
     Coordinates actual = (*found_node)->getCoordinates();
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({0,1.1});
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(expanded_node_sub_nodes[1][0], *found_node);
     expected_coordinates = {0, 1};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
     found_node = graph_node.getClosestNodeToCoordinates({4.4,6.6});
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
     expected_coordinates = {4, 6};
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
@@ -321,7 +321,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     std::vector<std::vector<std::shared_ptr<Node<nullptr_t>>>> expanded_node_sub_nodes =
             new_graph_node->getSubNodes();
 
-    boost::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
+    std::optional<std::shared_ptr<RealNode<nullptr_t>>> found_node;
     Coordinates expected_coordinates;
     std::function<bool(Node<nullptr_t>&)> filter;
 
@@ -335,7 +335,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     expected_coordinates = {4,6};
     filter = [&](Node<nullptr_t> &n) { return n.getCoordinates() == expected_coordinates; };
     found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter({0, 0}, filter);
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(top_level_sub_nodes[3][2], *found_node);
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
@@ -345,7 +345,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter({3, 0},
                                                                         filter,
                                                                         false);
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(top_level_sub_nodes[2][1], *found_node);
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 
@@ -357,7 +357,7 @@ TEST_F(GraphNodeTest, getClosestNodeToCoordinatesThatPassesFilter_small_case){
     found_node = graph_node.getClosestNodeToCoordinatesThatPassesFilter({7, 7},
                                                                         filter,
                                                                         false);
-    ASSERT_TRUE(found_node.is_initialized());
+    ASSERT_TRUE(found_node.has_value());
     EXPECT_EQ(top_level_sub_nodes[1][1], *found_node);
     EXPECT_EQ(expected_coordinates, (*found_node)->getCoordinates());
 }

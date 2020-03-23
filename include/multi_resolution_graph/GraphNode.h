@@ -1,6 +1,6 @@
 #pragma once
 
-// TODO: `boost::optional` should be replaced with `std::optional` if we migrate to `c++17`, create an issue for this and delete this TODO
+// TODO: `std::optional` should be replaced with `std::optional` if we migrate to `c++17`, create an issue for this and delete this TODO
 
 // TODO: In general, function order in `.cpp` should match that in the relevent `.h` file
 #include <vector>
@@ -18,10 +18,10 @@ namespace multi_resolution_graph {
     public:
 
         // TODO: Can we make this just return a pointer directly? This is guaranteed to find a node....
-        boost::optional<std::shared_ptr<RealNode<T>>>
+        std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinates(Coordinates coordinates) override;
 
-        boost::optional<std::shared_ptr<RealNode<T>>>
+        std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinatesThatPassesFilter(
                 Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
                 bool search_parent = true) override;

@@ -12,10 +12,10 @@ namespace multi_resolution_graph {
     template<typename T>
     class RealNode : public Node<T>, public std::enable_shared_from_this<RealNode<T>> {
     public:
-        boost::optional<std::shared_ptr<RealNode<T>>>
+        std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinates(Coordinates coordinates) override;
 
-        boost::optional<std::shared_ptr<RealNode<T>>>
+        std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinatesThatPassesFilter(
                 Coordinates coordinates,
                 const std::function<bool(Node < T > &)> &filter,

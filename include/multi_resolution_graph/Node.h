@@ -4,10 +4,7 @@
 #include <vector>
 #include <memory>
 #include <cmath>
-
-// Boost Includes
-// TODO: C++ 17 has `std::optional`. We should use it if possible (instead of `boost::optional`)
-#include <boost/optional.hpp>
+#include <functional>
 
 namespace multi_resolution_graph {
     struct Coordinates {
@@ -37,13 +34,13 @@ namespace multi_resolution_graph {
     template<typename T>
     class Node {
     public:
-        // TODO: Should we even use `boost::optional` here or is just an empty shared_ptr sufficient
+        // TODO: Should we even use `std::optional` here or is just an empty shared_ptr sufficient
         /**
          * Get the node closest to the given coordinates at, or below, this node
          * @param coordinates the coordinates that we're looking for a node at
          * @return a reference to the node closest to the given coordinates
          */
-        virtual boost::optional<std::shared_ptr<RealNode<T>>>
+        virtual std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinates(Coordinates coordinates) = 0;
 
         // TODO: Better doc comment here
@@ -56,7 +53,7 @@ namespace multi_resolution_graph {
          * (this is used to prevent loops when travelling all the way up the tree and back down)
          * @return a possible matching node
          */
-        virtual boost::optional<std::shared_ptr<RealNode<T>>>
+        virtual std::optional<std::shared_ptr<RealNode<T>>>
         getClosestNodeToCoordinatesThatPassesFilter(
                 Coordinates coordinates, const std::function<bool(Node<T> &)> &filter,
                 bool search_parent) = 0;

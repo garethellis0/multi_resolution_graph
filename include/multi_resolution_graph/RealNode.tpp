@@ -10,7 +10,7 @@ RealNode<T>::RealNode(GraphNode<T>* parent):
 }
 
 template <typename T>
-boost::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
+std::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoordinates(Coordinates coordinates) {
     // We have no sub-nodes, so the closest node is this node
     return this->shared_from_this();
 }
@@ -31,7 +31,7 @@ std::vector<std::shared_ptr<RealNode<T>>> RealNode<T>::getNeighbours() {
 
     std::vector<std::shared_ptr<RealNode<T>>> neighbours;
     for (auto& filter : filters){
-        boost::optional<std::shared_ptr<RealNode<T>>> node =
+        std::optional<std::shared_ptr<RealNode<T>>> node =
                 parent->getClosestNodeToCoordinatesThatPassesFilter(
                     this->getCoordinates(), filter,
                     true);
@@ -57,7 +57,7 @@ Coordinates RealNode<T>::getCoordinates() {
 }
 
 template <typename T>
-boost::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
+std::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoordinatesThatPassesFilter(
         Coordinates coordinates,
         const std::function<bool(Node<T> &)> &filter,
         bool search_parent) {
@@ -68,7 +68,7 @@ boost::optional<std::shared_ptr<RealNode<T>>> RealNode<T>::getClosestNodeToCoord
         return this->shared_from_this();
     }
 
-    return boost::optional<std::shared_ptr<RealNode<T>>>{};
+    return std::optional<std::shared_ptr<RealNode<T>>>{};
 }
 
 template<typename T>
