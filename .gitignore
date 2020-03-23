@@ -13,3 +13,5 @@ all_tests
 drawing_test
 *.cbp
 *.a
+bazel-*
+.clwb

@@ -1,0 +1,6 @@
+# We want bazel to output the results of our gtests
+test --test_output=all
+
+# Use C++17
+build --cxxopt='-std=c++17'
+
