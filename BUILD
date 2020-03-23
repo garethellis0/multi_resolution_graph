@@ -5,6 +5,7 @@ cc_library(
         "include/multi_resolution_graph/*.tpp",
     ]),
     includes = ["include"],
+    visibility = ["//visibility:public"],
 )
 
 cc_test(
